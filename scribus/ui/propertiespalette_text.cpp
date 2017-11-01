@@ -33,6 +33,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertywidget_orphans.h"
 #include "propertywidget_pareffect.h"
 #include "propertywidget_pathtext.h"
+#include "propertywidget_textalignment.h"
 #include "propertywidget_textbase.h"
 #include "propertywidget_textcolor.h"
 #include "sccombobox.h"
@@ -61,6 +62,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	m_unitRatio = 1.0;
 
 	textWidgets = new PropertyWidget_TextBase();
+	textAlignmentWidgets = new PropertyWidget_TextAlignment();
 	colorWidgets = new PropertyWidget_TextColor();
 	flopBox = new PropertyWidget_Flop();
 	orphanBox = new PropertyWidget_Orphans();
@@ -84,6 +86,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	layoutSectionTextPath = new ScLayoutSection(tr("Text Path"));
 
 	layoutSectionText->addWidget(textWidgets);
+	layoutSectionText->addWidget(textAlignmentWidgets);
 	layoutSectionText->addWidget(colorWidgets);
 
 	layoutSectionParagraph->addWidget(distanceWidgets);
@@ -125,6 +128,7 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 	advancedWidgets->setMainWindow(mw);
 	fontfeaturesWidget->setMainWindow(mw);
 	textWidgets->setMainWindow(mw);
+	textAlignmentWidgets->setMainWindow(mw);
 	colorWidgets->setMainWindow(mw);
 	distanceWidgets->setMainWindow(mw);
 	hyphenationWidget->setMainWindow(mw);
@@ -159,6 +163,7 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 	advancedWidgets->setDoc(m_doc);
 	fontfeaturesWidget->setDoc(m_doc);
 	textWidgets->setDoc(m_doc);
+	textAlignmentWidgets->setDoc(m_doc);
 	colorWidgets->setDoc(m_doc);
 	distanceWidgets->setDoc(m_doc);
 	parEffectWidgets->setDoc(m_doc);
@@ -188,6 +193,7 @@ void PropertiesPalette_Text::unsetDoc()
 	advancedWidgets->setDoc(0);
 	fontfeaturesWidget->setDoc(0);
 	textWidgets->setDoc(0);
+	textAlignmentWidgets->setDoc(0);
 	colorWidgets->setDoc(0);
 	distanceWidgets->setDoc(0);
 	flopBox->setDoc(0);
@@ -207,6 +213,7 @@ void PropertiesPalette_Text::unsetItem()
 	m_haveItem = false;
 	m_item     = NULL;
 	colorWidgets->setCurrentItem(m_item);
+	textAlignmentWidgets->setCurrentItem(m_item);
 	handleSelectionChanged();
 }
 
@@ -323,6 +330,7 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 	if (!sender())
 	{
 		colorWidgets->handleSelectionChanged();
+		textAlignmentWidgets->handleSelectionChanged();
 		distanceWidgets->handleSelectionChanged();
 		parEffectWidgets->handleSelectionChanged();
 	}
@@ -352,6 +360,7 @@ void PropertiesPalette_Text::unitChange()
 
 	advancedWidgets->unitChange();
 	fontfeaturesWidget->unitChange();
+	textAlignmentWidgets->unitChange();
 	colorWidgets->unitChange();
 	distanceWidgets->unitChange();
 	flopBox->unitChange();
@@ -427,6 +436,7 @@ void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
 	advancedWidgets->updateCharStyle(charStyle);
 	fontfeaturesWidget->updateCharStyle(charStyle);
 	colorWidgets->updateCharStyle(charStyle);
+	textAlignmentWidgets->updateCharStyle(charStyle);
 	hyphenationWidget->updateCharStyle(charStyle);
 	textWidgets->updateCharStyle(charStyle);
 }
@@ -439,6 +449,7 @@ void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
 	advancedWidgets->updateStyle(newCurrent);
 	fontfeaturesWidget->updateStyle(newCurrent);
 	colorWidgets->updateStyle(newCurrent);
+	textAlignmentWidgets->updateStyle(newCurrent);
 	optMargins->updateStyle(newCurrent);
 	orphanBox->updateStyle (newCurrent);
 	parEffectWidgets->updateStyle(newCurrent);
@@ -465,12 +476,12 @@ void PropertiesPalette_Text::updateTextStyles()
 
 void PropertiesPalette_Text::showAlignment(int e)
 {
-	textWidgets->showAlignment(e);
+	textAlignmentWidgets->showAlignment(e);
 }
 
 void PropertiesPalette_Text::showDirection(int e)
 {
-	textWidgets->showDirection(e);
+	textAlignmentWidgets->showDirection(e);
 
 }
 
@@ -493,7 +504,7 @@ void PropertiesPalette_Text::handleAlignment(int a)
 //	tempSelection.addItem(m_item, true);
 //	m_doc->itemSelection_SetAlignment(a, &tempSelection);
 
-	textWidgets->handleAlignment(a);
+	textAlignmentWidgets->handleAlignment(a);
 
 	if (m_item->isPathText())
 		pathTextWidgets->handleSelectionChanged();
@@ -532,6 +543,7 @@ void PropertiesPalette_Text::languageChange()
 	textWidgets->languageChange();
 
 	colorWidgets->languageChange();
+	textAlignmentWidgets->languageChange();
 	flopBox->languageChange();
 	orphanBox->languageChange();
 	distanceWidgets->languageChange();

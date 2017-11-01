@@ -4,32 +4,34 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTCOLOR_H
-#define PROPERTYWIDGET_TEXTCOLOR_H
+#ifndef PROPERTYWIDGET_TEXTALIGNMENT_H
+#define PROPERTYWIDGET_TEXTALIGNMENT_H
 
-#include "ui_propertywidget_textcolorbase.h"
+#include "ui_propertywidget_textalignment.h"
 
 #include "propertywidgetbase.h"
 
-
 class ScribusDoc;
 class ScribusMainWindow;
+class ParagraphStyle;
+class CharStyle;
 
-class PropertyWidget_TextColor : public QWidget, Ui::PropertyWidget_TextColorBase,
+class PropertyWidget_TextAlignment : public QWidget, Ui::PropertyWidget_TextAlignment,
 	                             public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_TextColor(QWidget *parent = 0);
-	~PropertyWidget_TextColor() {};
+	PropertyWidget_TextAlignment(QWidget *parent = 0);
+	~PropertyWidget_TextAlignment() {};
 
-	void updateColorList();
 	void setCurrentItem(PageItem *i);
 
 protected:
 	PageItem *         m_item;
 	ScribusMainWindow* m_ScMW;
+	bool   m_haveDoc;
+	bool   m_haveItem;
 
 	void connectSignals();
 	void disconnectSignals();
@@ -43,23 +45,32 @@ public slots:
 	void setDoc(ScribusDoc *d);
 
 	void handleSelectionChanged();
-	void handleUpdateRequest(int);
 
 	void languageChange();
 	void unitChange() {};
 
-	void showTextColors(QString p, QString b, QString bc, double shp, double shb, double sbc);
+	void showOutlineW(double x);
+	void showShadowOffset(double x, double y);
+	void showStrikeThru(double p, double w);
 	void showTextEffects(int s);
+	void showUnderline(double p, double w);
 
 	void updateCharStyle(const CharStyle& charStyle);
 	void updateStyle(const ParagraphStyle& newCurrent);
 
+	void showAlignment(int e);
+	void showDirection(int e);
+	void handleAlignment(int a);
+	void handleDirection(int d);
+
 private slots:
-	void handleTextFill();
-	void handleTextShade();
-	void handleTextStroke();
-	void handleTextBackground();
+	void handleOutlineWidth();
+	void handleShadowOffs();
+	void handleStrikeThru();
 	void handleTypeStyle(int s);
+	void handleUnderline();
+
+	void handleVAlign();
 };
 
 #endif

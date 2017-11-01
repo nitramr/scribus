@@ -176,6 +176,7 @@ set(SCRIBUS_UI_SRC
 	ui/propertywidget_optmarginsbase.ui
 	ui/propertywidget_orphansbase.ui
 	ui/propertywidget_pathtextbase.ui
+    ui/propertywidget_textalignment.ui
     ui/propertywidget_textbase.ui
 	ui/propertywidget_textcolorbase.ui
 	ui/recoverdialog.ui
@@ -473,7 +474,8 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertywidget_optmargins.h
 	ui/propertywidget_orphans.h
 	ui/propertywidget_pathtext.h
-    ui/propertywidget_textbase.h
+	ui/propertywidget_textalignment.h
+	ui/propertywidget_textbase.h
 	ui/propertywidget_textcolor.h
 	ui/propertywidget_fontfeatures.h
 	ui/proptree.h
@@ -957,7 +959,8 @@ set(SCRIBUS_SOURCES
 	ui/propertywidget_optmargins.cpp
 	ui/propertywidget_orphans.cpp
 	ui/propertywidget_pathtext.cpp
-    ui/propertywidget_textbase.cpp
+	ui/propertywidget_textalignment.cpp
+	ui/propertywidget_textbase.cpp
 	ui/propertywidget_textcolor.cpp
 	ui/propertywidget_fontfeatures.cpp
 	ui/propertywidgetbase.cpp

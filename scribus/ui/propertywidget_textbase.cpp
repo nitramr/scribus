@@ -59,11 +59,6 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 	connect(fonts         , SIGNAL(fontSelected(QString )), this, SLOT(handleTextFont(QString)));
 	connect(fontSize      , SIGNAL(valueChanged(double)), this, SLOT(handleFontSize()));
 
-
-	connect(textAlignment , SIGNAL(State(int))   , this, SLOT(handleAlignment(int)));
-	connect(textDirection , SIGNAL(State(int))   , this, SLOT(handleDirection(int)));
-
-
 	connect(charStyleClear, SIGNAL(clicked()), this, SLOT(doClearCStyle()));
 	connect(paraStyleClear, SIGNAL(clicked()), this, SLOT(doClearPStyle()));
 
@@ -152,8 +147,6 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 	if (!m_doc)
 		setDoc(i->doc());
 
-	disconnect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()));
-
 	m_haveItem = false;
 	m_item = i;
 
@@ -180,14 +173,6 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 		setEnabled(false);
 	}
 
-	// Vertical Alignment
-	PageItem_TextFrame *textItem = m_item->asTextFrame();
-	if (m_doc->appMode == modeEditTable)
-		textItem = m_item->asTable()->activeCell().textFrame();
-	if (!textItem) return;
-
-	verticalAlign->setCurrentIndex(textItem->verticalAlignment());
-	connect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()), Qt::UniqueConnection);
 }
 
 
@@ -317,8 +302,6 @@ void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
 
 	setupLineSpacingSpinbox(newCurrent.lineSpacingMode(), newCurrent.lineSpacing());
 	lineSpacingModeCombo->setCurrentIndex(newCurrent.lineSpacingMode());
-	textAlignment->setStyle(newCurrent.alignment(), newCurrent.direction());
-	textDirection->setStyle(newCurrent.direction());
 
 	m_haveItem = tmp;
 }
@@ -340,28 +323,6 @@ void PropertyWidget_TextBase::updateTextStyles()
 	charStyleCombo->updateFormatList();
 }
 
-
-void PropertyWidget_TextBase::showAlignment(int e)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-	textAlignment->setEnabled(true);
-	textAlignment->setStyle(e, textDirection->getStyle());
-	m_haveItem = tmp;
-}
-
-void PropertyWidget_TextBase::showDirection(int e)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-	textDirection->setEnabled(true);
-	textDirection->setStyle(e);
-	m_haveItem = tmp;
-}
 
 void PropertyWidget_TextBase::showCharStyle(const QString& name)
 {
@@ -399,36 +360,6 @@ void PropertyWidget_TextBase::handleFontSize()
 	m_doc->itemSelection_SetFontSize(qRound(fontSize->value()*10.0), &tempSelection);
 }
 
-void PropertyWidget_TextBase::handleAlignment(int a)
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetAlignment(a, &tempSelection);
-//	if (m_item->isPathText())
-//		pathTextWidgets->handleSelectionChanged();
-}
-
-void PropertyWidget_TextBase::handleDirection(int d)
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetDirection(d, &tempSelection);
-	// If current text alignment is left or right, change it to match direction
-	if (d == ParagraphStyle::RTL && textAlignment->selectedId() == ParagraphStyle::Leftaligned)
-	{
-		m_doc->itemSelection_SetAlignment(ParagraphStyle::Rightaligned, &tempSelection);
-		textAlignment->setTypeStyle(ParagraphStyle::Rightaligned);
-	}
-	else if (d == ParagraphStyle::LTR && textAlignment->selectedId() == ParagraphStyle::Rightaligned)
-	{
-		m_doc->itemSelection_SetAlignment(ParagraphStyle::Leftaligned, &tempSelection);
-		textAlignment->setTypeStyle(ParagraphStyle::Leftaligned);
-	}
-}
 
 void PropertyWidget_TextBase::handleTextFont(QString c)
 {
@@ -483,22 +414,6 @@ void PropertyWidget_TextBase::doClearPStyle()
 }
 
 
-void PropertyWidget_TextBase::handleVAlign()
-{
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	PageItem *textItem = m_item;
-	if (m_doc->appMode == modeEditTable)
-		textItem = m_item->asTable()->activeCell().textFrame();
-	if (textItem != NULL)
-	{
-		textItem->setVerticalAlignment(verticalAlign->currentIndex());
-		textItem->update();
-		if (m_doc->appMode == modeEditTable)
-			m_item->asTable()->update();
-		m_doc->regionsChanged()->update(QRect());
-	}
-}
 
 void PropertyWidget_TextBase::changeEvent(QEvent *e)
 {
@@ -513,15 +428,6 @@ void PropertyWidget_TextBase::changeEvent(QEvent *e)
 void PropertyWidget_TextBase::languageChange()
 {
 	retranslateUi(this);
-
-	QSignalBlocker verticalAlignBlocker(verticalAlign);
-	int oldAlignIndex = verticalAlign->currentIndex();
-	verticalAlign->clear();
-	verticalAlign->addItem( tr("Top"));
-	verticalAlign->addItem( tr("Middle"));
-	verticalAlign->addItem( tr("Bottom"));
-	verticalAlign->setCurrentIndex(oldAlignIndex);
-
 
 	QSignalBlocker lineSpacingModeBlocker(lineSpacingModeCombo);
 	int oldLineSpacingMode = lineSpacingModeCombo->currentIndex();
@@ -539,7 +445,4 @@ void PropertyWidget_TextBase::languageChange()
 	langCombo->addItems(languageList);
 	langCombo->setCurrentIndex(oldLang);
 
-	textAlignment->languageChange();
-	textDirection->languageChange();
 }
-

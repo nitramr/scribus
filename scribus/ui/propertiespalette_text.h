@@ -29,6 +29,7 @@ class PropertyWidget_Hyphenation;
 class PropertyWidget_OptMargins;
 class PropertyWidget_Orphans;
 class PropertyWidget_PathText;
+class PropertyWidget_TextAlignment;
 class PropertyWidget_TextBase;
 class PropertyWidget_TextColor;
 class ScComboBox;
@@ -79,6 +80,7 @@ protected:
 	PropertyWidget_Orphans* orphanBox;
 	PropertyWidget_ParEffect* parEffectWidgets;
 	PropertyWidget_PathText* pathTextWidgets;
+	PropertyWidget_TextAlignment* textAlignmentWidgets;
 	PropertyWidget_TextBase* textWidgets;
 	PropertyWidget_TextColor* colorWidgets;
 
