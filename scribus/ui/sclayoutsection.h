@@ -11,6 +11,7 @@ class ScLayoutSectionHeader : public QWidget
 	Q_OBJECT
 public:
 	ScLayoutSectionHeader(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
+	~ScLayoutSectionHeader() {}
 	void setToggleOff(bool isOff);
 
 private:

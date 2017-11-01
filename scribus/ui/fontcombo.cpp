@@ -113,23 +113,28 @@ FontComboH::FontComboH(QWidget* parent, bool labels) :
 	substFont = IconManager::instance()->loadPixmap("font_subst16.png");
 	fontComboLayout = new QGridLayout(this);
 	fontComboLayout->setMargin(0);
-	fontComboLayout->setSpacing(0);
+	fontComboLayout->setSpacing(4);
 	int col=0;
 	if (showLabels)
 	{
-		fontFaceLabel=new QLabel("", this);
+		fontFaceLabel=new QLabel("", this);		
 		fontStyleLabel=new QLabel("", this);
-		fontComboLayout->addWidget(fontFaceLabel,0,0);
-		fontComboLayout->addWidget(fontStyleLabel,1,0);
+
+		QFont font(fontFaceLabel->font());
+		font.setPixelSize(8);
+		fontFaceLabel->setFont(font);
+		fontStyleLabel->setFont(font);
+		fontComboLayout->addWidget(fontFaceLabel,1,0);
+		fontComboLayout->addWidget(fontStyleLabel,1,1);
 		fontComboLayout->setColumnStretch(1,10);
 		col=1;
 	}
 	fontFamily = new ScComboBox(this);
 	fontFamily->setEditable(true);
 	fontFamily->setItemDelegate(new FontFamilyDelegate(this));
-	fontComboLayout->addWidget(fontFamily,0,col);
+	fontComboLayout->addWidget(fontFamily,col,0);
 	fontStyle = new ScComboBox(this);
-	fontComboLayout->addWidget(fontStyle,1,col);
+	fontComboLayout->addWidget(fontStyle,col,1);
 	isForAnnotation = true;  // this is merely to ensure that the list is rebuilt
 	RebuildList(0);
 	connect(fontFamily, SIGNAL(activated(int)), this, SLOT(familySelected(int)));

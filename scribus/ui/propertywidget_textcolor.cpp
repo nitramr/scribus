@@ -20,8 +20,6 @@ PropertyWidget_TextColor::PropertyWidget_TextColor(QWidget* parent) : QWidget(pa
 
 	setupUi(this);
 
-	layout()->setAlignment( Qt::AlignLeft );
-
 	fillLayout->setAlignment( Qt::AlignLeft );
 	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
 	fillIcon->setPixmap(IconManager::instance()->loadPixmap("16/color-fill.png"));

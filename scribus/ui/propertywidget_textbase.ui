@@ -6,19 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>197</height>
+    <width>380</width>
+    <height>231</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
+    <width>380</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>300</width>
+    <width>380</width>
     <height>16777215</height>
    </size>
   </property>
@@ -30,21 +36,27 @@
     <number>2</number>
    </property>
    <property name="leftMargin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="topMargin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="rightMargin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="bottomMargin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7">
+    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="FontComboH" name="fonts" native="true"/>
        </item>
@@ -58,22 +70,6 @@
          <property name="text">
           <string>Typeface</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_weight">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Weight</string>
-         </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
@@ -83,6 +79,9 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="ScrSpinBox" name="fontSize">
          <property name="sizePolicy">
@@ -115,9 +114,6 @@
          <property name="text">
           <string>Font Size</string>
          </property>
-         <property name="pixmap">
-          <pixmap>../../resources/icons/zeichen.png</pixmap>
-         </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
@@ -128,12 +124,62 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1,0">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5"/>
+      <layout class="QVBoxLayout" name="verticalLayout_fontColor">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Color</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="fontOpacity"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Opacity</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QComboBox" name="lineSpacingModeCombo">
          <property name="sizePolicy">
@@ -161,10 +207,7 @@
           </font>
          </property>
          <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap>../../resources/icons/linespacing2.png</pixmap>
+          <string>Line Alignment</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -175,6 +218,9 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="ScrSpinBox" name="lineSpacing">
          <property name="sizePolicy">
@@ -211,12 +257,79 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item alignment="Qt::AlignLeft">
-      <widget class="DirectionSelect" name="textDirection" native="true"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1,0,1,0">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="DirectionSelect" name="textDirection" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Direction</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="AlignSelect" name="textAlignment" native="true"/>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="AlignSelect" name="textAlignment" native="true"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Horizontal Alignment</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <spacer name="horizontalSpacer_2">
@@ -232,19 +345,37 @@
       </spacer>
      </item>
      <item>
-      <widget class="QComboBox" name="langCombo">
-       <property name="toolTip">
-        <string>Text Language</string>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-      </widget>
+       <item>
+        <widget class="QComboBox" name="verticalAlign"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="verticalAlignLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Vertical Alignment</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,1,0">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QLabel" name="paraStyleLabel">
        <property name="sizePolicy">
@@ -254,12 +385,22 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../../resources/icons/zeichen.png</pixmap>
+        <string>Paragraph Style:</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="ParaStyleComboBox" name="paraStyleCombo">
@@ -278,8 +419,8 @@
       <widget class="QToolButton" name="paraStyleClear">
        <property name="maximumSize">
         <size>
-         <width>22</width>
-         <height>22</height>
+         <width>1677215</width>
+         <height>1677215</height>
         </size>
        </property>
        <property name="toolTip">
@@ -297,7 +438,10 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,1,0">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QLabel" name="charStyleLabel">
        <property name="sizePolicy">
@@ -307,12 +451,22 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../../resources/icons/zeichen.png</pixmap>
+        <string>Character Style:</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="CharStyleComboBox" name="charStyleCombo">
@@ -331,8 +485,8 @@
       <widget class="QToolButton" name="charStyleClear">
        <property name="maximumSize">
         <size>
-         <width>22</width>
-         <height>22</height>
+         <width>1677215</width>
+         <height>1677215</height>
         </size>
        </property>
        <property name="toolTip">
@@ -348,6 +502,16 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QComboBox" name="langCombo">
+     <property name="toolTip">
+      <string>Text Language</string>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

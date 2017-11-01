@@ -13,13 +13,13 @@ for which a new license (GPL+exception) is in place.
 //#include "scrpalettebase.h"
 #include "scrspinbox.h"
 
-//#include "scguardedptr.h"
+#include "scguardedptr.h"
 //#include "sctextstruct.h"
 
-#include "propertywidgetbase.h"
+//#include "propertywidgetbase.h"
 
 
-//class PageItem;
+class PageItem;
 class CharStyle;
 class ParagraphStyle;
 class ScribusDoc;
@@ -28,7 +28,7 @@ class ScComboBox;
 //class ScribusDoc;
 //class Selection;
 
-class PropertyWidget_TextBase : public QWidget, public Ui::PropertyWidget_TextBase, public PropertyWidgetBase
+class PropertyWidget_TextBase : public QWidget, public Ui::PropertyWidget_TextBase
 {
 	Q_OBJECT
 
@@ -53,7 +53,7 @@ protected:
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-//	ScGuardedPtr<ScribusDoc> m_doc;
+	ScGuardedPtr<ScribusDoc> m_doc;
 
 private:
 	PageItem* currentItemFromSelection();
@@ -97,8 +97,11 @@ public slots:
 	void handleAlignment(int a);
 	void handleDirection(int d);
 
+	void handleUpdateRequest(int updateFlags);
+
 private slots:
 
+	void handleVAlign();
 	void doClearCStyle();
 	void doClearPStyle();
 

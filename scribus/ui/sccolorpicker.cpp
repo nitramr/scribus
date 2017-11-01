@@ -9,6 +9,7 @@ ScColorPicker::ScColorPicker(QWidget *parent) :
 	ui->setupUi(this);
 
 	this->connect(ui->submitColor, SIGNAL(clicked(bool)), this, SLOT(submitButtonPress()));
+	this->connect(ui->resetColor, SIGNAL(clicked(bool)), this, SLOT(resetButtonPress()));
 
 }
 
@@ -22,7 +23,7 @@ ScColorPicker::~ScColorPicker()
 void ScColorPicker::submitButtonPress(){
 
 	//tmp color
-	QPixmap *fills = new QPixmap(30,24);
+	QPixmap *fills = new QPixmap(30,30);
 	fills->fill(Qt::transparent);
 
 	int red = qrand() % 255;
@@ -35,5 +36,11 @@ void ScColorPicker::submitButtonPress(){
 	paint.drawRect(fills->rect());
 
 	emit setPreview(QPixmap(*fills));
+
+}
+
+void ScColorPicker::resetButtonPress(){
+
+	emit resetColor();
 
 }

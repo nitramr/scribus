@@ -30,6 +30,7 @@ for which a new license (GPL+exception) is in place.
 #endif
 #include <cmath>
 
+
 #include "appmodehelper.h"
 #include "appmodes.h"
 #include "pageitem_table.h"
@@ -58,7 +59,13 @@ TextPalette::TextPalette( QWidget* parent) : ScDockPalette( parent, "TextPalette
 	setFont(f);
 
 	textPal = new PropertiesPalette_Text( this );
-	setWidget( textPal );
+
+	m_scrollArea = new QScrollArea(this);
+	m_scrollArea->setWidget(textPal);
+	m_scrollArea->setMinimumWidth(this->width());
+	m_scrollArea->setWidgetResizable(true);
+
+	setWidget( m_scrollArea );
 
 	languageChange();
 
@@ -341,6 +348,10 @@ void TextPalette::changeEvent(QEvent *e)
 	if (e->type() == QEvent::LanguageChange)
 	{
 		languageChange();
+		return;
+	}
+	if(e->type() == QEvent::Resize){
+		m_scrollArea->setMinimumWidth(this->width());
 		return;
 	}
 	ScDockPalette::changeEvent(e);

@@ -8,6 +8,7 @@ class ScPopupMenu : public QMenu
 {
 public:
 	ScPopupMenu(QWidget*widget);
+	~ScPopupMenu() {}
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 };

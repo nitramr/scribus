@@ -36,7 +36,7 @@ class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
 
-class SCRIBUS_API PropertiesPalette_Text : public QWidget//, public Ui::PropertiesPalette_TextBase
+class SCRIBUS_API PropertiesPalette_Text : public QWidget
 {
 	Q_OBJECT
 
@@ -121,33 +121,12 @@ public slots:
 	void updateParagraphStyles();
 	void updateTextStyles();
 	
-	void handleLineSpacingMode(int id);
-	void handleTextFont(QString);
-
-	// update widget layout
-	void updateTreeLayout();
+	//void handleLineSpacingMode(int id);
+	//void handleTextFont(QString);
 
 private slots:
 	void handleAlignment(int a);
-	void handleDirection(int d);
 	void handleFirstLinePolicy(int);
-	void handleFontSize();
-	void handleLineSpacing();
-	
-	void doClearCStyle();
-	void doClearPStyle();
-
-
-//	int advancedWidgetsItem;
-//	int colorWidgetsItem;
-//	int distanceItem;
-//	int flopItem;
-//	int fontfeaturesWidgetItem;
-//	int hyphenationWidgetItem;
-//	int optMarginsItem;
-//	int orphanItem;
-//	int parEffectItem;
-//	int pathTextItem;
 
 };
 

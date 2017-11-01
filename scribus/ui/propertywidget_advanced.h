@@ -7,7 +7,6 @@ for which a new license (GPL+exception) is in place.
 #ifndef PROPERTYWIDGET_ADVANCED_H
 #define PROPERTYWIDGET_ADVANCED_H
 
-#include "sclayoutsegment.h" // Indigo Segment
 #include "ui_propertywidget_advancedbase.h"
 
 #include "propertywidgetbase.h"
@@ -18,7 +17,7 @@ class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_Advanced : public ScLayoutSegment, Ui::PropertyWidget_AdvancedBase,
+class PropertyWidget_Advanced : public QWidget, Ui::PropertyWidget_AdvancedBase,
                                 public PropertyWidgetBase
 {
 	Q_OBJECT

@@ -20,11 +20,11 @@ DirectionSelect::DirectionSelect(QWidget* parent) : QWidget(parent)
 
         GroupSelectLayout = new QHBoxLayout( this );
         GroupSelectLayout->setSpacing( 0 );
-        GroupSelectLayout->setMargin( 5 );
+		GroupSelectLayout->setMargin( 0 );
         GroupSelectLayout->setAlignment(Qt::AlignRight);
 
         LTR = new QToolButton( this );
-        LTR->setMaximumSize( QSize( 22, 22 ) );
+	   // LTR->setMaximumSize( QSize( 22, 22 ) );
         LTR->setIcon(im->loadIcon("16/text-direction-ltr.png"));
         LTR->setCheckable( true );
         LTR->setChecked( true );
@@ -32,7 +32,7 @@ DirectionSelect::DirectionSelect(QWidget* parent) : QWidget(parent)
         buttonGroup->addButton(LTR, 0);
 
         RTL = new QToolButton( this );
-        RTL->setMaximumSize( QSize( 22, 22 ) );
+	   // RTL->setMaximumSize( QSize( 22, 22 ) );
         RTL->setIcon(im->loadIcon("16/text-direction-rtl.png"));
         RTL->setCheckable( true );
         GroupSelectLayout->addWidget( RTL );

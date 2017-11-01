@@ -16,24 +16,27 @@
   <widget class="QPushButton" name="submitColor">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>70</y>
+     <x>10</x>
+     <y>10</y>
      <width>80</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>Set Color</string>
    </property>
   </widget>
-  <widget class="QWidget" name="colorPreview" native="true">
+  <widget class="QPushButton" name="resetColor">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>61</width>
-     <height>51</height>
+     <x>10</x>
+     <y>40</y>
+     <width>80</width>
+     <height>25</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>Reset Color</string>
    </property>
   </widget>
  </widget>

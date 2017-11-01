@@ -15,7 +15,7 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "units.h"
 
-PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : ScLayoutSegment(parent)
+PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : QWidget(parent)
 {
 	m_item = NULL;
 	m_ScMW = NULL;
@@ -25,7 +25,7 @@ PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : ScLayoutSegm
 	setupUi(this);
 
 
-	layout()->setAlignment( Qt::AlignLeft );
+	//layout()->setAlignment( Qt::AlignLeft );
 
 	textBase->setValue( 0 );
 	textBaseLabel->setPixmap(IconManager::instance()->loadPixmap("textbase.png"));

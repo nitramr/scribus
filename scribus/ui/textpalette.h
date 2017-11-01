@@ -9,6 +9,7 @@ for which a new license (GPL+exception) is in place.
 
 #include <QListWidgetItem>
 #include <QLineEdit>
+#include <QScrollArea>
 
 class QCloseEvent;
 class QEvent;
@@ -52,6 +53,7 @@ public:
 private:
 
 	PageItem* currentItemFromSelection();
+	QScrollArea *m_scrollArea;
 	
 public slots:
 	void setMainWindow(ScribusMainWindow *mw);

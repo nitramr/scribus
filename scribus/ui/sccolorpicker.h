@@ -20,9 +20,11 @@ private:
 
 signals:
 	void setPreview(QPixmap);
+	void resetColor();
 
 private slots:
 	void submitButtonPress();
+	void resetButtonPress();
 
 };
 

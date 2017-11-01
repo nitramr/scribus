@@ -6,106 +6,54 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>138</height>
+    <width>380</width>
+    <height>104</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
+    <width>380</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>380</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>380</width>
     <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
    <string notr="true">Frame</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
    <property name="leftMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="topMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="rightMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="bottomMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="spacing">
     <number>2</number>
    </property>
-   <item row="1" column="1">
-    <widget class="ScrSpinBox" name="columns">
-     <property name="toolTip">
-      <string>Number of columns in text frame</string>
-     </property>
-     <property name="minimum">
-      <double>1.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>3000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="ScrSpinBox" name="topDistance">
-     <property name="toolTip">
-      <string>Distance of text from top of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="bottomLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&amp;Bottom</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="columnsLabel">
-     <property name="text">
-      <string>Colu&amp;mns:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="ScrSpinBox" name="bottomDistance">
-     <property name="toolTip">
-      <string>Distance of text from bottom of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="3">
-    <widget class="QLabel" name="leftLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&amp;Left</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
+   <item row="2" column="1">
     <widget class="QLabel" name="topLabel">
      <property name="font">
       <font>
@@ -123,37 +71,121 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="2">
-    <widget class="QToolButton" name="tabsButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>Edit tab settings of text frame...</string>
+   <item row="2" column="3">
+    <widget class="QLabel" name="leftLabel">
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
      </property>
      <property name="text">
-      <string>T&amp;abulators...</string>
+      <string>&amp;Left</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="1" column="0">
+    <widget class="QLabel" name="distancesLabel">
+     <property name="text">
+      <string>Distances:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="ScrSpinBox" name="columnGap">
+     <property name="toolTip">
+      <string>Distance between columns</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="columnsLabel">
+     <property name="text">
+      <string>Colu&amp;mns:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2" colspan="2">
+    <widget class="ScComboBox" name="columnGapLabel">
+     <property name="toolTip">
+      <string>Switches between Gap or Column width</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Gap:</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Width:</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="bottomLabel">
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&amp;Bottom</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="ScrSpinBox" name="bottomDistance">
+     <property name="toolTip">
+      <string>Distance of text from bottom of frame</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="ScrSpinBox" name="columns">
+     <property name="toolTip">
+      <string>Number of columns in text frame</string>
+     </property>
+     <property name="minimum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>3000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
     <widget class="ScrSpinBox" name="leftDistance">
+     <property name="maximumSize">
+      <size>
+       <width>300</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Distance of text from left of frame</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="4">
+   <item row="1" column="4">
     <widget class="ScrSpinBox" name="rightDistance">
      <property name="toolTip">
       <string>Distance of text from right of frame</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="4">
+   <item row="2" column="4">
     <widget class="QLabel" name="rightLabel">
      <property name="font">
       <font>
@@ -171,61 +203,27 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="distancesLabel">
-     <property name="text">
-      <string>Distances:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QComboBox" name="verticalAlign">
-     <item>
-      <property name="text">
-       <string>Top</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Middle</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Bottom</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="verticalAlignLabel">
-     <property name="text">
-      <string>Vertical Alignment:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="ScrSpinBox" name="columnGap">
+   <item row="1" column="1">
+    <widget class="ScrSpinBox" name="topDistance">
      <property name="toolTip">
-      <string>Distance between columns</string>
+      <string>Distance of text from top of frame</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="2" colspan="2">
-    <widget class="ScComboBox" name="columnGapLabel">
-     <property name="toolTip">
-      <string>Switches between Gap or Column width</string>
+   <item row="3" column="0" colspan="2">
+    <widget class="QToolButton" name="tabsButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <item>
-      <property name="text">
-       <string>Gap:</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Width:</string>
-      </property>
-     </item>
+     <property name="toolTip">
+      <string>Edit tab settings of text frame...</string>
+     </property>
+     <property name="text">
+      <string>T&amp;abulators...</string>
+     </property>
     </widget>
    </item>
   </layout>

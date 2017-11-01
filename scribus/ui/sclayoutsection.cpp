@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "sclayoutsection.h"
 #include "scpopupmenu.h"
+#include "iconmanager.h"
 
 
 ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool toggle, QWidget *parent) : QWidget(parent)
@@ -19,8 +20,8 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 
 	m_btnExtended = new QPushButton();
 	m_btnExtended->setFixedSize(24,24);
-	m_btnExtended->setIcon(QIcon(":icons/assets/ic_settings.png"));
-	//m_btnExtended->setFlat(true);
+	m_btnExtended->setIcon(IconManager::instance()->loadPixmap("configure.png"));
+	m_btnExtended->setFlat(true);
 
 	if(menu == 0){
 		m_btnExtended->hide();
@@ -36,8 +37,8 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 	m_btnOnOff = new QPushButton();
 	m_btnOnOff->setFixedSize(24,24);
 	m_btnOnOff->setCheckable(true);
-	m_btnOnOff->setIcon(QIcon(":icons/assets/ic_power_settings.png"));
-	//m_btnOnOff->setFlat(true);
+	m_btnOnOff->setIcon(IconManager::instance()->loadPixmap("configure.png"));
+	m_btnOnOff->setFlat(true);
 
 	if(!toggle){
 		m_btnOnOff->hide();
