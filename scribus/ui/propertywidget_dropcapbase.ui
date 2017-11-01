@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PropertyWidget_DropCapBase</class>
- <widget class="QFrame" name="PropertyWidget_DropCapBase">
+ <widget class="QWidget" name="PropertyWidget_DropCapBase">
   <property name="geometry">
    <rect>
     <x>0</x>

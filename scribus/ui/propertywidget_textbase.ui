@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PropertiesPalette_TextBase</class>
- <widget class="QWidget" name="PropertiesPalette_TextBase">
+ <class>PropertyWidget_TextBase</class>
+ <widget class="QWidget" name="PropertyWidget_TextBase">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>308</width>
-    <height>390</height>
+    <width>300</width>
+    <height>197</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>300</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string notr="true">Form</string>
@@ -30,100 +42,171 @@
     <number>2</number>
    </property>
    <item>
-    <widget class="FontComboH" name="fonts" native="true"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
-      <widget class="QLabel" name="fontSizeLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../../resources/icons/zeichen.png</pixmap>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="FontComboH" name="fonts" native="true"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Typeface</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="ScrSpinBox" name="fontSize">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Font Size</string>
-       </property>
-       <property name="suffix">
-        <string> pt</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_weight">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Weight</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="ScrSpinBox" name="fontSize">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Font Size</string>
+         </property>
+         <property name="suffix">
+          <string> pt</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="fontSizeLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Font Size</string>
+         </property>
+         <property name="pixmap">
+          <pixmap>../../resources/icons/zeichen.png</pixmap>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="lineSpacingLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../../resources/icons/linespacing2.png</pixmap>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_5"/>
      </item>
      <item>
-      <widget class="QComboBox" name="lineSpacingModeCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Select the line spacing mode</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QComboBox" name="lineSpacingModeCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Select the line spacing mode</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lineSpacingLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../../resources/icons/linespacing2.png</pixmap>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="ScrSpinBox" name="lineSpacing">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Line Spacing</string>
-       </property>
-       <property name="suffix">
-        <string> pt</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="ScrSpinBox" name="lineSpacing">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Line Spacing</string>
+         </property>
+         <property name="suffix">
+          <string> pt</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Line Height</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -161,16 +244,6 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6"/>
-   </item>
-   <item>
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="paraStyleLabel">
@@ -181,7 +254,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Paragraph St&amp;yle:</string>
+        <string/>
        </property>
        <property name="pixmap">
         <pixmap>../../resources/icons/zeichen.png</pixmap>
@@ -234,7 +307,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Character St&amp;yle:</string>
+        <string/>
        </property>
        <property name="pixmap">
         <pixmap>../../resources/icons/zeichen.png</pixmap>
@@ -276,22 +349,6 @@
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="ScTreeWidget" name="textTree">
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -301,20 +358,15 @@
    <header>ui/scrspinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>FontComboH</class>
-   <extends>QWidget</extends>
-   <header>ui/fontcombo.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>CharStyleComboBox</class>
    <extends>QComboBox</extends>
    <header>ui/spalette.h</header>
   </customwidget>
   <customwidget>
-   <class>ScTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>ui/sctreewidget.h</header>
+   <class>FontComboH</class>
+   <extends>QWidget</extends>
+   <header>ui/fontcombo.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ParaStyleComboBox</class>

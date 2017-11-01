@@ -6,6 +6,8 @@ INCLUDEPATH+=./scribus
 TEMPLATE = app
 TARGET = Scribus
 INCLUDEPATH += .
+QT += widgets
+QT += uitools
 
 # The following define makes your compiler warn you if you use any
 # feature of Qt which has been marked as deprecated (the exact warnings
@@ -416,6 +418,7 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/extimageprops.h \
            scribus/ui/filedialogeventcatcher.h \
            scribus/ui/filetoolbar.h \
+	   scribus/ui/flowlayout.h \
            scribus/ui/fmitem.h \
            scribus/ui/fontcombo.h \
            scribus/ui/fontlistview.h \
@@ -553,16 +556,21 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/resourcemanager.h \
            scribus/ui/resourcemanagerlicense.h \
            scribus/ui/rulermover.h \
+	   scribus/ui/sccolorfillsbox.h \
+	   scribus/ui/sccolorpicker.h \
            scribus/ui/sccolorslider.h \
            scribus/ui/sccombobox.h \
            scribus/ui/scdockpalette.h \
            scribus/ui/scescapecatcher.h \
            scribus/ui/scfilewidget.h \
            scribus/ui/scinputdialog.h \
+	   scribus/ui/sclayoutsegment.h \
+	   scribus/ui/sclayoutsection.h \
            scribus/ui/sclistwidgetdelegate.h \
            scribus/ui/scmenu.h \
            scribus/ui/scmessagebox.h \
            scribus/ui/scmwmenumanager.h \
+	   scribus/ui/scpopupmenu.h \
            scribus/ui/scprogressbar.h \
            scribus/ui/scrapbookpalette.h \
            scribus/ui/scresizecursor.h \
@@ -991,7 +999,14 @@ HEADERS += scribus/actionmanager.h \
            scribus/plugins/tools/2geomtools/meshdistortion/meshdistortion.h \
            scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.h \
            scribus/plugins/tools/2geomtools/pathalongpath/pathalongpath.h \
-           scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.h
+           scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.h \
+    scribus/ui/flowlayout.h \
+    scribus/ui/sccolorpicker.h \
+    scribus/ui/sccolorfillsbox.h \
+    scribus/ui/scpopupmenu.h \
+    scribus/ui/sclayoutsegment.h \
+    scribus/ui/sclayoutsection.h \
+    scribus/ui/propertywidget_textbase.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1074,7 +1089,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/propertiespalette_shadowbase.ui \
          scribus/ui/propertiespalette_shapebase.ui \
          scribus/ui/propertiespalette_tablebase.ui \
-         scribus/ui/propertiespalette_textbase.ui \
          scribus/ui/propertiespalette_xyzbase.ui \
          scribus/ui/propertywidget_advancedbase.ui \
          scribus/ui/propertywidget_distancebase.ui \
@@ -1093,6 +1107,7 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/resourcemanagerbase.ui \
          scribus/ui/resourcemanagerlicensebase.ui \
          scribus/ui/rotationsetter.ui \
+	 scribus/ui/sccolorpicker.ui \
          scribus/ui/selectobjects.ui \
          scribus/ui/shortcutwidget.ui \
          scribus/ui/smcellstylewidget.ui \
@@ -1146,7 +1161,9 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/plugins/tools/pathfinder/pathfinderbase.ui \
          scribus/plugins/scripter/python/sceditor/mainwindow.ui \
          scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.ui \
-         scribus/plugins/tools/2geomtools/pathalongpath/pathdialogbase.ui
+         scribus/plugins/tools/2geomtools/pathalongpath/pathdialogbase.ui \
+    scribus/ui/sccolorpicker.ui \
+    scribus/ui/propertywidget_textbase.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1506,6 +1523,7 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/extimageprops.cpp \
            scribus/ui/filedialogeventcatcher.cpp \
            scribus/ui/filetoolbar.cpp \
+	   scribus/ui/flowlayout.cpp \
            scribus/ui/fmitem.cpp \
            scribus/ui/fontcombo.cpp \
            scribus/ui/fontlistview.cpp \
@@ -1641,16 +1659,21 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/resourcemanager.cpp \
            scribus/ui/resourcemanagerlicense.cpp \
            scribus/ui/rulermover.cpp \
+	   scribus/ui/sccolorfillsbox.cpp \
+	   scribus/ui/sccolorpicker.cpp \
            scribus/ui/sccolorslider.cpp \
            scribus/ui/sccombobox.cpp \
            scribus/ui/scdockpalette.cpp \
            scribus/ui/scescapecatcher.cpp \
            scribus/ui/scfilewidget.cpp \
            scribus/ui/scinputdialog.cpp \
+	   scribus/ui/sclayoutsegment.cpp \
+	   scribus/ui/sclayoutsection.cpp \
            scribus/ui/sclistwidgetdelegate.cpp \
            scribus/ui/scmenu.cpp \
            scribus/ui/scmessagebox.cpp \
            scribus/ui/scmwmenumanager.cpp \
+	   scribus/ui/scpopupmenu.cpp \
            scribus/ui/scprogressbar.cpp \
            scribus/ui/scrapbookpalette.cpp \
            scribus/ui/scresizecursor.cpp \
@@ -2106,7 +2129,8 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/plugins/tools/2geomtools/meshdistortion/meshdistortion.cpp \
            scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.cpp \
            scribus/plugins/tools/2geomtools/pathalongpath/pathalongpath.cpp \
-           scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.cpp
+	   scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.cpp \
+    scribus/ui/propertywidget_textbase.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

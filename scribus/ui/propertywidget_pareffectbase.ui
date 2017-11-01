@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PropertyWidget_ParEffectBase</class>
- <widget class="QFrame" name="PropertyWidget_ParEffectBase">
+ <widget class="QWidget" name="PropertyWidget_ParEffectBase">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -7,20 +7,22 @@ for which a new license (GPL+exception) is in place.
 #ifndef PROPERTYWIDGET_DISTANCE_H
 #define PROPERTYWIDGET_DISTANCE_H
 
+//#include "sclayoutsegment.h" // Indigo Segment
 #include "ui_propertywidget_distancebase.h"
 
 #include "propertywidgetbase.h"
 
+
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_Distance : public QFrame, public Ui::PropertyWidget_DistanceBase,
+class PropertyWidget_Distance : public QWidget, public Ui::PropertyWidget_DistanceBase,
                                 public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_Distance(QWidget* parent);
+	PropertyWidget_Distance(QWidget *parent = 0);
 	~PropertyWidget_Distance() {};
 
 protected:

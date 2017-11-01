@@ -11,17 +11,18 @@ for which a new license (GPL+exception) is in place.
 
 #include "propertywidgetbase.h"
 
+
 class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_OptMargins : public QFrame, public Ui::PropertyWidget_OptMarginsBase,
+class PropertyWidget_OptMargins : public QWidget, public Ui::PropertyWidget_OptMarginsBase,
                                   public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_OptMargins(QWidget* parent);
+	PropertyWidget_OptMargins(QWidget *parent = 0);
 	~PropertyWidget_OptMargins() {};
 
 	void updateStyle(const ParagraphStyle& newCurrent);

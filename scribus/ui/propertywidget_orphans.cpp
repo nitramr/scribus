@@ -10,12 +10,10 @@ for which a new license (GPL+exception) is in place.
 
 #include "scribusdoc.h"
 
-PropertyWidget_Orphans::PropertyWidget_Orphans(QWidget* parent) : QFrame(parent)
+PropertyWidget_Orphans::PropertyWidget_Orphans(QWidget* parent) : QWidget(parent)
 {
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 	keepLinesStart->setDecimals(0);
 	keepLinesEnd->setDecimals(0);

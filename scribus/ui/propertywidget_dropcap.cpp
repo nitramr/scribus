@@ -13,14 +13,13 @@ for which a new license (GPL+exception) is in place.
 #include "units.h"
 #include "util.h"
 
-PropertyWidget_DropCap::PropertyWidget_DropCap(QWidget *parent) : QFrame(parent)
+PropertyWidget_DropCap::PropertyWidget_DropCap(QWidget *parent) : QWidget(parent)
 {
 	m_item = 0;
 	m_ScMW = 0;
 
     setupUi(this);
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
+
 	layout()->setAlignment( Qt::AlignTop );
 
 	languageChange();

@@ -14,14 +14,12 @@ for which a new license (GPL+exception) is in place.
 
 #include "fonts/fontfeatures.h"
 
-PropertyWidget_FontFeatures::PropertyWidget_FontFeatures(QWidget* parent) : QFrame(parent)
+PropertyWidget_FontFeatures::PropertyWidget_FontFeatures(QWidget* parent) : QWidget(parent)
 {
 	m_item = NULL;
 	m_ScMW = NULL;
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 
 	initWidgets();

@@ -166,7 +166,6 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_linebase.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
-	ui/propertiespalette_textbase.ui
 	ui/propertiespalette_xyzbase.ui
 	ui/propertywidget_advancedbase.ui
 	ui/propertywidget_distancebase.ui
@@ -177,12 +176,14 @@ set(SCRIBUS_UI_SRC
 	ui/propertywidget_optmarginsbase.ui
 	ui/propertywidget_orphansbase.ui
 	ui/propertywidget_pathtextbase.ui
+    ui/propertywidget_textbase.ui
 	ui/propertywidget_textcolorbase.ui
 	ui/recoverdialog.ui
 	ui/replacecolors.ui
 	ui/replaceonecolor.ui
 	ui/resourcemanagerbase.ui
 	ui/resourcemanagerlicensebase.ui
+	ui/sccolorpicker.ui
 	ui/selectobjects.ui
 	ui/shortcutwidget.ui
 	ui/smcellstylewidget.ui
@@ -337,6 +338,8 @@ set(SCRIBUS_MOC_CLASSES
 	ui/collectforoutput_ui.h
 	ui/colorchart.h
 	ui/colorcombo.h
+	ui/sccolorfillsbox.h
+	ui/sccolorpicker.h
 	ui/colorlistbox.h
 	ui/colorlistmodel.h
 	ui/colorsandfills.h
@@ -353,6 +356,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/effectsdialog.h
 	ui/extimageprops.h
 	ui/filedialogeventcatcher.h
+	ui/flowlayout.h
 	ui/fontcombo.h
 	ui/fontlistview.h
 	ui/fontreplacedialog.h
@@ -469,6 +473,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertywidget_optmargins.h
 	ui/propertywidget_orphans.h
 	ui/propertywidget_pathtext.h
+    ui/propertywidget_textbase.h
 	ui/propertywidget_textcolor.h
 	ui/propertywidget_fontfeatures.h
 	ui/proptree.h
@@ -485,10 +490,13 @@ set(SCRIBUS_MOC_CLASSES
 	ui/scescapecatcher.h
 	ui/scfilewidget.h
 	ui/scinputdialog.h
+	ui/sclayoutsegment.h
+	ui/sclayoutsection.h
 	ui/sclistwidgetdelegate.h
 	ui/scmenu.h
 	ui/scmessagebox.h
 	ui/scmwmenumanager.h
+	ui/scpopupmenu.h
 	ui/scrapbookpalette.h
 	ui/scrpalettebase.h
 	ui/scrspinbox.h
@@ -815,6 +823,8 @@ set(SCRIBUS_SOURCES
 	ui/collectforoutput_ui.cpp
 	ui/colorchart.cpp
 	ui/colorcombo.cpp
+    ui/sccolorfillsbox.cpp
+    ui/sccolorpicker.cpp
 	ui/colorlistbox.cpp
 	ui/colorlistmodel.cpp
 	ui/colorsandfills.cpp
@@ -831,6 +841,7 @@ set(SCRIBUS_SOURCES
 	ui/effectsdialog.cpp
 	ui/extimageprops.cpp
 	ui/filedialogeventcatcher.cpp
+    ui/flowlayout.cpp
 	ui/fontcombo.cpp
 	ui/fontlistview.cpp
 	ui/fontreplacedialog.cpp
@@ -854,6 +865,8 @@ set(SCRIBUS_SOURCES
 	ui/javadocs.cpp
 	ui/latexeditor.cpp
 	ui/layers.cpp
+	ui/sclayoutsegment.cpp
+	ui/sclayoutsection.cpp
 	ui/linecombo.cpp
 	ui/linkbutton.cpp
 	ui/loremipsum.cpp
@@ -944,6 +957,7 @@ set(SCRIBUS_SOURCES
 	ui/propertywidget_optmargins.cpp
 	ui/propertywidget_orphans.cpp
 	ui/propertywidget_pathtext.cpp
+    ui/propertywidget_textbase.cpp
 	ui/propertywidget_textcolor.cpp
 	ui/propertywidget_fontfeatures.cpp
 	ui/propertywidgetbase.cpp
@@ -965,6 +979,7 @@ set(SCRIBUS_SOURCES
 	ui/scmenu.cpp
 	ui/scmessagebox.cpp
 	ui/scmwmenumanager.cpp
+	ui/scpopupmenu.cpp
 	ui/scrapbookpalette.cpp
 	ui/scresizecursor.cpp
 	ui/scrpalettebase.cpp

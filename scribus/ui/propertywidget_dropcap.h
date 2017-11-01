@@ -1,15 +1,17 @@
 #ifndef PROPERTYWIDGET_DropCap_H
 #define PROPERTYWIDGET_DropCap_H
 
-#include "ui_propertywidget_dropcapbase.h"
+#include "sclayoutsegment.h" // Indigo Segment
+//#include "ui_propertywidget_dropcapbase.h"
 
 #include "propertywidgetbase.h"
+
 
 class PageItem;
 class ParagraphStyle;
 class ScribusMainWindow;
 
-class PropertyWidget_DropCap : public QFrame, private Ui::PropertyWidget_DropCapBase, public PropertyWidgetBase
+class PropertyWidget_DropCap : public QWidget, private Ui::PropertyWidget_DropCapBase, public PropertyWidgetBase
 {
     Q_OBJECT
 

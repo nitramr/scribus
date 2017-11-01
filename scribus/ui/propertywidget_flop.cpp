@@ -10,12 +10,10 @@ for which a new license (GPL+exception) is in place.
 #include "scribusdoc.h"
 #include "units.h"
 
-PropertyWidget_Flop::PropertyWidget_Flop(QWidget* parent) : QFrame(parent)
+PropertyWidget_Flop::PropertyWidget_Flop(QWidget* parent) : QWidget(parent)
 {
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 	
 	flopRealHeight->setChecked(true);

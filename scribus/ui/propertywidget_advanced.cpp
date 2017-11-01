@@ -15,7 +15,7 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "units.h"
 
-PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : QFrame(parent)
+PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : ScLayoutSegment(parent)
 {
 	m_item = NULL;
 	m_ScMW = NULL;
@@ -24,8 +24,6 @@ PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : QFrame(paren
 
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 
 	layout()->setAlignment( Qt::AlignLeft );
 

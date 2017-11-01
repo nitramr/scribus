@@ -14,7 +14,7 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "units.h"
 
-PropertyWidget_PathText::PropertyWidget_PathText(QWidget* parent) : QFrame(parent)
+PropertyWidget_PathText::PropertyWidget_PathText(QWidget* parent) : QWidget(parent)
 {
 	m_ScMW = 0;
 	m_doc  = 0;
@@ -24,8 +24,6 @@ PropertyWidget_PathText::PropertyWidget_PathText(QWidget* parent) : QFrame(paren
 
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 	
 	startOffset->setValues(0, 30000, 2, 0);

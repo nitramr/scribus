@@ -10,18 +10,19 @@ for which a new license (GPL+exception) is in place.
 #include "ui_propertywidget_fontfeaturesbase.h"
 #include "propertywidgetbase.h"
 
+
 class CharStyle;
 class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_FontFeatures : public QFrame, Ui::PropertyWidget_FontFeatures,
+class PropertyWidget_FontFeatures : public QWidget, Ui::PropertyWidget_FontFeatures,
 		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_FontFeatures(QWidget *parent);
+	PropertyWidget_FontFeatures(QWidget *parent = 0);
 	~PropertyWidget_FontFeatures() {}
 	void enableFeatures(QStringList fontFeatures);
 

@@ -11,15 +11,16 @@ for which a new license (GPL+exception) is in place.
 
 #include "propertywidgetbase.h"
 
+
 class ParagraphStyle;
 
-class PropertyWidget_Orphans : public QFrame, public Ui::PropertyWidget_OrphansBase, public PropertyWidgetBase
+class PropertyWidget_Orphans : public QWidget, public Ui::PropertyWidget_OrphansBase, public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
 
-	PropertyWidget_Orphans(QWidget* parent);
+	PropertyWidget_Orphans(QWidget *parent = 0);
 	~PropertyWidget_Orphans() {};
 
 	void updateStyle(const ParagraphStyle& newCurrent);

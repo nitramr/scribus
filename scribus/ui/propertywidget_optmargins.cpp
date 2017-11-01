@@ -15,15 +15,13 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "units.h"
 
-PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QFrame(parent)
+PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(parent)
 {
 	m_item = 0;
 	m_ScMW = 0;
 
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 
 	languageChange();

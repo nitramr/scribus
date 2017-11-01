@@ -21,11 +21,10 @@ for which a new license (GPL+exception) is in place.
 #include "units.h"
 #include "util.h"
 
-PropertyWidget_ParEffect::PropertyWidget_ParEffect(QWidget *parent) : QFrame(parent), m_enhanced(NULL), m_item(NULL), m_ScMW(NULL)
+PropertyWidget_ParEffect::PropertyWidget_ParEffect(QWidget *parent) : QWidget(parent), m_enhanced(NULL), m_item(NULL), m_ScMW(NULL)
 {
 	setupUi(this);
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
+
 	layout()->setAlignment( Qt::AlignTop );
 
 	languageChange();

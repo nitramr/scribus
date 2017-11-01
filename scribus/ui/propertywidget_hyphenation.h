@@ -10,18 +10,19 @@ for which a new license (GPL+exception) is in place.
 #include "ui_propertywidget_hyphenationbase.h"
 #include "propertywidgetbase.h"
 
+
 class CharStyle;
 class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_Hyphenation : public QFrame, Ui::PropertyWidget_HyphenationBase,
+class PropertyWidget_Hyphenation : public QWidget, Ui::PropertyWidget_HyphenationBase,
 		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_Hyphenation(QWidget *parent);
+	PropertyWidget_Hyphenation(QWidget *parent = 0);
 	~PropertyWidget_Hyphenation() {}
 
 protected:

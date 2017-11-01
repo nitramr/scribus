@@ -6,11 +6,13 @@
 #include "propertywidgetbase.h"
 #include "ui/charselectenhanced.h"
 
+
+
 class PageItem;
 class ParagraphStyle;
 class ScribusMainWindow;
 
-class PropertyWidget_ParEffect : public QFrame, private Ui::PropertyWidget_ParEffectBase, public PropertyWidgetBase
+class PropertyWidget_ParEffect : public QWidget, private Ui::PropertyWidget_ParEffectBase, public PropertyWidgetBase
 {
 	Q_OBJECT
 

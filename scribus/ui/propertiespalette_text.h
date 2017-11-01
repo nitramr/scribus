@@ -7,7 +7,7 @@ for which a new license (GPL+exception) is in place.
 #ifndef PROPERTIESPALETTE_TEXT_H
 #define PROPERTIESPALETTE_TEXT_H
 
-#include "ui_propertiespalette_textbase.h"
+
 
 #include "scribusapi.h"
 #include "scrpalettebase.h"
@@ -15,6 +15,9 @@ for which a new license (GPL+exception) is in place.
 
 #include "scguardedptr.h"
 #include "sctextstruct.h"
+
+#include "sclayoutsection.h" // Indigo Section
+#include "flowlayout.h"
 
 class PageItem;
 class PropertyWidget_Advanced;
@@ -26,18 +29,19 @@ class PropertyWidget_Hyphenation;
 class PropertyWidget_OptMargins;
 class PropertyWidget_Orphans;
 class PropertyWidget_PathText;
+class PropertyWidget_TextBase;
 class PropertyWidget_TextColor;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
 
-class SCRIBUS_API PropertiesPalette_Text : public QWidget, public Ui::PropertiesPalette_TextBase
+class SCRIBUS_API PropertiesPalette_Text : public QWidget//, public Ui::PropertiesPalette_TextBase
 {
 	Q_OBJECT
 
 public:
-	PropertiesPalette_Text(QWidget* parent);
+	PropertiesPalette_Text(QWidget* parent = 0);
 	~PropertiesPalette_Text() {}
 
 	virtual void changeEvent(QEvent *e);
@@ -60,8 +64,27 @@ protected:
 	ScribusMainWindow*       m_ScMW;
 	ScGuardedPtr<ScribusDoc> m_doc;
 
+	ScLayoutSection *layoutSectionText;
+	ScLayoutSection *layoutSectionParagraph;
+	ScLayoutSection *layoutSectionCharacter;
+	ScLayoutSection *layoutSectionLists;
+	ScLayoutSection *layoutSectionTextPath;
+
+	PropertyWidget_Advanced* advancedWidgets;
+	PropertyWidget_Distance* distanceWidgets;
+	PropertyWidget_Flop* flopBox;
+	PropertyWidget_FontFeatures* fontfeaturesWidget;
+	PropertyWidget_Hyphenation* hyphenationWidget;
+	PropertyWidget_OptMargins* optMargins;
+	PropertyWidget_Orphans* orphanBox;
+	PropertyWidget_ParEffect* parEffectWidgets;
+	PropertyWidget_PathText* pathTextWidgets;
+	PropertyWidget_TextBase* textWidgets;
+	PropertyWidget_TextColor* colorWidgets;
+
 private:
 	PageItem* currentItemFromSelection();
+
 	
 public slots:
 	void setMainWindow(ScribusMainWindow *mw);
@@ -114,28 +137,17 @@ private slots:
 	void doClearCStyle();
 	void doClearPStyle();
 
-protected:
-	PropertyWidget_Advanced* advancedWidgets;
-	PropertyWidget_Distance* distanceWidgets;
-	PropertyWidget_Flop* flopBox;
-	PropertyWidget_FontFeatures* fontfeaturesWidget;
-	PropertyWidget_Hyphenation* hyphenationWidget;
-	PropertyWidget_OptMargins* optMargins;
-	PropertyWidget_Orphans* orphanBox;
-	PropertyWidget_ParEffect* parEffectWidgets;
-	PropertyWidget_PathText* pathTextWidgets;
-	PropertyWidget_TextColor* colorWidgets;
 
-	int advancedWidgetsItem;
-	int colorWidgetsItem;
-	int distanceItem;
-	int flopItem;
-	int fontfeaturesWidgetItem;
-	int hyphenationWidgetItem;
-	int optMarginsItem;
-	int orphanItem;
-	int parEffectItem;
-	int pathTextItem;
+//	int advancedWidgetsItem;
+//	int colorWidgetsItem;
+//	int distanceItem;
+//	int flopItem;
+//	int fontfeaturesWidgetItem;
+//	int hyphenationWidgetItem;
+//	int optMarginsItem;
+//	int orphanItem;
+//	int parEffectItem;
+//	int pathTextItem;
 
 };
 

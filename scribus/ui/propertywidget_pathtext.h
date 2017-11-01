@@ -11,16 +11,17 @@ for which a new license (GPL+exception) is in place.
 
 #include "propertywidgetbase.h"
 
+
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_PathText : public QFrame, public Ui::PropertyWidget_PathTextBase,
+class PropertyWidget_PathText : public QWidget, public Ui::PropertyWidget_PathTextBase,
                                 public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_PathText(QWidget* parent);
+	PropertyWidget_PathText(QWidget *parent = 0);
 	~PropertyWidget_PathText() {};
 
 protected:

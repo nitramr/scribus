@@ -13,15 +13,12 @@ for which a new license (GPL+exception) is in place.
 #include "scribus.h"
 #include "selection.h"
 
-PropertyWidget_TextColor::PropertyWidget_TextColor(QWidget* parent) : QFrame(parent)
+PropertyWidget_TextColor::PropertyWidget_TextColor(QWidget* parent) : QWidget(parent)
 {
 	m_item = NULL;
 	m_ScMW = NULL;
 
 	setupUi(this);
-
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 
 	layout()->setAlignment( Qt::AlignLeft );
 

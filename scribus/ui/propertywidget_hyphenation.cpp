@@ -14,15 +14,13 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 
 PropertyWidget_Hyphenation::PropertyWidget_Hyphenation(QWidget* parent)
-	: QFrame(parent)
+	: QWidget(parent)
 {
 	m_item = NULL;
 	m_ScMW = NULL;
 
 	setupUi(this);
 
-	setFrameStyle(QFrame::Box | QFrame::Plain);
-	setLineWidth(1);
 	layout()->setAlignment( Qt::AlignTop );
 	languageChange();
 }

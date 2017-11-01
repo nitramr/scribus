@@ -7,13 +7,15 @@ for which a new license (GPL+exception) is in place.
 #ifndef PROPERTYWIDGET_FLOP_H
 #define PROPERTYWIDGET_FLOP_H
 
+
 #include "ui_propertywidget_flopbase.h"
 
 #include "scguardedptr.h"
 
+
 class ScribusDoc;
 
-class PropertyWidget_Flop : public QFrame, public Ui::PropertyWidget_FlopBase
+class PropertyWidget_Flop : public QWidget, public Ui::PropertyWidget_FlopBase
 {
 	Q_OBJECT
 
@@ -27,7 +29,7 @@ public:
 		BaselineGridID = 3
     };
 
-	PropertyWidget_Flop(QWidget* parent);
+	PropertyWidget_Flop(QWidget *parent = 0);
 	~PropertyWidget_Flop() {};
 
 protected:
