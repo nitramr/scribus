@@ -33,6 +33,7 @@ class PropertyWidget_TextAdvanced;
 class PropertyWidget_TextAlignment;
 class PropertyWidget_TextBase;
 class PropertyWidget_TextColor;
+class PropertyWidget_TextStyles;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
@@ -85,6 +86,7 @@ protected:
 	PropertyWidget_TextAlignment* textAlignmentWidgets;
 	PropertyWidget_TextBase* textWidgets;
 	PropertyWidget_TextColor* colorWidgets;
+	PropertyWidget_TextStyles* textStylesWidgets;
 
 private:
 	PageItem* currentItemFromSelection();

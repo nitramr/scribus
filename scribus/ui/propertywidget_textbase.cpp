@@ -8,13 +8,11 @@ for which a new license (GPL+exception) is in place.
 #include "propertywidget_textbase.h"
 
 #include "appmodes.h"
-#include "iconmanager.h"
 #include "pageitem_table.h"
 #include "scribus.h"
 #include "scribusdoc.h"
 #include "selection.h"
 #include "units.h"
-#include "langmgr.h"
 
 #include "sccolorfillsbox.h"
 #include "sccolorpicker.h"
@@ -33,12 +31,6 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 	setupUi(this);
 
 	fontSize->setPrefix( "" );
-
-	paraStyleLabel->setBuddy(paraStyleCombo);
-	paraStyleClear->setIcon(IconManager::instance()->loadPixmap("16/edit-clear.png"));
-	charStyleLabel->setBuddy(charStyleCombo);
-	charStyleClear->setIcon(IconManager::instance()->loadPixmap("16/edit-clear.png"));
-
 
 	// Setup ScColorPicker in ScPopupMenu and add it to ScColorFillsBox
 	ScColorPicker * colorPicker = new ScColorPicker();
@@ -59,9 +51,6 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 	connect(fonts         , SIGNAL(fontSelected(QString )), this, SLOT(handleTextFont(QString)));
 	connect(fontSize      , SIGNAL(valueChanged(double)), this, SLOT(handleFontSize()));
 
-	connect(charStyleClear, SIGNAL(clicked()), this, SLOT(doClearCStyle()));
-	connect(paraStyleClear, SIGNAL(clicked()), this, SLOT(doClearPStyle()));
-
 	connect(lineSpacingModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLineSpacingMode(int)));
 
 	m_haveItem = false;
@@ -73,9 +62,6 @@ void PropertyWidget_TextBase::setMainWindow(ScribusMainWindow* mw)
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int))     , this  , SLOT(handleUpdateRequest(int)));
-
-	connect(paraStyleCombo, SIGNAL(newStyle(const QString&)), m_ScMW, SLOT(setNewParStyle(const QString&)), Qt::UniqueConnection);
-	connect(charStyleCombo, SIGNAL(newStyle(const QString&)), m_ScMW, SLOT(setNewCharStyle(const QString&)), Qt::UniqueConnection);
 }
 
 void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
@@ -103,8 +89,6 @@ void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
 	lineSpacing->setValues( 1, 2048, 2, 1);
 
 	fonts->RebuildList(m_doc);
-	paraStyleCombo->setDoc(m_doc);
-	charStyleCombo->setDoc(m_doc);
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));	
@@ -122,12 +106,6 @@ void PropertyWidget_TextBase::unsetDoc()
 	m_haveItem = false;
 	m_doc      = NULL;
 	m_item     = NULL;
-
-	paraStyleCombo->setDoc(0);
-	charStyleCombo->setDoc(0);
-
-
-	m_haveItem = false;
 
 	setEnabled(false);
 }
@@ -174,8 +152,6 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 
 }
 
-
-// Remove Candidate?
 
 PageItem* PropertyWidget_TextBase::currentItemFromSelection()
 {
@@ -327,9 +303,6 @@ void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
 	showFontFace(charStyle.font().scName());
 	showFontSize(charStyle.fontSize());
 
-	showParStyle(newCurrent.parent());
-	showCharStyle(charStyle.parent());
-
 	bool tmp = m_haveItem;
 	m_haveItem = false;
 
@@ -337,42 +310,6 @@ void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
 	lineSpacingModeCombo->setCurrentIndex(newCurrent.lineSpacingMode());
 
 	m_haveItem = tmp;
-}
-
-void PropertyWidget_TextBase::updateCharStyles()
-{
-	charStyleCombo->updateFormatList();
-}
-
-void PropertyWidget_TextBase::updateParagraphStyles()
-{
-	paraStyleCombo->updateFormatList();
-	charStyleCombo->updateFormatList();
-}
-
-void PropertyWidget_TextBase::updateTextStyles()
-{
-	paraStyleCombo->updateFormatList();
-	charStyleCombo->updateFormatList();
-}
-
-
-void PropertyWidget_TextBase::showCharStyle(const QString& name)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool blocked = charStyleCombo->blockSignals(true);
-	charStyleCombo->setFormat(name);
-	charStyleCombo->blockSignals(blocked);
-}
-
-void PropertyWidget_TextBase::showParStyle(const QString& name)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool blocked = paraStyleCombo->blockSignals(true);
-	paraStyleCombo->setFormat(name);
-	paraStyleCombo->blockSignals(blocked);
 }
 
 void PropertyWidget_TextBase::handleLineSpacing()
@@ -407,45 +344,13 @@ void PropertyWidget_TextBase::handleUpdateRequest(int updateFlags)
 	// ColorWidget will handle its update itself
 	/*if (updateFlags & reqColorsUpdate)
 		updateColorList();*/
-	if (updateFlags & reqCharStylesUpdate)
-	{
-		charStyleCombo->updateFormatList();
-	}
-	if (updateFlags & reqParaStylesUpdate)
-		paraStyleCombo->updateFormatList();
+
 	if (updateFlags & reqDefFontListUpdate)
 		fonts->RebuildList(0);
 	if (updateFlags & reqDocFontListUpdate)
 		fonts->RebuildList(m_haveDoc ? m_doc : 0);
-	if (updateFlags & reqStyleComboDocUpdate)
-	{
-		paraStyleCombo->setDoc(m_haveDoc ? m_doc : 0);
-		charStyleCombo->setDoc(m_haveDoc ? m_doc : 0);
-	}
+
 }
-
-void PropertyWidget_TextBase::doClearCStyle()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_EraseCharStyle(&tempSelection);
-}
-
-
-void PropertyWidget_TextBase::doClearPStyle()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_ClearBulNumStrings(&tempSelection);
-	m_doc->itemSelection_EraseParagraphStyle(&tempSelection);
-	CharStyle emptyCStyle;
-	m_doc->itemSelection_SetCharStyle(emptyCStyle, &tempSelection);
-}
-
 
 
 void PropertyWidget_TextBase::changeEvent(QEvent *e)

@@ -33,6 +33,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertywidget_textalignment.h"
 #include "propertywidget_textbase.h"
 #include "propertywidget_textcolor.h"
+#include "propertywidget_textstyles.h"
 #include "scpopupmenu.h"
 #include "scraction.h"
 #include "scribuscore.h"
@@ -69,6 +70,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	advancedWidgets = new PropertyWidget_Advanced();
 	fontfeaturesWidget = new PropertyWidget_FontFeatures();
 	pathTextWidgets = new PropertyWidget_PathText();
+	textStylesWidgets = new PropertyWidget_TextStyles();
 
 
 	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
@@ -84,7 +86,8 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	layoutSectionTextPath = new ScLayoutSection(tr("Text Path"));
 
 	layoutSectionText->addWidget(textWidgets);
-	layoutSectionText->addWidget(textAlignmentWidgets);
+	layoutSectionText->addWidget(textAlignmentWidgets);	
+	layoutSectionText->addWidget(textStylesWidgets);
 	layoutSectionText->addWidget(colorWidgets);
 
 	layoutSectionParagraph->addWidget(distanceWidgets);
@@ -125,6 +128,7 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 	advancedWidgets->setMainWindow(mw);
 	fontfeaturesWidget->setMainWindow(mw);
 	textWidgets->setMainWindow(mw);
+	textStylesWidgets->setMainWindow(mw);
 	textAdvancedWidgets->setMainWindow(mw);
 	textAlignmentWidgets->setMainWindow(mw);
 	colorWidgets->setMainWindow(mw);
@@ -161,6 +165,7 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 	advancedWidgets->setDoc(m_doc);
 	fontfeaturesWidget->setDoc(m_doc);
 	textWidgets->setDoc(m_doc);
+	textStylesWidgets->setDoc(m_doc);
 	textAdvancedWidgets->setDoc(m_doc);
 	textAlignmentWidgets->setDoc(m_doc);
 	colorWidgets->setDoc(m_doc);
@@ -192,6 +197,7 @@ void PropertiesPalette_Text::unsetDoc()
 	advancedWidgets->setDoc(0);
 	fontfeaturesWidget->setDoc(0);
 	textWidgets->setDoc(0);
+	textStylesWidgets->setDoc(0);
 	textAdvancedWidgets->setDoc(0);
 	textAlignmentWidgets->setDoc(0);
 	colorWidgets->setDoc(0);
@@ -279,6 +285,7 @@ void PropertiesPalette_Text::handleSelectionChanged()
 void PropertiesPalette_Text::handleUpdateRequest(int updateFlags)
 {
 	textWidgets->handleUpdateRequest(updateFlags);
+	textStylesWidgets->handleUpdateRequest(updateFlags);
 
 	// ColorWidget will handle its update itself
 	/*if (updateFlags & reqColorsUpdate)
@@ -325,6 +332,7 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 //		textWidgets->setCurrentItem(m_item);
 //		textAdvancedWidgets->setCurrentItem(m_item);
 		textWidgets->handleSelectionChanged();
+		textStylesWidgets->handleSelectionChanged();
 		textAdvancedWidgets->handleSelectionChanged();
 		colorWidgets->handleSelectionChanged();
 		textAlignmentWidgets->handleSelectionChanged();
@@ -429,6 +437,7 @@ void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
 	textAlignmentWidgets->updateCharStyle(charStyle);
 	hyphenationWidget->updateCharStyle(charStyle);
 	textWidgets->updateCharStyle(charStyle);
+	//textStylesWidgets->updateCharStyle(charStyle);
 	textAdvancedWidgets->updateCharStyle(charStyle);
 }
 
@@ -446,24 +455,28 @@ void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
 	parEffectWidgets->updateStyle(newCurrent);
 	hyphenationWidget->updateStyle(newCurrent);
 	textWidgets->updateStyle(newCurrent);
+	textStylesWidgets->updateStyle(newCurrent);
 	textAdvancedWidgets->updateStyle(newCurrent);
 }
 
 void PropertiesPalette_Text::updateCharStyles()
 {
-	textWidgets->updateCharStyles();
+	//textWidgets->updateCharStyles();
+	textStylesWidgets->updateCharStyles();
 	parEffectWidgets->updateCharStyles();
 }
 
 void PropertiesPalette_Text::updateParagraphStyles()
 {
-	textWidgets->updateParagraphStyles();
+//	textWidgets->updateParagraphStyles();
+	textStylesWidgets->updateParagraphStyles();
 	parEffectWidgets->updateCharStyles();
 }
 
 void PropertiesPalette_Text::updateTextStyles()
 {
-	textWidgets->updateTextStyles();
+	//textWidgets->updateTextStyles();
+	textStylesWidgets->updateTextStyles();
 }
 
 void PropertiesPalette_Text::showAlignment(int e)
@@ -479,12 +492,14 @@ void PropertiesPalette_Text::showDirection(int e)
 
 void PropertiesPalette_Text::showCharStyle(const QString& name)
 {
-	textWidgets->showCharStyle(name);
+	//textWidgets->showCharStyle(name);
+	textStylesWidgets->showCharStyle(name);
 }
 
 void PropertiesPalette_Text::showParStyle(const QString& name)
 {
-	textWidgets->showParStyle(name);
+	//textWidgets->showParStyle(name);
+	textStylesWidgets->showParStyle(name);
 }
 
 
@@ -520,6 +535,7 @@ void PropertiesPalette_Text::languageChange()
 {
 
 	textWidgets->languageChange();
+	textStylesWidgets->languageChange();
 	textAdvancedWidgets->languageChange();
 	colorWidgets->languageChange();
 	textAlignmentWidgets->languageChange();

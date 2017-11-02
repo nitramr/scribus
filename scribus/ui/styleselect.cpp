@@ -146,6 +146,7 @@ StyleSelect::StyleSelect(QWidget* parent) : QWidget(parent)
 	underlineButton->setMenu(UnderlinePop);
 	underlineButton->setPopupMode(QToolButton::DelayedPopup);
 	ssLayout->addWidget( underlineButton );
+
 	underlineWordButton = new QToolButton( this );
 	underlineWordButton->setText( "" );
 	underlineWordButton->setIcon(im->loadIcon("wordsOnly.png"));
@@ -159,6 +160,7 @@ StyleSelect::StyleSelect(QWidget* parent) : QWidget(parent)
 	subscriptButton->setIcon(im->loadIcon("tief.png"));
 	subscriptButton->setCheckable( true );
 	ssLayout->addWidget( subscriptButton );
+
 	superscriptButton = new QToolButton( this );
 	superscriptButton->setText( "" );
 	superscriptButton->setIcon(im->loadIcon("hoch.png"));
@@ -166,11 +168,11 @@ StyleSelect::StyleSelect(QWidget* parent) : QWidget(parent)
 	ssLayout->addWidget( superscriptButton );
 
 	allcapsButton = new QToolButton( this );
-	allcapsButton->setMaximumSize( QSize( 22, 22 ) );
 	allcapsButton->setText("");
 	allcapsButton->setIcon(im->loadIcon("AllCaps.png"));
 	allcapsButton->setCheckable( true );
 	ssLayout->addWidget( allcapsButton );
+
 	smallcapsButton = new QToolButton( this );
 	smallcapsButton->setText("");
 	smallcapsButton->setIcon(im->loadIcon("kapital.png"));
@@ -216,25 +218,25 @@ StyleSelect::StyleSelect(QWidget* parent) : QWidget(parent)
 	shadowButton->setPopupMode(QToolButton::DelayedPopup);
 	ssLayout->addWidget( shadowButton );
 	
-	QSize s(24,24);
-	underlineButton->setMinimumSize(s);
-	underlineWordButton->setMinimumSize(s);
-	subscriptButton->setMinimumSize(s);
-	superscriptButton->setMinimumSize(s);
-	smallcapsButton->setMinimumSize(s);
-	allcapsButton->setMinimumSize(s);
-	strikeoutButton->setMinimumSize(s);
-	outlineButton->setMinimumSize(s);
-	shadowButton->setMinimumSize(s);
-	underlineButton->setMaximumSize(s);
-	underlineWordButton->setMaximumSize(s);
-	subscriptButton->setMaximumSize(s);
-	superscriptButton->setMaximumSize(s);
-	smallcapsButton->setMaximumSize(s);
-	allcapsButton->setMaximumSize(s);
-	strikeoutButton->setMaximumSize(s);
-	outlineButton->setMaximumSize(s);
-	shadowButton->setMaximumSize(s);
+//	QSize s(24,24);
+//	underlineButton->setMinimumSize(s);
+//	underlineWordButton->setMinimumSize(s);
+//	subscriptButton->setMinimumSize(s);
+//	superscriptButton->setMinimumSize(s);
+//	smallcapsButton->setMinimumSize(s);
+//	allcapsButton->setMinimumSize(s);
+//	strikeoutButton->setMinimumSize(s);
+//	outlineButton->setMinimumSize(s);
+//	shadowButton->setMinimumSize(s);
+//	underlineButton->setMaximumSize(s);
+//	underlineWordButton->setMaximumSize(s);
+//	subscriptButton->setMaximumSize(s);
+//	superscriptButton->setMaximumSize(s);
+//	smallcapsButton->setMaximumSize(s);
+//	allcapsButton->setMaximumSize(s);
+//	strikeoutButton->setMaximumSize(s);
+//	outlineButton->setMaximumSize(s);
+//	shadowButton->setMaximumSize(s);
 
 
 	languageChange();
