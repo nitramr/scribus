@@ -71,6 +71,9 @@ private slots:
 	void handleUnderline();
 
 	void handleVAlign();
+
+signals:
+	void handleAlignment();
 };
 
 #endif

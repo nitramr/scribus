@@ -1,30 +1,42 @@
 #include "scpopupmenu.h"
 #include <QEvent>
 #include <QLayout>
-#include <QBoxLayout>
+
 
 ScPopupMenu::ScPopupMenu(QWidget *widget)
 {
-	widget->adjustSize();
 
-	QVBoxLayout *layout = new QVBoxLayout();
-	layout->addWidget(widget);
-	layout->setMargin(1);
-	//layout->setSizeConstraint(QLayout::SetMinimumSize);
+
+	m_layout = new QVBoxLayout();
+	m_layout->setSizeConstraint(QLayout::SetMinimumSize);
+	m_layout->setMargin(1);
+
+	if(widget){
+		addWidget(widget);
+	}
 
 	QWidget *panel = new QWidget();
 	//panel->setFixedSize(widget->size());
-	panel->setLayout(layout);
+	panel->setLayout(m_layout);
 	panel->adjustSize();
+	panel->installEventFilter(this);
 
 	QWidgetAction * action = new QWidgetAction(this);
 	action->setDefaultWidget(panel);
 
-	widget->installEventFilter(this);
-
 	this->addAction(action);
 
 }
+
+void ScPopupMenu::addWidget(QWidget *widget)
+{
+	widget->adjustSize();
+
+	m_layout->addWidget(widget);
+
+}
+
+
 
 bool ScPopupMenu::eventFilter(QObject *obj, QEvent *event)
 {

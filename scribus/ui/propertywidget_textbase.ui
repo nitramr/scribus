@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>185</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -387,16 +387,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QComboBox" name="langCombo">
-     <property name="toolTip">
-      <string>Text Language</string>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

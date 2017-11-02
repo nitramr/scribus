@@ -29,6 +29,7 @@ class PropertyWidget_Hyphenation;
 class PropertyWidget_OptMargins;
 class PropertyWidget_Orphans;
 class PropertyWidget_PathText;
+class PropertyWidget_TextAdvanced;
 class PropertyWidget_TextAlignment;
 class PropertyWidget_TextBase;
 class PropertyWidget_TextColor;
@@ -58,8 +59,8 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
-	double m_unitRatio;
-	int    m_unitIndex;
+//	double m_unitRatio;
+//	int    m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
@@ -80,6 +81,7 @@ protected:
 	PropertyWidget_Orphans* orphanBox;
 	PropertyWidget_ParEffect* parEffectWidgets;
 	PropertyWidget_PathText* pathTextWidgets;
+	PropertyWidget_TextAdvanced* textAdvancedWidgets;
 	PropertyWidget_TextAlignment* textAlignmentWidgets;
 	PropertyWidget_TextBase* textWidgets;
 	PropertyWidget_TextColor* colorWidgets;
@@ -123,11 +125,8 @@ public slots:
 	void updateParagraphStyles();
 	void updateTextStyles();
 	
-	//void handleLineSpacingMode(int id);
-	//void handleTextFont(QString);
-
 private slots:
-	void handleAlignment(int a);
+	void handleAlignment();
 	void handleFirstLinePolicy(int);
 
 };

@@ -15,11 +15,7 @@ for which a new license (GPL+exception) is in place.
 #include <QSignalBlocker>
 
 #include "appmodes.h"
-#include "colorcombo.h"
-#include "colorlistbox.h"
-#include "commonstrings.h"
-#include "fontcombo.h"
-#include "iconmanager.h"
+//#include "commonstrings.h"
 #include "pageitem.h"
 #include "pageitem_table.h"
 #include "pageitem_textframe.h"
@@ -33,17 +29,16 @@ for which a new license (GPL+exception) is in place.
 #include "propertywidget_orphans.h"
 #include "propertywidget_pareffect.h"
 #include "propertywidget_pathtext.h"
+#include "propertywidget_textadvanced.h"
 #include "propertywidget_textalignment.h"
 #include "propertywidget_textbase.h"
 #include "propertywidget_textcolor.h"
-#include "sccombobox.h"
-#include "scfonts.h"
 #include "scpopupmenu.h"
 #include "scraction.h"
 #include "scribuscore.h"
 #include "selection.h"
-#include "spalette.h"
-#include "styleselect.h"
+//#include "spalette.h"
+//#include "styleselect.h"
 #include "tabmanager.h"
 #include "undomanager.h"
 #include "units.h"
@@ -58,10 +53,11 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	m_item=0;
 	m_haveDoc = false;
 	m_haveItem = false;
-	m_unitIndex = 0;
-	m_unitRatio = 1.0;
+//	m_unitIndex = 0;
+//	m_unitRatio = 1.0;
 
 	textWidgets = new PropertyWidget_TextBase();
+	textAdvancedWidgets = new PropertyWidget_TextAdvanced();
 	textAlignmentWidgets = new PropertyWidget_TextAlignment();
 	colorWidgets = new PropertyWidget_TextColor();
 	flopBox = new PropertyWidget_Flop();
@@ -74,7 +70,9 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	fontfeaturesWidget = new PropertyWidget_FontFeatures();
 	pathTextWidgets = new PropertyWidget_PathText();
 
-	ScPopupMenu * popupFontFeatures = new ScPopupMenu(fontfeaturesWidget);
+
+	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
+	popupFontFeatures->addWidget(fontfeaturesWidget);
 	ScPopupMenu * popupOrphans = new ScPopupMenu(orphanBox);
 	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
 
@@ -114,8 +112,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 
 	connect(flopBox->flopGroup, SIGNAL(buttonClicked( int )), this, SLOT(handleFirstLinePolicy(int)));
 
-	connect(fontfeaturesWidget, SIGNAL(needsRelayout()), this, SLOT(updateTreeLayout()));
-	connect(parEffectWidgets,   SIGNAL(needsRelayout()), this, SLOT(updateTreeLayout()));
+	connect(textAlignmentWidgets, SIGNAL(handleAlignment()), this, SLOT(handleAlignment()));
 
 	m_haveItem = false;
 	setEnabled(false);
@@ -128,6 +125,7 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 	advancedWidgets->setMainWindow(mw);
 	fontfeaturesWidget->setMainWindow(mw);
 	textWidgets->setMainWindow(mw);
+	textAdvancedWidgets->setMainWindow(mw);
 	textAlignmentWidgets->setMainWindow(mw);
 	colorWidgets->setMainWindow(mw);
 	distanceWidgets->setMainWindow(mw);
@@ -154,8 +152,8 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 	m_doc  = d;
 	m_item = NULL;
 
-	m_unitRatio   = m_doc->unitRatio();
-	m_unitIndex   = m_doc->unitIndex();
+//	m_unitRatio   = m_doc->unitRatio();
+//	m_unitIndex   = m_doc->unitIndex();
 
 	m_haveDoc  = true;
 	m_haveItem = false;
@@ -163,6 +161,7 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 	advancedWidgets->setDoc(m_doc);
 	fontfeaturesWidget->setDoc(m_doc);
 	textWidgets->setDoc(m_doc);
+	textAdvancedWidgets->setDoc(m_doc);
 	textAlignmentWidgets->setDoc(m_doc);
 	colorWidgets->setDoc(m_doc);
 	distanceWidgets->setDoc(m_doc);
@@ -193,6 +192,7 @@ void PropertiesPalette_Text::unsetDoc()
 	advancedWidgets->setDoc(0);
 	fontfeaturesWidget->setDoc(0);
 	textWidgets->setDoc(0);
+	textAdvancedWidgets->setDoc(0);
 	textAlignmentWidgets->setDoc(0);
 	colorWidgets->setDoc(0);
 	distanceWidgets->setDoc(0);
@@ -243,7 +243,6 @@ void PropertiesPalette_Text::handleSelectionChanged()
 	if (m_doc->m_Selection->count() > 1 )
 	{
 		setEnabled(false);
-		textWidgets->setEnabled(false);
 		flopBox->flopRealHeight->setChecked(true);
 	}
 	else
@@ -255,28 +254,23 @@ void PropertiesPalette_Text::handleSelectionChanged()
 		{
 		case -1:
 			m_haveItem = false;
-			textWidgets->setEnabled(false);
 			setEnabled(false);
 			break;
 		case PageItem::TextFrame:
 		case PageItem::PathText:
-			textWidgets->setEnabled(true);
 			setEnabled(true);
 			break;
 		case PageItem::Table:
 			setEnabled(m_doc->appMode == modeEditTable);
-			textWidgets->setEnabled(m_doc->appMode == modeEditTable);
 			break;
 		default:
 			setEnabled(false);
-			textWidgets->setEnabled(false);
 			break;
 		}
 	}
 	if (currItem)
 	{
 		setCurrentItem(currItem);
-		textWidgets->setCurrentItem(currItem);
 	}
 	updateGeometry();
 	//repaint();
@@ -316,7 +310,6 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 	m_haveItem = false;
 	m_item = i;
 
-	textWidgets->setCurrentItem(i);
 
 	showFirstLinePolicy(m_item->firstLineOffset());
 
@@ -329,6 +322,10 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 
 	if (!sender())
 	{
+//		textWidgets->setCurrentItem(m_item);
+//		textAdvancedWidgets->setCurrentItem(m_item);
+		textWidgets->handleSelectionChanged();
+		textAdvancedWidgets->handleSelectionChanged();
 		colorWidgets->handleSelectionChanged();
 		textAlignmentWidgets->handleSelectionChanged();
 		distanceWidgets->handleSelectionChanged();
@@ -371,22 +368,19 @@ void PropertiesPalette_Text::unitChange()
 	m_haveItem = tmp;
 }
 
-//void PropertiesPalette_Text::handleLineSpacingMode(int id)
-//{
-//	if ((m_haveDoc) && (m_haveItem))
-//	{
-//		Selection tempSelection(this, false);
-//		tempSelection.addItem(m_item, true);
-//		m_doc->itemSelection_SetLineSpacingMode(id, &tempSelection);
-//	//	updateStyle(((m_doc->appMode == modeEdit) || (m_doc->appMode == modeEditTable)) ? m_item->currentStyle() : m_item->itemText.defaultStyle());
-//		m_doc->regionsChanged()->update(QRect());
-//	}
-//}
 
 void PropertiesPalette_Text::changeLang(int id)
 {
-	textWidgets->changeLang(id);
+	textAdvancedWidgets->changeLang(id);
 }
+
+void PropertiesPalette_Text::showLanguage(QString w)
+{
+
+	textAdvancedWidgets->showLanguage(w);
+
+}
+
 
 void PropertiesPalette_Text::showLineSpacing(double r)
 {
@@ -405,11 +399,7 @@ void PropertiesPalette_Text::showFontSize(double s)
 	textWidgets->showFontSize(s);
 }
 
-void PropertiesPalette_Text::showLanguage(QString w)
-{
-	textWidgets->showLanguage(w);
 
-}
 
 void PropertiesPalette_Text::showFirstLinePolicy( FirstLineOffsetPolicy f )
 {
@@ -439,6 +429,7 @@ void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
 	textAlignmentWidgets->updateCharStyle(charStyle);
 	hyphenationWidget->updateCharStyle(charStyle);
 	textWidgets->updateCharStyle(charStyle);
+	textAdvancedWidgets->updateCharStyle(charStyle);
 }
 
 void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
@@ -455,6 +446,7 @@ void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
 	parEffectWidgets->updateStyle(newCurrent);
 	hyphenationWidget->updateStyle(newCurrent);
 	textWidgets->updateStyle(newCurrent);
+	textAdvancedWidgets->updateStyle(newCurrent);
 }
 
 void PropertiesPalette_Text::updateCharStyles()
@@ -496,27 +488,14 @@ void PropertiesPalette_Text::showParStyle(const QString& name)
 }
 
 
-void PropertiesPalette_Text::handleAlignment(int a)
+void PropertiesPalette_Text::handleAlignment()
 {
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	Selection tempSelection(this, false);
-//	tempSelection.addItem(m_item, true);
-//	m_doc->itemSelection_SetAlignment(a, &tempSelection);
-
-	textAlignmentWidgets->handleAlignment(a);
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
 
 	if (m_item->isPathText())
 		pathTextWidgets->handleSelectionChanged();
 }
-
-
-//void PropertiesPalette_Text::handleTextFont(QString c)
-//{
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	m_ScMW->SetNewFont(c);
-//}
 
 
 void PropertiesPalette_Text::updateColorList()
@@ -541,7 +520,7 @@ void PropertiesPalette_Text::languageChange()
 {
 
 	textWidgets->languageChange();
-
+	textAdvancedWidgets->languageChange();
 	colorWidgets->languageChange();
 	textAlignmentWidgets->languageChange();
 	flopBox->languageChange();

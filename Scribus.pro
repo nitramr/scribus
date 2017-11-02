@@ -1007,7 +1007,8 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/sclayoutsegment.h \
     scribus/ui/sclayoutsection.h \
     scribus/ui/propertywidget_textbase.h \
-    scribus/ui/propertywidget_textalignment.h
+    scribus/ui/propertywidget_textalignment.h \
+    scribus/ui/propertywidget_textadvanced.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1165,7 +1166,8 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/plugins/tools/2geomtools/pathalongpath/pathdialogbase.ui \
     scribus/ui/sccolorpicker.ui \
     scribus/ui/propertywidget_textbase.ui \
-    scribus/ui/propertywidget_textalignment.ui
+    scribus/ui/propertywidget_textalignment.ui \
+    scribus/ui/propertywidget_textadvanced.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -2133,7 +2135,8 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/plugins/tools/2geomtools/pathalongpath/pathalongpath.cpp \
 	   scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.cpp \
     scribus/ui/propertywidget_textbase.cpp \
-    scribus/ui/propertywidget_textalignment.cpp
+    scribus/ui/propertywidget_textalignment.cpp \
+    scribus/ui/propertywidget_textadvanced.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

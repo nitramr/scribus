@@ -11,14 +11,20 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="maximumSize">
+  <property name="minimumSize">
    <size>
     <width>380</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -42,7 +48,7 @@
     <number>4</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="fillLayout">
+    <layout class="QHBoxLayout" name="fillLayout" stretch="0,1,0,0">
      <property name="spacing">
       <number>2</number>
      </property>
@@ -92,7 +98,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="strokeLayout">
+    <layout class="QHBoxLayout" name="strokeLayout" stretch="0,1,0,0">
      <property name="spacing">
       <number>2</number>
      </property>
@@ -154,7 +160,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="backLayout">
+    <layout class="QHBoxLayout" name="backLayout" stretch="0,1,0,0">
      <property name="spacing">
       <number>2</number>
      </property>

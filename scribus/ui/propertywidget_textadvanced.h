@@ -4,11 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTBASE_H
-#define PROPERTYWIDGET_TEXTBASE_H
+#ifndef PROPERTYWIDGET_TEXTADVANCED_H
+#define PROPERTYWIDGET_TEXTADVANCED_H
 
-#include "ui_propertywidget_textbase.h"
-#include "scrspinbox.h"
+#include "ui_propertywidget_textadvanced.h"
 #include "scguardedptr.h"
 
 class PageItem;
@@ -16,15 +15,14 @@ class CharStyle;
 class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
-class ScComboBox;
 
-class PropertyWidget_TextBase : public QWidget, public Ui::PropertyWidget_TextBase
+class PropertyWidget_TextAdvanced : public QWidget, public Ui::PropertyWidget_TextAdvanced
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_TextBase(QWidget* parent = 0);
-	~PropertyWidget_TextBase() {}
+	PropertyWidget_TextAdvanced(QWidget* parent = 0);
+	~PropertyWidget_TextAdvanced() {}
 
 	virtual void changeEvent(QEvent *e);
 
@@ -38,8 +36,6 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
-	double m_unitRatio;
-	int    m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
@@ -56,38 +52,16 @@ public slots:
 	void unsetDoc();
 
 	void languageChange();
+	void changeLang(int id);
 
-	void showCharStyle(const QString& name);
-	void showFontFace(const QString&);
-	void showFontSize(double s);
-	void showLineSpacing(double r);
-	void showParStyle(const QString& name);
+	void showLanguage(QString w);
 	void setCurrentItem(PageItem *i);
-
-	void setupLineSpacingSpinbox(int mode, double value);
 
 	/// update TB values:
 	void updateCharStyle(const CharStyle& charStyle);
 	void updateStyle(const ParagraphStyle& newCurrent);
 
-	void updateCharStyles();
-	void updateParagraphStyles();
-	void updateTextStyles();
-
 	void handleSelectionChanged();
-
-	void handleLineSpacing();
-	void handleLineSpacingMode(int id);
-
-	void handleFontSize();
-	void handleTextFont(QString);
-
-	void handleUpdateRequest(int updateFlags);
-
-private slots:
-
-	void doClearCStyle();
-	void doClearPStyle();
 
 };
 

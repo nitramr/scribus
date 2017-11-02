@@ -63,7 +63,6 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 	connect(paraStyleClear, SIGNAL(clicked()), this, SLOT(doClearPStyle()));
 
 	connect(lineSpacingModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLineSpacingMode(int)));
-	connect(langCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLang(int)));
 
 	m_haveItem = false;
 	setEnabled(false);
@@ -176,6 +175,67 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 }
 
 
+// Remove Candidate?
+
+PageItem* PropertyWidget_TextBase::currentItemFromSelection()
+{
+	PageItem *currentItem = NULL;
+
+	if (m_doc)
+	{
+		if (m_doc->m_Selection->count() > 1)
+			currentItem = m_doc->m_Selection->itemAt(0);
+		else if (m_doc->m_Selection->count() == 1)
+			currentItem = m_doc->m_Selection->itemAt(0);
+		if (currentItem  && currentItem->isTable() && m_doc->appMode == modeEditTable)
+			currentItem = currentItem->asTable()->activeCell().textFrame();
+	}
+
+	return currentItem;
+}
+
+void PropertyWidget_TextBase::handleSelectionChanged()
+{
+	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	if (m_doc->m_Selection->count() > 1 )
+	{
+		setEnabled(false);
+	}
+	else
+	{
+		int itemType = currItem ? (int) currItem->itemType() : -1;
+		m_haveItem = (itemType != -1);
+
+		switch (itemType)
+		{
+		case -1:
+			m_haveItem = false;
+			setEnabled(false);
+			break;
+		case PageItem::TextFrame:
+		case PageItem::PathText:
+			setEnabled(true);
+			break;
+		case PageItem::Table:
+			setEnabled(m_doc->appMode == modeEditTable);
+			break;
+		default:
+			setEnabled(false);
+			break;
+		}
+	}
+	if (currItem)
+	{
+		setCurrentItem(currItem);
+	}
+	updateGeometry();
+	//repaint();
+}
+
+
 void PropertyWidget_TextBase::handleLineSpacingMode(int id)
 {
 	if ((m_haveDoc) && (m_haveItem))
@@ -186,18 +246,6 @@ void PropertyWidget_TextBase::handleLineSpacingMode(int id)
 		updateStyle(((m_doc->appMode == modeEdit) || (m_doc->appMode == modeEditTable)) ? m_item->currentStyle() : m_item->itemText.defaultStyle());
 		m_doc->regionsChanged()->update(QRect());
 	}
-}
-
-void PropertyWidget_TextBase::changeLang(int id)
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	QStringList languageList;
-	LanguageManager::instance()->fillInstalledStringList(&languageList);
-	QString abrv = LanguageManager::instance()->getAbbrevFromLang(languageList.value(id),false);
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetLanguage(abrv, &tempSelection);
 }
 
 void PropertyWidget_TextBase::showLineSpacing(double r)
@@ -236,19 +284,6 @@ void PropertyWidget_TextBase::showFontSize(double s)
 	fontSize->showValue(s / 10.0);
 }
 
-void PropertyWidget_TextBase::showLanguage(QString w)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	QStringList lang;
-	LanguageManager::instance()->fillInstalledStringList(&lang);
-	QString langName = LanguageManager::instance()->getLangFromAbbrev(w, true);
-
-	bool sigBlocked  = langCombo->blockSignals(true);
-	langCombo->setCurrentIndex(lang.indexOf(langName));
-	langCombo->blockSignals(sigBlocked);
-}
-
 
 void PropertyWidget_TextBase::setupLineSpacingSpinbox(int mode, double value)
 {
@@ -280,7 +315,6 @@ void PropertyWidget_TextBase::updateCharStyle(const CharStyle& charStyle)
 
 	showFontFace(charStyle.font().scName());
 	showFontSize(charStyle.fontSize());
-	showLanguage(charStyle.language());
 }
 
 void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
@@ -292,7 +326,6 @@ void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
 
 	showFontFace(charStyle.font().scName());
 	showFontSize(charStyle.fontSize());
-	showLanguage(charStyle.language());
 
 	showParStyle(newCurrent.parent());
 	showCharStyle(charStyle.parent());
@@ -436,13 +469,5 @@ void PropertyWidget_TextBase::languageChange()
 	lineSpacingModeCombo->addItem( tr("Automatic Linespacing"));
 	lineSpacingModeCombo->addItem( tr("Align to Baseline Grid"));
 	lineSpacingModeCombo->setCurrentIndex(oldLineSpacingMode);
-
-	QSignalBlocker langComboBlocker(langCombo);
-	QStringList languageList;
-	LanguageManager::instance()->fillInstalledStringList(&languageList);
-	int oldLang = langCombo->currentIndex();
-	langCombo->clear();
-	langCombo->addItems(languageList);
-	langCombo->setCurrentIndex(oldLang);
 
 }

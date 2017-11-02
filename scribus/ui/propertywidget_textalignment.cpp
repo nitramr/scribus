@@ -22,7 +22,7 @@ PropertyWidget_TextAlignment::PropertyWidget_TextAlignment(QWidget* parent) : QW
 	setupUi(this);
 
 
-	effectsLayout->setAlignment( Qt::AlignLeft );
+	//effectsLayout->setAlignment( Qt::AlignLeft );
 
 	languageChange();
 
@@ -398,8 +398,8 @@ void PropertyWidget_TextAlignment::handleAlignment(int a)
 	Selection tempSelection(this, false);
 	tempSelection.addItem(m_item, true);
 	m_doc->itemSelection_SetAlignment(a, &tempSelection);
-//	if (m_item->isPathText())
-//		pathTextWidgets->handleSelectionChanged();
+
+	emit handleAlignment();
 }
 
 // Alignment & Direction End

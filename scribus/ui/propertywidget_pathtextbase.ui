@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>140</height>
+    <height>76</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,43 +48,88 @@
     <number>2</number>
    </property>
    <item row="0" column="0">
-    <widget class="QLabel" name="pathTextTypeLabel">
-     <property name="text">
-      <string>Type:</string>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
      </property>
-    </widget>
+     <item>
+      <widget class="ScComboBox" name="pathTextType"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="pathTextTypeLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Type</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item row="0" column="1">
-    <widget class="ScComboBox" name="pathTextType"/>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="ScrSpinBox" name="startOffset"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="startOffsetLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Start Offset</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="2">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="ScrSpinBox" name="distFromCurve"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="distFromCurveLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Distance from Curve</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="startOffsetLabel">
-     <property name="text">
-      <string>Start Offset:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="ScrSpinBox" name="startOffset"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="distFromCurveLabel">
-     <property name="text">
-      <string>Distance from Curve:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="ScrSpinBox" name="distFromCurve"/>
-   </item>
-   <item row="3" column="0">
     <widget class="QCheckBox" name="flippedPathText">
      <property name="text">
       <string>Flip Text</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="1" column="1">
     <widget class="QCheckBox" name="showCurveCheckBox">
      <property name="text">
       <string>Show Curve</string>
