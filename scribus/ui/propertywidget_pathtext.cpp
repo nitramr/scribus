@@ -143,7 +143,9 @@ void PropertyWidget_PathText::configureWidgets(void)
 		enabled  = m_item->isPathText();
 		enabled &= (m_doc->m_Selection->count() == 1);
 	}
-	setEnabled(enabled);
+	//setEnabled(enabled);
+	setVisible(enabled);
+
 }
 
 void PropertyWidget_PathText::handleSelectionChanged()

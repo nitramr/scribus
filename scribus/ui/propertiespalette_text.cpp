@@ -492,13 +492,11 @@ void PropertiesPalette_Text::showDirection(int e)
 
 void PropertiesPalette_Text::showCharStyle(const QString& name)
 {
-	//textWidgets->showCharStyle(name);
 	textStylesWidgets->showCharStyle(name);
 }
 
 void PropertiesPalette_Text::showParStyle(const QString& name)
 {
-	//textWidgets->showParStyle(name);
 	textStylesWidgets->showParStyle(name);
 }
 

@@ -49,7 +49,7 @@ PropertiesPalette_Shape::PropertiesPalette_Shape( QWidget* parent)
 	m_tmpSelection->clear();
 
 	setupUi(this);
-	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
+	//setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
 
 	textFlowDisabled->setIcon(IconManager::instance()->loadIcon("flow-none.png"));
 	textFlowUsesFrameShape->setIcon(IconManager::instance()->loadIcon("flow-frame.png"));

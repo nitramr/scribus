@@ -164,6 +164,7 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_groupbase.ui
 	ui/propertiespalette_imagebase.ui
 	ui/propertiespalette_linebase.ui
+    ui/propertiespalette_shadowbase.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui

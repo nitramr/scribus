@@ -25,8 +25,10 @@ for which a new license (GPL+exception) is in place.
 #include "util.h"
 #include "util_math.h"
 
-PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : PropTreeWidget(parent)
+PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : QWidget(parent)
 {
+
+
 	m_ScMW = 0;
 	m_doc = 0;
 	m_item = 0;
@@ -34,61 +36,125 @@ PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : PropTreeW
 	m_haveItem = false;
 	m_unitIndex = 0;
 	m_unitRatio = 1.0;
-	hasSoftShadow = new PropTreeItem(this, PropTreeItem::CheckBox, tr( "Has Drop Shadow"));
-	hasSoftShadow->setBoolValue(false);
 
-	softShadowXOffset = new PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "X-Offset:"));
-	softShadowXOffset->setUnitValue(0);
-	softShadowXOffset->setDecimalsValue(2);
-	softShadowXOffset->setMinMaxValues(-200.0, 200.0);
-	softShadowXOffset->setDoubleValue(5.0);
+	setupUi(this);
 
-	softShadowYOffset = new PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Y-Offset:"));
-	softShadowYOffset->setUnitValue(0);
-	softShadowYOffset->setDecimalsValue(2);
-	softShadowYOffset->setMinMaxValues(-200.0, 200.0);
-	softShadowYOffset->setDoubleValue(5.0);
+//	hasSoftShadow = new QCheckBox();//PropTreeItem(this, PropTreeItem::CheckBox, tr( "Has Drop Shadow"));
+//	hasSoftShadow->setBoolValue(false);
+	hasSoftShadow->setChecked(false);
 
-	softShadowBlurRadius = new PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Blur:"));
-	softShadowBlurRadius->setUnitValue(0);
-	softShadowBlurRadius->setDecimalsValue(1);
-	softShadowBlurRadius->setMinMaxValues(-20.0, 20.0);
-	softShadowBlurRadius->setDoubleValue(2.0);
+//	softShadowXOffset = new ScrSpinBox();//PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "X-Offset:"));
+	softShadowXOffset->setNewUnit(0);
+	softShadowXOffset->setDecimals(2);
+	softShadowXOffset->setMinimum(-200.0);
+	softShadowXOffset->setMaximum(200.00);
+	softShadowXOffset->setValue(5.0);
+//	softShadowXOffset->setUnitValue(0);
+//	softShadowXOffset->setDecimalsValue(2);
+//	softShadowXOffset->setMinMaxValues(-200.0, 200.0);
+//	softShadowXOffset->setDoubleValue(5.0);
 
-	softShadowColor = new PropTreeItem(this, PropTreeItem::ColorComboBox, tr( "Color:"));
-	softShadowColor->setStringValue( tr( "Black"));
+//	softShadowYOffset = new ScrSpinBox();//PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Y-Offset:"));
+	softShadowYOffset->setNewUnit(0);
+	softShadowYOffset->setDecimals(2);
+	softShadowYOffset->setMinimum(-200.0);
+	softShadowYOffset->setMaximum(200.00);
+	softShadowYOffset->setValue(5.0);
+//	softShadowYOffset->setUnitValue(0);
+//	softShadowYOffset->setDecimalsValue(2);
+//	softShadowYOffset->setMinMaxValues(-200.0, 200.0);
+//	softShadowYOffset->setDoubleValue(5.0);
 
-	softShadowShade = new PropTreeItem(this, PropTreeItem::IntSpinBox, tr( "Shade:"));
-	softShadowShade->setUnitValue(7);
-	softShadowShade->setDecimalsValue(0);
-	softShadowShade->setMinMaxValues(0, 100);
-	softShadowShade->setIntValue(100);
+//	softShadowBlurRadius = new ScrSpinBox();//PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Blur:"));
+	softShadowBlurRadius->setNewUnit(0);
+	softShadowBlurRadius->setDecimals(1);
+	softShadowBlurRadius->setMinimum(-20.0);
+	softShadowBlurRadius->setMaximum(20.00);
+	softShadowBlurRadius->setValue(2.0);
+//	softShadowBlurRadius->setUnitValue(0);
+//	softShadowBlurRadius->setDecimalsValue(1);
+//	softShadowBlurRadius->setMinMaxValues(-20.0, 20.0);
+//	softShadowBlurRadius->setDoubleValue(2.0);
 
-	softShadowOpacity = new PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Opacity:"));
-	softShadowOpacity->setUnitValue(7);
-	softShadowOpacity->setDecimalsValue(1);
-	softShadowOpacity->setMinMaxValues(0.0, 100.0);
-	softShadowOpacity->setDoubleValue(100.0);
+//	softShadowColor = new ColorCombo();//PropTreeItem(this, PropTreeItem::ColorComboBox, tr( "Color:"));
+//	softShadowColor->setStringValue( tr( "Black"));
+	softShadowColor->setCurrentText( tr( "Black"));
 
-	softShadowBlendMode = new PropTreeItem(this, PropTreeItem::ComboBox, tr( "Blendmode:"));
+//	softShadowShade = new ScrSpinBox();//PropTreeItem(this, PropTreeItem::IntSpinBox, tr( "Shade:"));
+	softShadowShade->setNewUnit(7);
+	softShadowShade->setDecimals(0);
+	softShadowShade->setMinimum(0);
+	softShadowShade->setMaximum(100);
+	softShadowShade->setValue(100);
+//	softShadowShade->setUnitValue(7);
+//	softShadowShade->setDecimalsValue(0);
+//	softShadowShade->setMinMaxValues(0, 100);
+//	softShadowShade->setIntValue(100);
+
+//	softShadowOpacity = new ScrSpinBox();//PropTreeItem(this, PropTreeItem::DoubleSpinBox, tr( "Opacity:"));
+	softShadowOpacity->setNewUnit(7);
+	softShadowOpacity->setDecimals(0);
+	softShadowOpacity->setMinimum(0);
+	softShadowOpacity->setMaximum(100);
+	softShadowOpacity->setValue(100.0);
+//	softShadowOpacity->setUnitValue(7);
+//	softShadowOpacity->setDecimalsValue(1);
+//	softShadowOpacity->setMinMaxValues(0.0, 100.0);
+//	softShadowOpacity->setDoubleValue(100.0);
+
+//	softShadowBlendMode = new ScComboBox();//PropTreeItem(this, PropTreeItem::ComboBox, tr( "Blendmode:"));
 	QStringList modes;
-	softShadowBlendMode->setComboStrings(modes);
-	softShadowBlendMode->setStringValue( tr( "Normal"));
+	softShadowBlendMode->addItems(modes);
+	softShadowBlendMode->setItemText(0, tr( "Normal"));
+//	softShadowBlendMode->setComboStrings(modes);
+//	softShadowBlendMode->setStringValue( tr( "Normal"));
 
-	softShadowErase = new PropTreeItem(this, PropTreeItem::CheckBox, tr( "Content covers\nDrop Shadow"));
-	softShadowErase->setBoolValue(false);
+//	softShadowErase = new QCheckBox(); //new PropTreeItem(this, PropTreeItem::CheckBox, tr( "Content covers\nDrop Shadow"));
+//	softShadowErase->setBoolValue(false);
+	softShadowErase->setChecked(false);
 
-	softShadowObjTrans = new PropTreeItem(this, PropTreeItem::CheckBox, tr( "Inherit Object\nTransparency"));
-	softShadowObjTrans->setBoolValue(false);
+//	softShadowObjTrans = new QCheckBox(); //new PropTreeItem(this, PropTreeItem::CheckBox, tr( "Inherit Object\nTransparency"));
+//	softShadowObjTrans->setBoolValue(false);
+	softShadowObjTrans->setChecked(false);
 
 	languageChange();
 	m_haveItem = false;
 
-	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
-	connect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handleNewValues()));
+//	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
+//	connect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handleNewValues()));
+	connectSignals();
 
 	m_haveItem = false;
 }
+
+void PropertiesPalette_Shadow::connectSignals(){
+
+	connect(softShadowBlendMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleNewValues()));
+	connect(softShadowBlurRadius, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	connect(softShadowColor, SIGNAL(currentIndexChanged(int)), this, SLOT(handleNewValues()));
+	connect(softShadowOpacity, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	connect(softShadowShade, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	connect(softShadowXOffset, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	connect(softShadowYOffset, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	connect(hasSoftShadow, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+	connect(softShadowErase, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+	connect(softShadowObjTrans, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+}
+
+void PropertiesPalette_Shadow::disconnectSignals(){
+
+	disconnect(softShadowBlendMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleNewValues()));
+	disconnect(softShadowBlurRadius, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	disconnect(softShadowColor, SIGNAL(currentIndexChanged(int)), this, SLOT(handleNewValues()));
+	disconnect(softShadowOpacity, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	disconnect(softShadowShade, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	disconnect(softShadowXOffset, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	disconnect(softShadowYOffset, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
+	disconnect(hasSoftShadow, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+	disconnect(softShadowErase, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+	disconnect(softShadowObjTrans, SIGNAL(toggled(bool)), this, SLOT(handleNewValues()));
+}
+
 
 void PropertiesPalette_Shadow::setMainWindow(ScribusMainWindow* mw)
 {
@@ -117,28 +183,51 @@ void PropertiesPalette_Shadow::setDoc(ScribusDoc *d)
 
 	m_haveDoc = true;
 	m_haveItem = false;
-	softShadowXOffset->setUnitValue(m_unitIndex);
-	softShadowXOffset->setDecimalsValue(precision);
-	softShadowXOffset->setMinMaxValues(minXYVal, maxXYWHVal);
-	softShadowXOffset->setDoubleValue(minXYVal);
+	softShadowXOffset->setNewUnit(m_unitIndex);
+	softShadowXOffset->setValue(precision);
+	softShadowXOffset->setDecimals(minXYVal);
+	softShadowXOffset->setMinimum(minXYVal);
+	softShadowXOffset->setMaximum(maxXYWHVal);
+//	softShadowXOffset->setUnitValue(m_unitIndex);
+//	softShadowXOffset->setDecimalsValue(precision);
+//	softShadowXOffset->setMinMaxValues(minXYVal, maxXYWHVal);
+//	softShadowXOffset->setDoubleValue(minXYVal);
 
-	softShadowYOffset->setUnitValue(m_unitIndex);
-	softShadowYOffset->setDecimalsValue(precision);
-	softShadowYOffset->setMinMaxValues(minXYVal, maxXYWHVal);
-	softShadowYOffset->setDoubleValue(minXYVal);
+	softShadowYOffset->setNewUnit(m_unitIndex);
+	softShadowYOffset->setValue(precision);
+	softShadowYOffset->setDecimals(minXYVal);
+	softShadowYOffset->setMinimum(minXYVal);
+	softShadowYOffset->setMaximum(maxXYWHVal);
+//	softShadowYOffset->setUnitValue(m_unitIndex);
+//	softShadowYOffset->setDecimalsValue(precision);
+//	softShadowYOffset->setMinMaxValues(minXYVal, maxXYWHVal);
+//	softShadowYOffset->setDoubleValue(minXYVal);
 
-	softShadowBlurRadius->setUnitValue(m_unitIndex);
-	softShadowBlurRadius->setDecimalsValue(1);
-	softShadowBlurRadius->setMinMaxValues(0.0, 20.0);
-	softShadowBlurRadius->setDoubleValue(5);
+	softShadowBlurRadius->setNewUnit(m_unitIndex);
+	softShadowBlurRadius->setDecimals(1);
+	softShadowBlurRadius->setMinimum(0.0);
+	softShadowBlurRadius->setMaximum(20.0);
+	softShadowBlurRadius->setValue(5);
+//	softShadowBlurRadius->setUnitValue(m_unitIndex);
+//	softShadowBlurRadius->setDecimalsValue(1);
+//	softShadowBlurRadius->setMinMaxValues(0.0, 20.0);
+//	softShadowBlurRadius->setDoubleValue(5);
 
-	softShadowShade->setDecimalsValue(0);
-	softShadowShade->setMinMaxValues(0, 100);
-	softShadowShade->setIntValue(100);
+	softShadowShade->setValue(100);
+	softShadowShade->setDecimals(0);
+	softShadowShade->setMinimum(0);
+	softShadowShade->setMaximum(100);
+//	softShadowShade->setDecimalsValue(0);
+//	softShadowShade->setMinMaxValues(0, 100);
+//	softShadowShade->setIntValue(100);
 
-	softShadowOpacity->setDecimalsValue(0);
-	softShadowOpacity->setMinMaxValues(0, 100);
-	softShadowOpacity->setIntValue(100);
+	softShadowOpacity->setValue(100);
+	softShadowOpacity->setDecimals(0);
+	softShadowOpacity->setMinimum(0);
+	softShadowOpacity->setMaximum(100);
+//	softShadowOpacity->setDecimalsValue(0);
+//	softShadowOpacity->setMinMaxValues(0, 100);
+//	softShadowOpacity->setIntValue(100);
 	updateColorList();
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
@@ -193,16 +282,28 @@ void PropertiesPalette_Shadow::setCurrentItem(PageItem *i)
 		setDoc(i->doc());
 	m_haveItem = false;
 	m_item = i;
-	hasSoftShadow->setBoolValue(i->hasSoftShadow());
-	softShadowXOffset->setDoubleValue(i->softShadowXOffset() * m_unitRatio);
-	softShadowYOffset->setDoubleValue(i->softShadowYOffset() * m_unitRatio);
-	softShadowBlurRadius->setDoubleValue(i->softShadowBlurRadius() * m_unitRatio);
-	softShadowColor->setStringValue(i->softShadowColor());
-	softShadowShade->setIntValue(i->softShadowShade());
-	softShadowOpacity->setDoubleValue(qRound(100 - (i->softShadowOpacity() * 100)));
-	softShadowBlendMode->setIntValue(i->softShadowBlendMode());
-	softShadowErase->setBoolValue(i->softShadowErasedByObject());
-	softShadowObjTrans->setBoolValue(i->softShadowHasObjectTransparency());
+
+	hasSoftShadow->setChecked(i->hasSoftShadow());
+	softShadowXOffset->setValue(i->softShadowXOffset() * m_unitRatio);
+	softShadowYOffset->setValue(i->softShadowYOffset() * m_unitRatio);
+	softShadowBlurRadius->setValue(i->softShadowBlurRadius() * m_unitRatio);
+	softShadowColor->setEditText(i->softShadowColor());
+	softShadowShade->setValue(i->softShadowShade());
+	softShadowOpacity->setValue(qRound(100 - (i->softShadowOpacity() * 100)));
+	softShadowBlendMode->setCurrentIndex(i->softShadowBlendMode());
+	softShadowErase->setChecked(i->softShadowErasedByObject());
+	softShadowObjTrans->setChecked(i->softShadowHasObjectTransparency());
+
+//	hasSoftShadow->setBoolValue(i->hasSoftShadow());
+//	softShadowXOffset->setDoubleValue(i->softShadowXOffset() * m_unitRatio);
+//	softShadowYOffset->setDoubleValue(i->softShadowYOffset() * m_unitRatio);
+//	softShadowBlurRadius->setDoubleValue(i->softShadowBlurRadius() * m_unitRatio);
+//	softShadowColor->setStringValue(i->softShadowColor());
+//	softShadowShade->setIntValue(i->softShadowShade());
+//	softShadowOpacity->setDoubleValue(qRound(100 - (i->softShadowOpacity() * 100)));
+//	softShadowBlendMode->setIntValue(i->softShadowBlendMode());
+//	softShadowErase->setBoolValue(i->softShadowErasedByObject());
+//	softShadowObjTrans->setBoolValue(i->softShadowHasObjectTransparency());
 	m_haveItem = true;
 	updateSpinBoxConstants();
 }
@@ -228,41 +329,54 @@ void PropertiesPalette_Shadow::unitChange()
 	bool sigBlocked1 = softShadowXOffset->blockSignals(true);
 	bool sigBlocked2 = softShadowYOffset->blockSignals(true);
 	bool sigBlocked3 = softShadowBlurRadius->blockSignals(true);
-	bool sigBlocked4 = this->model()->blockSignals(true);
+//	bool sigBlocked4 = this->model()->blockSignals(true);
 
-	softShadowXOffset->setUnitValue(m_unitIndex);
-	softShadowYOffset->setUnitValue(m_unitIndex);
-	softShadowBlurRadius->setUnitValue(m_unitIndex);
+//	softShadowXOffset->setUnitValue(m_unitIndex);
+//	softShadowYOffset->setUnitValue(m_unitIndex);
+//	softShadowBlurRadius->setUnitValue(m_unitIndex);
+	softShadowYOffset->setNewUnit(m_unitIndex);
+	softShadowXOffset->setNewUnit(m_unitIndex);
+	softShadowBlurRadius->setNewUnit(m_unitIndex);
 
 	softShadowXOffset->blockSignals(sigBlocked1);
 	softShadowYOffset->blockSignals(sigBlocked2);
 	softShadowBlurRadius->blockSignals(sigBlocked3);
-	this->model()->blockSignals(sigBlocked4);
+//	this->model()->blockSignals(sigBlocked4);
 }
 
 void PropertiesPalette_Shadow::updateColorList()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	softShadowColor->setColorList(m_doc->PageColors);
+	softShadowColor->setColors(m_doc->PageColors);
 }
 
 void PropertiesPalette_Shadow::handleNewValues()
 {
 	if (m_haveItem)
 	{
-		double x = softShadowXOffset->valueAsDouble() / m_unitRatio;
-		double y = softShadowYOffset->valueAsDouble() / m_unitRatio;
-		double r = softShadowBlurRadius->valueAsDouble() / m_unitRatio;
-		QString color = softShadowColor->valueAsString();
+
+		double x = softShadowXOffset->value() / m_unitRatio;
+		double y = softShadowYOffset->value() / m_unitRatio;
+		double r = softShadowBlurRadius->value() / m_unitRatio;
+		QString color = softShadowColor->currentColor();
+
+//		double x = softShadowXOffset->valueAsDouble() / m_unitRatio;
+//		double y = softShadowYOffset->valueAsDouble() / m_unitRatio;
+//		double r = softShadowBlurRadius->valueAsDouble() / m_unitRatio;
+//		QString color = softShadowColor->valueAsString();
 		if (color == CommonStrings::tr_NoneColor)
 			color = CommonStrings::None;
-		int b = softShadowBlendMode->valueAsInt();
-		double o = (100 - softShadowOpacity->valueAsDouble()) / 100.0;
-		int s = softShadowShade->valueAsInt();
+		int b = softShadowBlendMode->currentIndex();
+		double o = (100 - softShadowOpacity->value()) / 100.0;
+		int s = softShadowShade->value();
+//		int b = softShadowBlendMode->valueAsInt();
+//		double o = (100 - softShadowOpacity->valueAsDouble()) / 100.0;
+//		int s = softShadowShade->valueAsInt();
+
 		if (m_haveDoc)
 		{
-			m_doc->itemSelection_SetSoftShadow(hasSoftShadow->valueAsBool(), color, x, y, r, s, o, b, softShadowErase->valueAsBool(), softShadowObjTrans->valueAsBool());
+			m_doc->itemSelection_SetSoftShadow(hasSoftShadow->isChecked(), color, x, y, r, s, o, b, softShadowErase->isChecked(), softShadowObjTrans->isChecked());
 		}
 	}
 }
@@ -279,17 +393,20 @@ void PropertiesPalette_Shadow::changeEvent(QEvent *e)
 
 void PropertiesPalette_Shadow::languageChange()
 {
-	disconnect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handleNewValues()));
+	disconnectSignals();
 
-	hasSoftShadow->setText(0, tr( "Has Drop Shadow"));
-	softShadowXOffset->setText(0, tr( "X-Offset:"));
-	softShadowYOffset->setText(0, tr( "Y-Offset:"));
-	softShadowBlurRadius->setText(0, tr( "Blur:"));
-	softShadowColor->setText(0, tr( "Color:"));
-	softShadowShade->setText(0, tr( "Shade:"));
-	softShadowOpacity->setText(0, tr( "Opacity:"));
-	softShadowErase->setText(0, tr( "Content covers\nDrop Shadow"));
-	softShadowObjTrans->setText(0, tr( "Inherit Object\nTransparency"));
+	labelShadowXOffset->setText(tr( "X-Offset:"));
+	labelShadowYOffset->setText(tr( "Y-Offset:"));
+	labelShadowBlurRadius->setText(tr( "Blur:"));
+	labelShadowColor->setText(tr( "Color:"));
+	labelShadowShade->setText(tr( "Shade:"));
+	labelShadowOpacity->setText(tr( "Opacity:"));
+	hasSoftShadow->setText(tr( "Has Drop Shadow"));
+	softShadowErase->setText(tr( "Content covers\nDrop Shadow"));
+	softShadowObjTrans->setText(tr( "Inherit Object\nTransparency"));
+
+	softShadowBlendMode->clear();
+
 	QStringList modes;
 	modes.append( tr("Normal"));
 	modes.append( tr("Darken"));
@@ -307,11 +424,15 @@ void PropertiesPalette_Shadow::languageChange()
 	modes.append( tr("Saturation"));
 	modes.append( tr("Color"));
 	modes.append( tr("Luminosity"));
-	softShadowBlendMode->setComboStrings(modes);
-	softShadowBlendMode->setStringValue( tr("Normal"));
-	softShadowBlendMode->setText(0, tr( "Blendmode:"));
 
-	connect(this->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(handleNewValues()));
+	softShadowBlendMode->addItems(modes);
+	softShadowBlendMode->setCurrentText( tr("Normal"));
+
+//	softShadowBlendMode->setComboStrings(modes);
+//	softShadowBlendMode->setStringValue( tr("Normal"));
+//	softShadowBlendMode->setText(0, tr( "Blendmode:"));
+
+	connectSignals();
 }
 
 void PropertiesPalette_Shadow::updateSpinBoxConstants()

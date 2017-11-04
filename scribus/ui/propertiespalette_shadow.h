@@ -6,18 +6,19 @@ for which a new license (GPL+exception) is in place.
 */
 #ifndef PROPERTIESPALETTE_SHADOW_H
 #define PROPERTIESPALETTE_SHADOW_H
+#include "ui_propertiespalette_shadowbase.h"
 
 #include "scribusapi.h"
 #include "scguardedptr.h"
 
-#include "proptree.h"
+//#include "proptree.h"
 
 class PageItem;
 class ScribusDoc;
 class Selection;
 class ScribusMainWindow;
 
-class SCRIBUS_API PropertiesPalette_Shadow : public PropTreeWidget
+class SCRIBUS_API PropertiesPalette_Shadow : public QWidget, Ui::PropertiesPalette_ShadowBase
 {
 	Q_OBJECT
 
@@ -31,6 +32,8 @@ public:
 private:
 
 	PageItem* currentItemFromSelection();
+	void connectSignals();
+	void disconnectSignals();
 
 public slots:
 	void setMainWindow(ScribusMainWindow *mw);
@@ -52,16 +55,16 @@ protected slots:
 	void updateSpinBoxConstants();
 
 protected:
-	PropTreeItem *hasSoftShadow;
-	PropTreeItem *softShadowXOffset;
-	PropTreeItem *softShadowYOffset;
-	PropTreeItem *softShadowBlurRadius;
-	PropTreeItem *softShadowColor;
-	PropTreeItem *softShadowShade;
-	PropTreeItem *softShadowOpacity;
-	PropTreeItem *softShadowBlendMode;
-	PropTreeItem *softShadowErase;
-	PropTreeItem *softShadowObjTrans;
+//	PropTreeItem *hasSoftShadow;
+//	PropTreeItem *softShadowXOffset;
+//	PropTreeItem *softShadowYOffset;
+//	PropTreeItem *softShadowBlurRadius;
+//	PropTreeItem *softShadowColor;
+//	PropTreeItem *softShadowShade;
+//	PropTreeItem *softShadowOpacity;
+//	PropTreeItem *softShadowBlendMode;
+//	PropTreeItem *softShadowErase;
+//	PropTreeItem *softShadowObjTrans;
 	ScribusMainWindow *m_ScMW;
 
 	bool      m_haveDoc;

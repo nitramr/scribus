@@ -61,7 +61,7 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	connect(userActionSniffer, SIGNAL(actionStart()), this, SLOT(spinboxStartUserAction()));
 	connect(userActionSniffer, SIGNAL(actionEnd()), this, SLOT(spinboxFinishUserAction()));
 
-	nameEdit->setFocusPolicy(Qt::ClickFocus);
+	nameEdit->setFocusPolicy(Qt::ClickFocus); //
 
 	installSniffer(xposSpin);
 	installSniffer(yposSpin);
@@ -127,12 +127,12 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	connect(levelBottom, SIGNAL(clicked()), this, SLOT(handleBack()));
 	connect(basePointWidget, SIGNAL(buttonClicked(int)), this, SLOT(handleBasePoint(int)));
 
-	connect(nameEdit , SIGNAL(Leaved()) , this, SLOT(handleNewName()));
+	connect(nameEdit , SIGNAL(Leaved()) , this, SLOT(handleNewName())); //
 	connect(doLock   , SIGNAL(clicked()), this, SLOT(handleLock()));
 	connect(noPrint  , SIGNAL(clicked()), this, SLOT(handlePrint()));
 	connect(noResize , SIGNAL(clicked()), this, SLOT(handleLockSize()));
-	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) );
-	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) );
+	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) ); //
+	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) ); //
 
 	m_haveItem = false;
 	xposSpin->showValue(0);
@@ -202,19 +202,19 @@ void PropertiesPalette_XYZ::unsetDoc()
 	m_haveItem = false;
 	m_doc   = NULL;
 	m_item  = NULL;
-	nameEdit->clear();
+	nameEdit->clear(); //
 	xposSpin->setConstants(NULL);
 	yposSpin->setConstants(NULL);
 	widthSpin->setConstants(NULL);
 	heightSpin->setConstants(NULL);
-	doGroup->setEnabled(false);
-	doUnGroup->setEnabled(false);
+	doGroup->setEnabled(false); //
+	doUnGroup->setEnabled(false); //
 	flipH->setEnabled(false);
 	flipV->setEnabled(false);
-	xposLabel->setText( tr( "&X-Pos:" ) );
-	yposLabel->setText( tr( "&Y-Pos:" ) );
-	widthLabel->setText( tr( "&Width:" ) );
-	heightLabel->setText( tr( "&Height:" ) );
+	xposLabel->setText( tr( "&X-Pos" ) );
+	yposLabel->setText( tr( "&Y-Pos" ) );
+	widthLabel->setText( tr( "&Width" ) );
+	heightLabel->setText( tr( "&Height" ) );
 	xposSpin->showValue(0);
 	yposSpin->showValue(0);
 	widthSpin->showValue(0);
@@ -292,10 +292,10 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	m_haveItem = false;
 	m_item = i;
 
-	nameEdit->setText(m_item->itemName());
+	nameEdit->setText(m_item->itemName()); //
 	levelLabel->setText( QString::number(m_item->level()) );
 
-	connect(nameEdit, SIGNAL(Leaved()), this, SLOT(handleNewName()));
+	connect(nameEdit, SIGNAL(Leaved()), this, SLOT(handleNewName())); //
 
 //CB replaces old emits from PageItem::emitAllToGUI()
 	disconnect(xposSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewX()));
@@ -388,14 +388,15 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 		rrR = 360 - rrR;
 	noResize->setEnabled(!m_item->isArc());
 	
-	doGroup->setEnabled(false);
+	doGroup->setEnabled(false); //
 	doUnGroup->setEnabled(false);
 	if ((m_doc->m_Selection->count() > 1) && (haveSameParent))
 		doGroup->setEnabled(true);
 	if (m_doc->m_Selection->count() == 1)
 		doUnGroup->setEnabled(m_item->isGroup());
 	if ((m_doc->appMode == modeEditClip) && (m_item->isGroup()))
-		doUnGroup->setEnabled(false);
+		doUnGroup->setEnabled(false);//
+
 	if (m_item->asOSGFrame())
 	{
 		setEnabled(true);
@@ -412,7 +413,7 @@ void PropertiesPalette_XYZ::handleAppModeChanged(int oldMode, int mode)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	doUnGroup->setEnabled(mode != modeEdit && mode != modeEditClip && m_item->isGroup());
+	doUnGroup->setEnabled(mode != modeEdit && mode != modeEditClip && m_item->isGroup()); //
 	doLock->setEnabled(mode != modeEditClip);
 }
 
@@ -421,7 +422,7 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	nameEdit->setEnabled(m_doc->m_Selection->count() == 1);
+	nameEdit->setEnabled(m_doc->m_Selection->count() == 1); //
 
 	PageItem* currItem = currentItemFromSelection();
 	if (m_doc->m_Selection->count() > 1)
@@ -457,7 +458,7 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 		heightSpin->setEnabled(true);
 		rotationSpin->setEnabled(true);
 
-		nameEdit->setEnabled(false);
+		nameEdit->setEnabled(false); //
 		flipH->setCheckable( false );
 		flipV->setCheckable( false );
 		flipH->setChecked(false);
@@ -473,12 +474,12 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 		int itemType = currItem ? (int) currItem->itemType() : -1;
 		
 		m_haveItem = (itemType!=-1);
-		if (itemType == -1)
+		if (itemType == -1) //
 		{
 			doGroup->setEnabled(false);
 			doUnGroup->setEnabled(false);
 		}
-		nameEdit->setEnabled(true);
+		nameEdit->setEnabled(true); //
 		basePointWidget->setEnabled(true);
 
 		setEnabled(true);
@@ -1365,8 +1366,8 @@ void PropertiesPalette_XYZ::showFlippedV(bool isFlippedV)
 void PropertiesPalette_XYZ::handleGrouping()
 {
 	m_ScMW->GroupObj();
-	doGroup->setEnabled(false);
-	doUnGroup->setEnabled(true);
+	doGroup->setEnabled(false);//
+	doUnGroup->setEnabled(true);//
 	handleSelectionChanged();
 	//FIXME
 	//TabStack->setItemEnabled(idShapeItem, false);
