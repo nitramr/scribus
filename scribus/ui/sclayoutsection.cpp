@@ -54,6 +54,7 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 
 	this->setLayout(m_headerLayout);
 	this->setFixedHeight(30);
+	this->setAutoFillBackground(true);
 
 	this->connect(m_btnOnOff, SIGNAL(toggled(bool)),this, SLOT(setToggleState()));
 
@@ -63,12 +64,15 @@ void ScLayoutSectionHeader::paintEvent(QPaintEvent *)
 {
 
 	QColor lineColor(128,128,128,128);
+	QColor backgroundColor(this->palette().button().color());
 	int lineWidth = 1;
 
 	QPainter painter(this);
+	painter.fillRect(this->geometry(), QBrush(backgroundColor));
 	painter.setPen(lineColor);
 	painter.drawLine(0,0,this->width(), 0);
 	painter.drawLine(0,this->height()-lineWidth,this->width(), this->height()-lineWidth);
+
 
 }
 

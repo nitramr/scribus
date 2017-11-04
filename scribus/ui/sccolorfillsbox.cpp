@@ -17,8 +17,21 @@ ScColorFillsBox::ScColorFillsBox(QWidget *parent) : QPushButton(parent)
 
 }
 
-void ScColorFillsBox::setPixmap(QPixmap fills){
-	m_fills = new QPixmap(fills);
+
+void ScColorFillsBox::setColor(QColor fillsColor){
+
+	QPixmap *fills = new QPixmap(this->size());
+	fills->fill(Qt::transparent);
+
+	QPainter paint(fills);
+	paint.setBrush(QBrush(fillsColor));
+	paint.drawRect(fills->rect());
+
+	setPixmap(*fills);
+}
+
+void ScColorFillsBox::setPixmap(QPixmap fillsPixmap){
+	m_fills = new QPixmap(fillsPixmap);
 	m_reset = false;
 	update();
 

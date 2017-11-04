@@ -1,7 +1,8 @@
 #include "scpopupmenu.h"
 #include <QEvent>
 #include <QLayout>
-
+#include <QActionEvent>
+#include <QApplication>
 
 ScPopupMenu::ScPopupMenu(QWidget *widget)
 {
@@ -15,27 +16,61 @@ ScPopupMenu::ScPopupMenu(QWidget *widget)
 		addWidget(widget);
 	}
 
-	QWidget *panel = new QWidget();
-	//panel->setFixedSize(widget->size());
+	panel = new QWidget();
+	panel->installEventFilter(this);
 	panel->setLayout(m_layout);
 	panel->adjustSize();
-	panel->installEventFilter(this);
 
-	QWidgetAction * action = new QWidgetAction(this);
+
+
+	action = new QWidgetAction(this);
 	action->setDefaultWidget(panel);
 
 	this->addAction(action);
 
+	//updateSize();
+
+}
+
+ScPopupMenu::~ScPopupMenu() {
+
+	this->clear();
 }
 
 void ScPopupMenu::addWidget(QWidget *widget)
 {
+	widget->updateGeometry();
 	widget->adjustSize();
 
 	m_layout->addWidget(widget);
 
+
 }
 
+
+void ScPopupMenu::updateSize(){
+
+//	panel->adjustSize();
+//	this->adjustSize();
+
+	panel->adjustSize();
+	panel->resize(panel->sizeHint());
+//	this->resize(panel->sizeHint());
+
+//	QWidget * pan = action->defaultWidget();
+
+//	this->clear();
+
+	//QWidgetAction * action = new QWidgetAction(this);
+	//action->setDefaultWidget(panel);
+//	action->setDefaultWidget(pan);
+//	this->addAction(action);
+
+	//action->setDefaultWidget(NULL);
+//	action->setDefaultWidget(panel);
+
+	//this->resize(panel->size());
+}
 
 
 bool ScPopupMenu::eventFilter(QObject *obj, QEvent *event)
@@ -47,6 +82,12 @@ bool ScPopupMenu::eventFilter(QObject *obj, QEvent *event)
 			event->type() == QEvent::MouseMove) {
 
 		return true;
+	}
+	if(event->type() == QEvent::Resize){
+
+//		QWidget *widget = qobject_cast<QWidget *>(obj);
+//		this->resize(widget->size());
+//		return true;
 	}
 
 		return QObject::eventFilter(obj, event);

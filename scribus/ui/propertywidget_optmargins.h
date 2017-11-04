@@ -10,7 +10,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui_propertywidget_optmarginsbase.h"
 
 #include "propertywidgetbase.h"
-
+#include "scribusdoc.h"
 
 class ParagraphStyle;
 class ScribusDoc;
@@ -22,6 +22,15 @@ class PropertyWidget_OptMargins : public QWidget, public Ui::PropertyWidget_OptM
 	Q_OBJECT
 
 public:
+
+	enum FlopButtonID
+	{
+		RealHeightID   = 0,
+		FontAscentID   = 1,
+		LineSpacingID  = 2,
+		BaselineGridID = 3
+	};
+
 	PropertyWidget_OptMargins(QWidget *parent = 0);
 	~PropertyWidget_OptMargins() {};
 
@@ -50,11 +59,14 @@ public slots:
 	void languageChange();
 	void unitChange() {};
 
-	void showOpticalMargins(const ParagraphStyle& pStyle);
+	void showOpticalMargins(const ParagraphStyle& pStyle);	
+	void showFirstLinePolicy( FirstLineOffsetPolicy f );
 
 private slots:
+	void handleFirstLinePolicy(int radioFlop);
 	void handleOpticalMargins();
 	void resetOpticalMargins();
+
 };
 
 #endif

@@ -15,7 +15,7 @@ for which a new license (GPL+exception) is in place.
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_PathText : public QWidget, public Ui::PropertyWidget_PathTextBase,
+class PropertyWidget_PathText : public QWidget, Ui::PropertyWidget_PathTextBase,
                                 public PropertyWidgetBase
 {
 	Q_OBJECT

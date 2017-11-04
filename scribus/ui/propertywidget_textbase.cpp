@@ -13,9 +13,10 @@ for which a new license (GPL+exception) is in place.
 #include "scribusdoc.h"
 #include "selection.h"
 #include "units.h"
+#include "sccolorengine.h"
 
 #include "sccolorfillsbox.h"
-#include "sccolorpicker.h"
+//#include "sccolorpicker.h"
 #include "scpopupmenu.h"
 
 PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(parent)
@@ -32,17 +33,28 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 
 	fontSize->setPrefix( "" );
 
-	// Setup ScColorPicker in ScPopupMenu and add it to ScColorFillsBox
-	ScColorPicker * colorPicker = new ScColorPicker();
-	colorPicker->setFixedSize(100,100);
-	ScPopupMenu * colorPickerMenu = new ScPopupMenu(colorPicker);
-	ScColorFillsBox * fontColorFillsBox = new ScColorFillsBox();
-	fontColorFillsBox->setMenu(colorPickerMenu);
-	verticalLayout_fontColor->insertWidget(0,fontColorFillsBox);
+	// Fills
+	fillColor = new ColorCombo();
+	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
+	ScPopupMenu * fillsColorMenu = new ScPopupMenu(fillColor);
+	fillsColorBox = new ScColorFillsBox();
+	fillsColorBox->setMenu(fillsColorMenu);
+	verticalLayout_fontColor->insertWidget(0,fillsColorBox);
+
+	fillShade = new ShadeButton(this);
+	verticalLayout_fillShade->insertWidget(0,fillShade);
+
+//	// Setup ScColorPicker in ScPopupMenu and add it to ScColorFillsBox
+//	ScColorPicker * colorPicker = new ScColorPicker();
+//	colorPicker->setFixedSize(100,100);
+//	ScPopupMenu * colorPickerMenu = new ScPopupMenu(colorPicker);
+//	ScColorFillsBox * fontColorFillsBox = new ScColorFillsBox();
+//	fontColorFillsBox->setMenu(colorPickerMenu);
+//	verticalLayout_fontColor->insertWidget(0,fontColorFillsBox);
 
 	// connect ScFillsBox with ScColorPicker
-	connect(colorPicker, SIGNAL(setPreview(QPixmap)), fontColorFillsBox, SLOT(setPixmap(QPixmap)));
-	connect(colorPicker, SIGNAL(resetColor()), fontColorFillsBox, SLOT(resetColor()));
+//	connect(colorPicker, SIGNAL(setPreview(QPixmap)), fontColorFillsBox, SLOT(setPixmap(QPixmap)));
+//	connect(colorPicker, SIGNAL(resetColor()), fontColorFillsBox, SLOT(resetColor()));
 
 
 	languageChange();
@@ -64,6 +76,23 @@ void PropertyWidget_TextBase::setMainWindow(ScribusMainWindow* mw)
 	connect(m_ScMW, SIGNAL(UpdateRequest(int))     , this  , SLOT(handleUpdateRequest(int)));
 }
 
+
+void PropertyWidget_TextBase::connectSignals()
+{
+	// Fills
+	connect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill())     , Qt::UniqueConnection);
+	connect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
+
+}
+
+void PropertyWidget_TextBase::disconnectSignals()
+{
+	// Fills
+	disconnect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill()));
+	disconnect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
+
+}
+
 void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
 {
 
@@ -79,6 +108,7 @@ void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
 	m_doc  = d;
 	m_item = NULL;
 
+
 	m_unitRatio   = m_doc->unitRatio();
 	m_unitIndex   = m_doc->unitIndex();
 
@@ -89,6 +119,14 @@ void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
 	lineSpacing->setValues( 1, 2048, 2, 1);
 
 	fonts->RebuildList(m_doc);
+
+	if (m_doc.isNull())
+	{
+		disconnectSignals();
+		return;
+	}
+
+	updateColorList();
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));	
@@ -124,6 +162,8 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 	if (!m_doc)
 		setDoc(i->doc());
 
+	disconnectSignals();
+
 	m_haveItem = false;
 	m_item = i;
 
@@ -149,6 +189,8 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 	{
 		setEnabled(false);
 	}
+
+	connectSignals();
 
 }
 
@@ -209,6 +251,7 @@ void PropertyWidget_TextBase::handleSelectionChanged()
 	}
 	updateGeometry();
 	//repaint();
+
 }
 
 
@@ -261,6 +304,29 @@ void PropertyWidget_TextBase::showFontSize(double s)
 }
 
 
+void PropertyWidget_TextBase::showTextColors(QString b, double shb)
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	ColorList::Iterator it;
+	int c = 0;
+
+	fillShade->setValue(qRound(shb));	// Fills
+
+	if ((b != CommonStrings::None) && (!b.isEmpty()))
+	{
+		c++;
+		for (it = m_doc->PageColors.begin(); it != m_doc->PageColors.end(); ++it)
+		{
+			if (it.key() == b)
+				break;
+			c++;
+		}
+	}
+	fillColor->setCurrentIndex(c);
+
+}
+
 void PropertyWidget_TextBase::setupLineSpacingSpinbox(int mode, double value)
 {
 	bool blocked = lineSpacing->blockSignals(true);
@@ -284,11 +350,29 @@ void PropertyWidget_TextBase::setupLineSpacingSpinbox(int mode, double value)
 	lineSpacing->blockSignals(blocked);
 }
 
+void PropertyWidget_TextBase::updateColorList()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	if (m_item)
+		disconnectSignals();
+
+	// Fills
+	fillColor->setColors(m_doc->PageColors, true);
+	fillColor->view()->setMinimumWidth(100);//fillColor->view()->maximumViewportSize().width());// + 24);
+
+	if (m_item)
+		setCurrentItem(m_item);
+}
+
+
 void PropertyWidget_TextBase::updateCharStyle(const CharStyle& charStyle)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
+	showTextColors(charStyle.fillColor(), charStyle.fillShade());
 	showFontFace(charStyle.font().scName());
 	showFontSize(charStyle.fontSize());
 }
@@ -300,6 +384,7 @@ void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
 
 	const CharStyle& charStyle = newCurrent.charStyle();
 
+	showTextColors(charStyle.fillColor(), charStyle.fillShade());
 	showFontFace(charStyle.font().scName());
 	showFontSize(charStyle.fontSize());
 
@@ -338,6 +423,61 @@ void PropertyWidget_TextBase::handleTextFont(QString c)
 	m_ScMW->SetNewFont(c);
 }
 
+// Fills
+void PropertyWidget_TextBase::handleFillColorBox(){
+
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	QString color = fillColor->currentColor();
+
+	if(color != CommonStrings::None){
+		const ScColor& col = m_doc->PageColors[color];
+		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, fillShade->getValue());
+		fillsColorBox->setColor(tmp);
+	} else fillsColorBox->resetColor();
+}
+
+// Fills
+void PropertyWidget_TextBase::handleTextFill()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	PageItem *i2 = m_item;
+	if (m_doc->appMode == modeEditTable)
+		i2 = m_item->asTable()->activeCell().textFrame();
+	if (i2 != NULL)
+	{
+		Selection tempSelection(this, false);
+		tempSelection.addItem(i2, true);
+		m_doc->itemSelection_SetFillColor(fillColor->currentColor(), &tempSelection);
+
+		// draw color box
+		handleFillColorBox();
+	}
+}
+
+void PropertyWidget_TextBase::handleTextShade()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if (fillShade == sender()) // Fills
+	{
+		int b = fillShade->getValue();
+		PageItem *i2 = m_item;
+		if (m_doc->appMode == modeEditTable)
+			i2 = m_item->asTable()->activeCell().textFrame();
+		if (i2 != NULL)
+		{
+			Selection tempSelection(this, false);
+			tempSelection.addItem(i2, true);
+			m_doc->itemSelection_SetFillShade(b, &tempSelection);
+			// draw color box
+			handleFillColorBox();
+		}
+	}
+}
+
 void PropertyWidget_TextBase::handleUpdateRequest(int updateFlags)
 {
 
@@ -349,6 +489,8 @@ void PropertyWidget_TextBase::handleUpdateRequest(int updateFlags)
 		fonts->RebuildList(0);
 	if (updateFlags & reqDocFontListUpdate)
 		fonts->RebuildList(m_haveDoc ? m_doc : 0);
+	if (updateFlags & reqColorsUpdate)
+		updateColorList();
 
 }
 

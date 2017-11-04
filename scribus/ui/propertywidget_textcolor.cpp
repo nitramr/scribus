@@ -7,11 +7,12 @@ for which a new license (GPL+exception) is in place.
 
 
 #include "appmodes.h"
-#include "iconmanager.h"
 #include "pageitem_table.h"
 #include "propertywidget_textcolor.h"
 #include "scribus.h"
 #include "selection.h"
+#include "sccolorengine.h"
+#include "scpopupmenu.h"
 
 PropertyWidget_TextColor::PropertyWidget_TextColor(QWidget* parent) : QWidget(parent)
 {
@@ -20,27 +21,22 @@ PropertyWidget_TextColor::PropertyWidget_TextColor(QWidget* parent) : QWidget(pa
 
 	setupUi(this);
 
-	fillLayout->setAlignment( Qt::AlignLeft );
-	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
-	fillIcon->setPixmap(IconManager::instance()->loadPixmap("16/color-fill.png"));
-	fillIcon->setScaledContents( false );
-	fillShadeLabel->setPixmap(IconManager::instance()->loadPixmap("shade.png"));
-
-	strokeLayout->setAlignment( Qt::AlignLeft );
 	strokeColor->setPixmapType(ColorCombo::fancyPixmaps);
-	strokeIcon->setPixmap(IconManager::instance()->loadPixmap("16/color-stroke.png"));
-	strokeIcon->setScaledContents( false );
-	strokeShadeLabel->setPixmap(IconManager::instance()->loadPixmap("shade.png"));
+	ScPopupMenu * strokeColorMenu = new ScPopupMenu(strokeColor);
+	strokeColorBox = new ScColorFillsBox();
+	strokeColorBox->setMenu(strokeColorMenu);
+	strokeLayout->insertWidget(0,strokeColorBox);
 
-	backLayout->setAlignment( Qt::AlignLeft );
+
 	backColor->setPixmapType(ColorCombo::fancyPixmaps);
-	backIcon->setPixmap(IconManager::instance()->loadPixmap("16/color-fill.png"));
-	backIcon->setScaledContents( false );
-	backShadeLabel->setPixmap(IconManager::instance()->loadPixmap("shade.png"));
+	ScPopupMenu * backColorMenu = new ScPopupMenu(backColor);
+	backColorBox = new ScColorFillsBox();
+	backColorBox->setMenu(backColorMenu);
+	backLayout->insertWidget(0,backColorBox);
+
 
 	languageChange();
 
-	strokeIcon->setEnabled(false);
 	strokeColor->setEnabled(false);
 	strokeShade->setEnabled(false);
 }
@@ -114,9 +110,7 @@ void PropertyWidget_TextColor::setCurrentItem(PageItem *item)
 
 void PropertyWidget_TextColor::connectSignals()
 {
-	connect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill())     , Qt::UniqueConnection);
 	connect(strokeColor , SIGNAL(activated(int)), this, SLOT(handleTextStroke())   , Qt::UniqueConnection);
-	connect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
 	connect(strokeShade , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
 	connect(backShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
 	connect(backColor   , SIGNAL(activated(int)), this, SLOT(handleTextBackground())     , Qt::UniqueConnection);
@@ -124,9 +118,7 @@ void PropertyWidget_TextColor::connectSignals()
 
 void PropertyWidget_TextColor::disconnectSignals()
 {
-	disconnect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill()));
 	disconnect(strokeColor , SIGNAL(activated(int)), this, SLOT(handleTextStroke()));
-	disconnect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
 	disconnect(strokeShade , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
 	disconnect(backShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
 	disconnect(backColor   , SIGNAL(activated(int)), this, SLOT(handleTextBackground()));
@@ -173,14 +165,12 @@ void PropertyWidget_TextColor::updateColorList()
 	if (m_item)
 		disconnectSignals();
 
-	fillColor->setColors(m_doc->PageColors, true);
 	strokeColor->setColors(m_doc->PageColors, false);
-	backColor->setColors(m_doc->PageColors, true);
-	fillColor->view()->setMinimumWidth(fillColor->view()->maximumViewportSize().width());// + 24);
-	strokeColor->view()->setMinimumWidth(strokeColor->view()->maximumViewportSize().width());// + 24);
-	backColor->view()->setMinimumWidth(backColor->view()->maximumViewportSize().width());// + 24);
+	backColor->setColors(m_doc->PageColors, true);	
+	strokeColor->view()->setMinimumWidth(100);//strokeColor->view()->maximumViewportSize().width());// + 24);
+	backColor->view()->setMinimumWidth(100);//backColor->view()->maximumViewportSize().width());// + 24);
 
-	//if (m_item)
+	if (m_item)
 		setCurrentItem(m_item);
 }
 
@@ -189,7 +179,7 @@ void PropertyWidget_TextColor::updateCharStyle(const CharStyle& charStyle)
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	showTextColors(charStyle.strokeColor(), charStyle.fillColor(), charStyle.backColor(), charStyle.strokeShade(), charStyle.fillShade(), charStyle.backShade());
+	showTextColors(charStyle.strokeColor(), charStyle.backColor(), charStyle.strokeShade(), charStyle.backShade());
 	showTextEffects(charStyle.effects());
 
 }
@@ -201,31 +191,21 @@ void PropertyWidget_TextColor::updateStyle(const ParagraphStyle& newCurrent)
 
 	const CharStyle& charStyle = newCurrent.charStyle();
 
-	showTextColors(charStyle.strokeColor(), charStyle.fillColor(), charStyle.backColor(), charStyle.strokeShade(), charStyle.fillShade(), charStyle.backShade());
+	showTextColors(charStyle.strokeColor(), charStyle.backColor(), charStyle.strokeShade(), charStyle.backShade());
 	showTextEffects(charStyle.effects());
 
 }
 
-void PropertyWidget_TextColor::showTextColors(QString p, QString b, QString bc, double shp, double shb, double sbc)
+void PropertyWidget_TextColor::showTextColors(QString p, QString bc, double shp, double sbc)
 {
 	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	ColorList::Iterator it;
 	int c = 0;
-	fillShade->setValue(qRound(shb));
+
 	strokeShade->setValue(qRound(shp));
 	backShade->setValue(qRound(sbc));
-	if ((b != CommonStrings::None) && (!b.isEmpty()))
-	{
-		c++;
-		for (it = m_doc->PageColors.begin(); it != m_doc->PageColors.end(); ++it)
-		{
-			if (it.key() == b)
-				break;
-			c++;
-		}
-	}
-	fillColor->setCurrentIndex(c);
+
 	c = 0;
 	if ((p != CommonStrings::None) && (!p.isEmpty()))
 	{
@@ -235,8 +215,10 @@ void PropertyWidget_TextColor::showTextColors(QString p, QString b, QString bc, 
 				break;
 			c++;
 		}
-	}
+	}	
 	strokeColor->setCurrentIndex(c);
+
+
 	c = 0;
 	if ((bc != CommonStrings::None) && (!bc.isEmpty()))
 	{
@@ -255,32 +237,42 @@ void PropertyWidget_TextColor::showTextEffects(int s)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	strokeIcon->setEnabled(false);
 	strokeColor->setEnabled(false);
 	strokeShade->setEnabled(false);
 
 	if ((s & 4) || (s & 256))
 	{
-		strokeIcon->setEnabled(true);
 		strokeColor->setEnabled(true);
 		strokeShade->setEnabled(true);
 	}
 }
 
+void PropertyWidget_TextColor::handleStrokeColorBox(){
 
-void PropertyWidget_TextColor::handleTextFill()
-{
 	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	PageItem *i2 = m_item;
-	if (m_doc->appMode == modeEditTable)
-		i2 = m_item->asTable()->activeCell().textFrame();
-	if (i2 != NULL)
-	{
-		Selection tempSelection(this, false);
-		tempSelection.addItem(i2, true);
-		m_doc->itemSelection_SetFillColor(fillColor->currentColor(), &tempSelection);
-	}
+
+	QString color = strokeColor->currentColor();
+
+	if(color != CommonStrings::None){
+		const ScColor& col = m_doc->PageColors[color];
+		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, strokeShade->getValue());
+		strokeColorBox->setColor(tmp);
+	} else strokeColorBox->resetColor();
+}
+
+void PropertyWidget_TextColor::handleBackColorBox(){
+
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	QString color = backColor->currentColor();
+
+	if(color != CommonStrings::None){
+		const ScColor& col = m_doc->PageColors[color];
+		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, backShade->getValue());
+		backColorBox->setColor(tmp);
+	} else backColorBox->resetColor();
 }
 
 void PropertyWidget_TextColor::handleTextStroke()
@@ -295,6 +287,9 @@ void PropertyWidget_TextColor::handleTextStroke()
 		Selection tempSelection(this, false);
 		tempSelection.addItem(i2, true);
 		m_doc->itemSelection_SetStrokeColor(strokeColor->currentColor(), &tempSelection);
+
+		// draw color box
+		handleStrokeColorBox();
 	}
 }
 
@@ -310,6 +305,9 @@ void PropertyWidget_TextColor::handleTextBackground()
 		Selection tempSelection(this, false);
 		tempSelection.addItem(i2, true);
 		m_doc->itemSelection_SetBackgroundColor(backColor->currentColor(), &tempSelection);
+
+		// draw color box
+		handleBackColorBox();
 	}
 }
 
@@ -328,19 +326,8 @@ void PropertyWidget_TextColor::handleTextShade()
 			Selection tempSelection(this, false);
 			tempSelection.addItem(i2, true);
 			m_doc->itemSelection_SetStrokeShade(b, &tempSelection);
-		}
-	}
-	else if (fillShade == sender())
-	{
-		int b = fillShade->getValue();
-		PageItem *i2 = m_item;
-		if (m_doc->appMode == modeEditTable)
-			i2 = m_item->asTable()->activeCell().textFrame();
-		if (i2 != NULL)
-		{
-			Selection tempSelection(this, false);
-			tempSelection.addItem(i2, true);
-			m_doc->itemSelection_SetFillShade(b, &tempSelection);
+			// draw color box
+			handleStrokeColorBox();
 		}
 	}
 	else if (backShade == sender())
@@ -354,6 +341,8 @@ void PropertyWidget_TextColor::handleTextShade()
 			Selection tempSelection(this, false);
 			tempSelection.addItem(i2, true);
 			m_doc->itemSelection_SetBackgroundShade(b, &tempSelection);
+			// draw color box
+			handleBackColorBox();
 		}
 	}
 }

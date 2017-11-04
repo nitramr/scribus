@@ -519,9 +519,12 @@ void PropertyWidget_FontFeatures::enableFeatures(QStringList fontFeatures)
 	// Do not trigger item relayout unnecessarily,
 	// that can hurt text typing speed
 	if (oldFlags != featureFlags()){
-		this->adjustSize();
-		emit needsRelayout();
+		this->adjustSize();		
+		this->updateGeometry();
+		//emit needsRelayout();
 	}
+
+	emit needsRelayout();
 }
 
 quint64 PropertyWidget_FontFeatures::featureFlags()

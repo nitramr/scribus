@@ -1,17 +1,20 @@
 #ifndef SCLAYOUTSECTION_H
 #define SCLAYOUTSECTION_H
 
+#include "scribusapi.h"
+#include "scribusstructs.h"
+
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
 #include "flowlayout.h"
 
-class ScLayoutSectionHeader : public QWidget
+class SCRIBUS_API ScLayoutSectionHeader : public QWidget
 {
 	Q_OBJECT
 public:
 	ScLayoutSectionHeader(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
-	~ScLayoutSectionHeader() {}
+	~ScLayoutSectionHeader() {};
 	void setToggleOff(bool isOff);
 
 private:
@@ -28,11 +31,12 @@ public slots:
 };
 
 
-class ScLayoutSection : public QWidget
+class SCRIBUS_API ScLayoutSection : public QWidget
 {
 	Q_OBJECT
 public:
 	ScLayoutSection(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
+	~ScLayoutSection() {};
 	void addWidget(QWidget * item);
 	void setToggleOff(bool isOff);
 

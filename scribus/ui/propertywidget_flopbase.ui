@@ -41,38 +41,6 @@
    <property name="spacing">
     <number>2</number>
    </property>
-   <item row="0" column="1">
-    <widget class="QRadioButton" name="flopBaselineGrid">
-     <property name="maximumSize">
-      <size>
-       <width>380</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Set the base line of the first line of the text frame to the base line grid</string>
-     </property>
-     <property name="text">
-      <string>Baseline Grid</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">flopGroup</string>
-     </attribute>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QRadioButton" name="flopFontAscent">
-     <property name="toolTip">
-      <string>Set the height of the first line of text frame to use the full ascent of the font(s) in use</string>
-     </property>
-     <property name="text">
-      <string>Font Ascent</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">flopGroup</string>
-     </attribute>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QRadioButton" name="flopRealHeight">
      <property name="minimumSize">
@@ -98,6 +66,19 @@
      </attribute>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QRadioButton" name="flopFontAscent">
+     <property name="toolTip">
+      <string>Set the height of the first line of text frame to use the full ascent of the font(s) in use</string>
+     </property>
+     <property name="text">
+      <string>Font Ascent</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">flopGroup</string>
+     </attribute>
+    </widget>
+   </item>
    <item row="1" column="1">
     <widget class="QRadioButton" name="flopLineSpacing">
      <property name="toolTip">
@@ -105,6 +86,25 @@
      </property>
      <property name="text">
       <string>Line Spacing</string>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">flopGroup</string>
+     </attribute>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QRadioButton" name="flopBaselineGrid">
+     <property name="maximumSize">
+      <size>
+       <width>380</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Set the base line of the first line of the text frame to the base line grid</string>
+     </property>
+     <property name="text">
+      <string>Baseline Grid</string>
      </property>
      <attribute name="buttonGroup">
       <string notr="true">flopGroup</string>

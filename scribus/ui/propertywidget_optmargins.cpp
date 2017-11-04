@@ -14,6 +14,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusdoc.h"
 #include "selection.h"
 #include "units.h"
+#include "iconmanager.h"
 
 PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(parent)
 {
@@ -22,9 +23,27 @@ PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(
 
 	setupUi(this);
 
-	layout()->setAlignment( Qt::AlignTop );
+	flopRealHeight->setChecked(true);
+
+	flopGroup->setId(flopRealHeight,  RealHeightID);
+	flopGroup->setId(flopFontAscent,  FontAscentID);
+	flopGroup->setId(flopLineSpacing, LineSpacingID);
+	flopGroup->setId(flopBaselineGrid, BaselineGridID);
+
+
+	flopRealHeight->setIcon(IconManager::instance()->loadPixmap("16/flob-align-realheight.png"));
+	flopFontAscent->setIcon(IconManager::instance()->loadPixmap("16/flob-align-fontascent.png"));
+	flopLineSpacing->setIcon(IconManager::instance()->loadPixmap("16/flob-align-linespace.png"));
+	flopBaselineGrid->setIcon(IconManager::instance()->loadPixmap("16/flob-align-baseline.png"));
+
+	optMarginRadioBoth->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-both.png"));
+	optMarginRadioLeft->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-left.png"));
+	optMarginRadioRight->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-right.png"));
+	optMarginRadioNone->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-none.png"));
 
 	languageChange();
+
+	connect(flopGroup, SIGNAL(buttonClicked( int )), this, SLOT(handleFirstLinePolicy(int)));
 }
 
 void PropertyWidget_OptMargins::setMainWindow(ScribusMainWindow* mw)
@@ -121,6 +140,8 @@ void PropertyWidget_OptMargins::configureWidgets(void)
 
 		enabled  = (m_item->isPathText() || (textItem != NULL));
 		enabled &= (m_doc->m_Selection->count() == 1);
+
+		showFirstLinePolicy(m_item->firstLineOffset()); // flopBox
 	}
 	setEnabled(enabled);
 }
@@ -139,9 +160,22 @@ void PropertyWidget_OptMargins::handleSelectionChanged()
 		return;
 
 	PageItem* currItem = currentItemFromSelection();
+
+	if (m_doc->m_Selection->count() > 1 )
+	{
+		flopRealHeight->setChecked(true);
+	}
+
 	setCurrentItem(currItem);
 	updateGeometry();
 }
+
+
+/*********************************************************************
+*
+* Optical Margin
+*
+**********************************************************************/
 
 void PropertyWidget_OptMargins::showOpticalMargins(const ParagraphStyle & pStyle)
 {
@@ -200,6 +234,53 @@ void PropertyWidget_OptMargins::resetOpticalMargins()
 		m_doc->itemSelection_resetOpticalMargins(&tempSelection);
 	}
 }
+
+
+/*********************************************************************
+*
+* FirstLine
+*
+**********************************************************************/
+
+void PropertyWidget_OptMargins::showFirstLinePolicy( FirstLineOffsetPolicy f )
+{
+	if(f == FLOPFontAscent)
+		flopFontAscent->setChecked(true);
+	else if(f == FLOPLineSpacing)
+		flopLineSpacing->setChecked(true);
+	else if (f == FLOPRealGlyphHeight)
+		flopRealHeight->setChecked(true); //It’s historical behaviour.
+	else // if (f == FLOPBaseline)
+		flopBaselineGrid->setChecked(true);
+}
+
+
+void PropertyWidget_OptMargins::handleFirstLinePolicy(int radioFlop)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning()/* || !m_haveDoc*/)
+		return;
+	if( radioFlop == RealHeightID)
+		m_item->setFirstLineOffset(FLOPRealGlyphHeight);
+	else if( radioFlop == FontAscentID)
+		m_item->setFirstLineOffset(FLOPFontAscent);
+	else if( radioFlop == LineSpacingID)
+		m_item->setFirstLineOffset(FLOPLineSpacing);
+	else if( radioFlop == BaselineGridID)
+		m_item->setFirstLineOffset(FLOPBaselineGrid);
+	m_item->update();
+	if (m_doc->appMode == modeEditTable)
+		m_item->parentTable()->update();
+	else
+		m_item->update();
+	m_doc->regionsChanged()->update(QRect());
+}
+
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
 
 void PropertyWidget_OptMargins::changeEvent(QEvent *e)
 {

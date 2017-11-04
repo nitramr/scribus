@@ -9,7 +9,8 @@ for which a new license (GPL+exception) is in place.
 
 #include "ui_propertywidget_textstyles.h"
 //#include "scrspinbox.h"
-#include "scguardedptr.h"
+//#include "scguardedptr.h"
+#include "propertywidgetbase.h"
 
 class PageItem;
 class CharStyle;
@@ -18,7 +19,8 @@ class ScribusDoc;
 class ScribusMainWindow;
 class ScComboBox;
 
-class PropertyWidget_TextStyles : public QWidget, public Ui::PropertyWidget_TextStyles
+class PropertyWidget_TextStyles : public QWidget, Ui::PropertyWidget_TextStyles,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 

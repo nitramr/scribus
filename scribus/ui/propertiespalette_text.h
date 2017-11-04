@@ -34,7 +34,7 @@ class PropertyWidget_TextAlignment;
 class PropertyWidget_TextBase;
 class PropertyWidget_TextColor;
 class PropertyWidget_TextStyles;
-class ScComboBox;
+//class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
@@ -75,7 +75,7 @@ protected:
 
 	PropertyWidget_Advanced* advancedWidgets;
 	PropertyWidget_Distance* distanceWidgets;
-	PropertyWidget_Flop* flopBox;
+//	PropertyWidget_Flop* flopBox;
 	PropertyWidget_FontFeatures* fontfeaturesWidget;
 	PropertyWidget_Hyphenation* hyphenationWidget;
 	PropertyWidget_OptMargins* optMargins;
@@ -105,31 +105,23 @@ public slots:
 
 	void languageChange();
 	void unitChange();
-	void changeLang(int id);
 
 	void showAlignment(int e);
 	void showDirection(int e);
 	void showCharStyle(const QString& name);
-	void showFontFace(const QString&);
 	void showFontSize(double s);
 	void showLanguage(QString w);
-	void showFirstLinePolicy(FirstLineOffsetPolicy);
-	void showLineSpacing(double r);
 	void showParStyle(const QString& name);
-	
-	void setupLineSpacingSpinbox(int mode, double value);
 	
 	/// update TB values:
 	void updateCharStyle(const CharStyle& charStyle);
-	void updateStyle(const ParagraphStyle& newCurrent);
-	
-	void updateCharStyles();
+	void updateStyle(const ParagraphStyle& newCurrent);	
 	void updateParagraphStyles();
-	void updateTextStyles();
+
 	
 private slots:
 	void handleAlignment();
-	void handleFirstLinePolicy(int);
+//	void handleFirstLinePolicy(int);
 
 };
 

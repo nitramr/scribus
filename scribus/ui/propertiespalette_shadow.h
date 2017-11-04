@@ -11,7 +11,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusapi.h"
 #include "scguardedptr.h"
 
-//#include "proptree.h"
+#include "sccolorfillsbox.h"
 
 class PageItem;
 class ScribusDoc;
@@ -55,16 +55,7 @@ protected slots:
 	void updateSpinBoxConstants();
 
 protected:
-//	PropTreeItem *hasSoftShadow;
-//	PropTreeItem *softShadowXOffset;
-//	PropTreeItem *softShadowYOffset;
-//	PropTreeItem *softShadowBlurRadius;
-//	PropTreeItem *softShadowColor;
-//	PropTreeItem *softShadowShade;
-//	PropTreeItem *softShadowOpacity;
-//	PropTreeItem *softShadowBlendMode;
-//	PropTreeItem *softShadowErase;
-//	PropTreeItem *softShadowObjTrans;
+
 	ScribusMainWindow *m_ScMW;
 
 	bool      m_haveDoc;
@@ -73,6 +64,7 @@ protected:
 	int       m_unitIndex;
 	PageItem *m_item;
 	ScGuardedPtr<ScribusDoc> m_doc;
+	ScColorFillsBox * shadowColor;
 };
 
 #endif

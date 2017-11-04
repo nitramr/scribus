@@ -8,7 +8,11 @@ for which a new license (GPL+exception) is in place.
 #define PROPERTYWIDGET_TEXTBASE_H
 
 #include "ui_propertywidget_textbase.h"
-#include "scguardedptr.h"
+#include "propertywidgetbase.h"
+//#include "scribus.h"
+#include "shadebutton.h"
+#include "colorcombo.h"
+#include "sccolorfillsbox.h"
 
 class PageItem;
 class CharStyle;
@@ -16,7 +20,8 @@ class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_TextBase : public QWidget, public Ui::PropertyWidget_TextBase
+class PropertyWidget_TextBase : public QWidget, Ui::PropertyWidget_TextBase,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
@@ -24,8 +29,8 @@ public:
 	PropertyWidget_TextBase(QWidget* parent = 0);
 	~PropertyWidget_TextBase() {}
 
+	void updateColorList();
 	virtual void changeEvent(QEvent *e);
-
 
 	/** @brief Returns true if there is a user action going on at the moment of call. */
 	bool userActionOn(); // not yet implemented!!! This is needed badly.
@@ -42,9 +47,14 @@ protected:
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
 	ScGuardedPtr<ScribusDoc> m_doc;
+	void disconnectSignals();
+	void connectSignals();
 
 private:
 	PageItem* currentItemFromSelection();
+	ColorCombo *fillColor;
+	ShadeButton *fillShade;
+	ScColorFillsBox * fillsColorBox;
 
 
 public slots:
@@ -58,8 +68,9 @@ public slots:
 	void showFontFace(const QString&);
 	void showFontSize(double s);
 	void showLineSpacing(double r);
-	void setCurrentItem(PageItem *i);
+	void showTextColors(QString b, double shb);
 
+	void setCurrentItem(PageItem *i);
 	void setupLineSpacingSpinbox(int mode, double value);
 
 	/// update TB values:
@@ -76,6 +87,10 @@ public slots:
 
 	void handleUpdateRequest(int updateFlags);
 
+private slots:
+	void handleFillColorBox();
+	void handleTextFill();
+	void handleTextShade();
 };
 
 #endif

@@ -10,6 +10,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui_propertywidget_textcolorbase.h"
 
 #include "propertywidgetbase.h"
+#include "sccolorfillsbox.h"
 
 
 class ScribusDoc;
@@ -30,6 +31,9 @@ public:
 protected:
 	PageItem *         m_item;
 	ScribusMainWindow* m_ScMW;
+	ScColorFillsBox * fillsColorBox;
+	ScColorFillsBox * strokeColorBox;
+	ScColorFillsBox * backColorBox;
 
 	void connectSignals();
 	void disconnectSignals();
@@ -48,14 +52,17 @@ public slots:
 	void languageChange();
 	void unitChange() {};
 
-	void showTextColors(QString p, QString b, QString bc, double shp, double shb, double sbc);
+	void showTextColors(QString p, QString bc, double shp, double sbc);
 	void showTextEffects(int s);
 
 	void updateCharStyle(const CharStyle& charStyle);
 	void updateStyle(const ParagraphStyle& newCurrent);
 
 private slots:
-	void handleTextFill();
+//	void handleFillColorBox();
+	void handleStrokeColorBox();
+	void handleBackColorBox();
+//	void handleTextFill();
 	void handleTextShade();
 	void handleTextStroke();
 	void handleTextBackground();

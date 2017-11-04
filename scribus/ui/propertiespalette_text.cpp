@@ -22,7 +22,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertiespalette_utils.h"
 #include "propertywidget_advanced.h"
 #include "propertywidget_distance.h"
-#include "propertywidget_flop.h"
+//#include "propertywidget_flop.h"
 #include "propertywidget_fontfeatures.h"
 #include "propertywidget_hyphenation.h"
 #include "propertywidget_optmargins.h"
@@ -61,7 +61,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	textAdvancedWidgets = new PropertyWidget_TextAdvanced();
 	textAlignmentWidgets = new PropertyWidget_TextAlignment();
 	colorWidgets = new PropertyWidget_TextColor();
-	flopBox = new PropertyWidget_Flop();
+//	flopBox = new PropertyWidget_Flop();
 	orphanBox = new PropertyWidget_Orphans();
 	parEffectWidgets = new PropertyWidget_ParEffect();
 	distanceWidgets = new PropertyWidget_Distance();
@@ -74,6 +74,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 
 
 	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
+	popupFontFeatures->addWidget(colorWidgets);
 	popupFontFeatures->addWidget(fontfeaturesWidget);
 	ScPopupMenu * popupOrphans = new ScPopupMenu(orphanBox);
 	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
@@ -88,10 +89,9 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	layoutSectionText->addWidget(textWidgets);
 	layoutSectionText->addWidget(textAlignmentWidgets);	
 	layoutSectionText->addWidget(textStylesWidgets);
-	layoutSectionText->addWidget(colorWidgets);
 
 	layoutSectionParagraph->addWidget(distanceWidgets);
-	layoutSectionParagraph->addWidget(flopBox);
+//	layoutSectionParagraph->addWidget(flopBox);
 	layoutSectionParagraph->addWidget(optMargins);
 
 	layoutSectionCharacter->addWidget(advancedWidgets);
@@ -113,9 +113,9 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 
 	languageChange();
 
-	connect(flopBox->flopGroup, SIGNAL(buttonClicked( int )), this, SLOT(handleFirstLinePolicy(int)));
-
-	connect(textAlignmentWidgets, SIGNAL(handleAlignment()), this, SLOT(handleAlignment()));
+//	connect(flopBox->flopGroup, SIGNAL(buttonClicked( int )), this, SLOT(handleFirstLinePolicy(int)));
+	connect(textAlignmentWidgets, SIGNAL(handleAlignment()), this, SLOT(handleAlignment(int)));
+	connect(fontfeaturesWidget, SIGNAL(needsRelayout()), popupFontFeatures, SLOT(updateSize()));
 
 	m_haveItem = false;
 	setEnabled(false);
@@ -128,7 +128,6 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 	advancedWidgets->setMainWindow(mw);
 	fontfeaturesWidget->setMainWindow(mw);
 	textWidgets->setMainWindow(mw);
-	textStylesWidgets->setMainWindow(mw);
 	textAdvancedWidgets->setMainWindow(mw);
 	textAlignmentWidgets->setMainWindow(mw);
 	colorWidgets->setMainWindow(mw);
@@ -137,9 +136,12 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 	parEffectWidgets->setMainWindow(mw);
 	optMargins->setMainWindow(mw);
 	pathTextWidgets->setMainWindow(mw);
-
+	textStylesWidgets->setMainWindow(mw);
+//	flopBox->setMainWindow(mw);
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int))     , this  , SLOT(handleUpdateRequest(int)));
+
+
 }
 
 void PropertiesPalette_Text::setDoc(ScribusDoc *d)
@@ -164,18 +166,18 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 
 	advancedWidgets->setDoc(m_doc);
 	fontfeaturesWidget->setDoc(m_doc);
-	textWidgets->setDoc(m_doc);
-	textStylesWidgets->setDoc(m_doc);
+	textWidgets->setDoc(m_doc);	
 	textAdvancedWidgets->setDoc(m_doc);
 	textAlignmentWidgets->setDoc(m_doc);
 	colorWidgets->setDoc(m_doc);
 	distanceWidgets->setDoc(m_doc);
 	parEffectWidgets->setDoc(m_doc);
-	flopBox->setDoc(m_doc);
+//	flopBox->setDoc(m_doc);
 	hyphenationWidget->setDoc(m_doc);
 	optMargins->setDoc(m_doc);
 	orphanBox->setDoc(m_doc);
 	pathTextWidgets->setDoc(m_doc);
+	textStylesWidgets->setDoc(m_doc);
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
@@ -202,8 +204,8 @@ void PropertiesPalette_Text::unsetDoc()
 	textAlignmentWidgets->setDoc(0);
 	colorWidgets->setDoc(0);
 	distanceWidgets->setDoc(0);
-	flopBox->setDoc(0);
-	hyphenationWidget->setDoc(NULL);
+//	flopBox->setDoc(0);
+	hyphenationWidget->setDoc(0);
 	optMargins->setDoc(0);
 	orphanBox->setDoc(0);
 	parEffectWidgets->setDoc(0);
@@ -218,8 +220,8 @@ void PropertiesPalette_Text::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	colorWidgets->setCurrentItem(m_item);
-	textAlignmentWidgets->setCurrentItem(m_item);
+	colorWidgets->setCurrentItem(m_item); // trigger disconnect
+	textAlignmentWidgets->setCurrentItem(m_item); // trigger disconnect
 	handleSelectionChanged();
 }
 
@@ -249,7 +251,7 @@ void PropertiesPalette_Text::handleSelectionChanged()
 	if (m_doc->m_Selection->count() > 1 )
 	{
 		setEnabled(false);
-		flopBox->flopRealHeight->setChecked(true);
+		//flopBox->flopRealHeight->setChecked(true);
 	}
 	else
 	{
@@ -284,20 +286,24 @@ void PropertiesPalette_Text::handleSelectionChanged()
 
 void PropertiesPalette_Text::handleUpdateRequest(int updateFlags)
 {
-	textWidgets->handleUpdateRequest(updateFlags);
+
 	textStylesWidgets->handleUpdateRequest(updateFlags);
+	textWidgets->handleUpdateRequest(updateFlags);
+	parEffectWidgets->handleUpdateRequest(updateFlags);
 
 	// ColorWidget will handle its update itself
 	/*if (updateFlags & reqColorsUpdate)
 		updateColorList();*/
-	if (updateFlags & reqCharStylesUpdate)
-	{
-		parEffectWidgets->updateCharStyles();
-	}
-	if (updateFlags & reqStyleComboDocUpdate)
-	{
-		parEffectWidgets->setDoc(m_haveDoc ? m_doc : 0);
-	}
+//	if (updateFlags & reqCharStylesUpdate)
+//	{
+//		parEffectWidgets->updateCharStyles();
+//	}
+
+//	if (updateFlags & reqStyleComboDocUpdate)
+//	{
+//		parEffectWidgets->setDoc(m_haveDoc ? m_doc : 0);
+//	}
+
 }
 
 void PropertiesPalette_Text::setCurrentItem(PageItem *i)
@@ -318,7 +324,7 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 	m_item = i;
 
 
-	showFirstLinePolicy(m_item->firstLineOffset());
+	//flopBox->showFirstLinePolicy(m_item->firstLineOffset());
 
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
@@ -329,13 +335,11 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 
 	if (!sender())
 	{
-//		textWidgets->setCurrentItem(m_item);
-//		textAdvancedWidgets->setCurrentItem(m_item);
-		textWidgets->handleSelectionChanged();
-		textStylesWidgets->handleSelectionChanged();
-		textAdvancedWidgets->handleSelectionChanged();
+		//textWidgets->handleSelectionChanged();
+		//textStylesWidgets->handleSelectionChanged();
+		//textAdvancedWidgets->handleSelectionChanged();
 		colorWidgets->handleSelectionChanged();
-		textAlignmentWidgets->handleSelectionChanged();
+		//textAlignmentWidgets->handleSelectionChanged();
 		distanceWidgets->handleSelectionChanged();
 		parEffectWidgets->handleSelectionChanged();
 	}
@@ -345,6 +349,7 @@ void PropertiesPalette_Text::setCurrentItem(PageItem *i)
 		ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
 		if (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable)
 			m_item->currentTextProps(parStyle);
+		updateStyle(parStyle);
 	}
 	if (m_item->asOSGFrame())
 	{
@@ -368,18 +373,12 @@ void PropertiesPalette_Text::unitChange()
 	textAlignmentWidgets->unitChange();
 	colorWidgets->unitChange();
 	distanceWidgets->unitChange();
-	flopBox->unitChange();
+	//flopBox->unitChange(); //empty
 	optMargins->unitChange();
 	pathTextWidgets->unitChange();
 	parEffectWidgets->unitChange();
 
 	m_haveItem = tmp;
-}
-
-
-void PropertiesPalette_Text::changeLang(int id)
-{
-	textAdvancedWidgets->changeLang(id);
 }
 
 void PropertiesPalette_Text::showLanguage(QString w)
@@ -389,41 +388,9 @@ void PropertiesPalette_Text::showLanguage(QString w)
 
 }
 
-
-void PropertiesPalette_Text::showLineSpacing(double r)
-{
-	textWidgets->showLineSpacing(r);
-
-}
-
-void PropertiesPalette_Text::showFontFace(const QString& newFont)
-{
-	textWidgets->showFontFace(newFont);
-
-}
-
 void PropertiesPalette_Text::showFontSize(double s)
 {
 	textWidgets->showFontSize(s);
-}
-
-
-
-void PropertiesPalette_Text::showFirstLinePolicy( FirstLineOffsetPolicy f )
-{
-	if(f == FLOPFontAscent)
-		flopBox->flopFontAscent->setChecked(true);
-	else if(f == FLOPLineSpacing)
-		flopBox->flopLineSpacing->setChecked(true);
-	else if (f == FLOPRealGlyphHeight)
-		flopBox->flopRealHeight->setChecked(true); //It’s historical behaviour.
-	else // if (f == FLOPBaseline)
-		flopBox->flopBaselineGrid->setChecked(true);
-}
-
-void PropertiesPalette_Text::setupLineSpacingSpinbox(int mode, double value)
-{
-	textWidgets->setupLineSpacingSpinbox(mode, value);
 }
 
 void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
@@ -437,7 +404,6 @@ void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
 	textAlignmentWidgets->updateCharStyle(charStyle);
 	hyphenationWidget->updateCharStyle(charStyle);
 	textWidgets->updateCharStyle(charStyle);
-	//textStylesWidgets->updateCharStyle(charStyle);
 	textAdvancedWidgets->updateCharStyle(charStyle);
 }
 
@@ -459,24 +425,10 @@ void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
 	textAdvancedWidgets->updateStyle(newCurrent);
 }
 
-void PropertiesPalette_Text::updateCharStyles()
-{
-	//textWidgets->updateCharStyles();
-	textStylesWidgets->updateCharStyles();
-	parEffectWidgets->updateCharStyles();
-}
-
 void PropertiesPalette_Text::updateParagraphStyles()
 {
-//	textWidgets->updateParagraphStyles();
 	textStylesWidgets->updateParagraphStyles();
 	parEffectWidgets->updateCharStyles();
-}
-
-void PropertiesPalette_Text::updateTextStyles()
-{
-	//textWidgets->updateTextStyles();
-	textStylesWidgets->updateTextStyles();
 }
 
 void PropertiesPalette_Text::showAlignment(int e)
@@ -517,6 +469,7 @@ void PropertiesPalette_Text::updateColorList()
 		return;
 
 	colorWidgets->updateColorList();
+	textWidgets->updateColorList();
 }
 
 void PropertiesPalette_Text::changeEvent(QEvent *e)
@@ -537,7 +490,7 @@ void PropertiesPalette_Text::languageChange()
 	textAdvancedWidgets->languageChange();
 	colorWidgets->languageChange();
 	textAlignmentWidgets->languageChange();
-	flopBox->languageChange();
+//	flopBox->languageChange();
 	orphanBox->languageChange();
 	distanceWidgets->languageChange();
 	optMargins->languageChange();
@@ -547,22 +500,22 @@ void PropertiesPalette_Text::languageChange()
 	hyphenationWidget->languageChange();
 }
 
-void PropertiesPalette_Text::handleFirstLinePolicy(int radioFlop)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	if( radioFlop == PropertyWidget_Flop::RealHeightID)
-		m_item->setFirstLineOffset(FLOPRealGlyphHeight);
-	else if( radioFlop == PropertyWidget_Flop::FontAscentID)
-		m_item->setFirstLineOffset(FLOPFontAscent);
-	else if( radioFlop == PropertyWidget_Flop::LineSpacingID)
-		m_item->setFirstLineOffset(FLOPLineSpacing);
-	else if( radioFlop == PropertyWidget_Flop::BaselineGridID)
-		m_item->setFirstLineOffset(FLOPBaselineGrid);
-	m_item->update();
-	if (m_doc->appMode == modeEditTable)
-		m_item->parentTable()->update();
-	else
-		m_item->update();
-	m_doc->regionsChanged()->update(QRect());
-}
+//void PropertiesPalette_Text::handleFirstLinePolicy(int radioFlop)
+//{
+//	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
+//		return;
+//	if( radioFlop == PropertyWidget_Flop::RealHeightID)
+//		m_item->setFirstLineOffset(FLOPRealGlyphHeight);
+//	else if( radioFlop == PropertyWidget_Flop::FontAscentID)
+//		m_item->setFirstLineOffset(FLOPFontAscent);
+//	else if( radioFlop == PropertyWidget_Flop::LineSpacingID)
+//		m_item->setFirstLineOffset(FLOPLineSpacing);
+//	else if( radioFlop == PropertyWidget_Flop::BaselineGridID)
+//		m_item->setFirstLineOffset(FLOPBaselineGrid);
+//	m_item->update();
+//	if (m_doc->appMode == modeEditTable)
+//		m_item->parentTable()->update();
+//	else
+//		m_item->update();
+//	m_doc->regionsChanged()->update(QRect());
+//}

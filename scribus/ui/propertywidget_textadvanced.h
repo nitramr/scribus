@@ -8,7 +8,8 @@ for which a new license (GPL+exception) is in place.
 #define PROPERTYWIDGET_TEXTADVANCED_H
 
 #include "ui_propertywidget_textadvanced.h"
-#include "scguardedptr.h"
+//#include "scguardedptr.h"
+#include "propertywidgetbase.h"
 
 class PageItem;
 class CharStyle;
@@ -16,7 +17,8 @@ class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_TextAdvanced : public QWidget, public Ui::PropertyWidget_TextAdvanced
+class PropertyWidget_TextAdvanced : public QWidget, Ui::PropertyWidget_TextAdvanced,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
