@@ -41,12 +41,10 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
-//	double m_unitRatio;
-//	int    m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-	ScGuardedPtr<ScribusDoc> m_doc;
+//	ScGuardedPtr<ScribusDoc> m_doc;
 	void disconnectSignals();
 	void connectSignals();
 

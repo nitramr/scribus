@@ -116,10 +116,6 @@ void PropertyWidget_TextFont::setDoc(ScribusDoc *d)
 		return;
 	}
 
-
-//	m_unitRatio   = m_doc->unitRatio();
-//	m_unitIndex   = m_doc->unitIndex();
-
 	m_haveDoc  = true;
 	m_haveItem = false;
 

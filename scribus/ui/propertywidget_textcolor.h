@@ -31,7 +31,6 @@ public:
 protected:
 	PageItem *         m_item;
 	ScribusMainWindow* m_ScMW;
-	ScColorFillsBox * fillsColorBox;
 	ScColorFillsBox * strokeColorBox;
 	ScColorFillsBox * backColorBox;
 
@@ -59,10 +58,8 @@ public slots:
 	void updateStyle(const ParagraphStyle& newCurrent);
 
 private slots:
-//	void handleFillColorBox();
 	void handleStrokeColorBox();
 	void handleBackColorBox();
-//	void handleTextFill();
 	void handleTextShade();
 	void handleTextStroke();
 	void handleTextBackground();

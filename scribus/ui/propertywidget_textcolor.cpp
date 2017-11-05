@@ -174,6 +174,9 @@ void PropertyWidget_TextColor::handleStrokeColorBox(){
 
 	QString color = strokeColor->currentColor();
 
+	if (color == CommonStrings::tr_NoneColor)
+		color = CommonStrings::None;
+
 	if(color != CommonStrings::None){
 		const ScColor& col = m_doc->PageColors[color];
 		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, strokeShade->getValue());
@@ -211,6 +214,9 @@ void PropertyWidget_TextColor::handleBackColorBox(){
 		return;
 
 	QString color = backColor->currentColor();
+
+	if (color == CommonStrings::tr_NoneColor)
+		color = CommonStrings::None;
 
 	if(color != CommonStrings::None){
 		const ScColor& col = m_doc->PageColors[color];
@@ -267,7 +273,8 @@ void PropertyWidget_TextColor::showTextColors(QString p, QString bc, double shp,
 		}
 	}	
 	strokeColor->setCurrentIndex(c);
-
+	// draw color box
+	handleStrokeColorBox();
 
 	c = 0;
 	if ((bc != CommonStrings::None) && (!bc.isEmpty()))
@@ -281,6 +288,8 @@ void PropertyWidget_TextColor::showTextColors(QString p, QString bc, double shp,
 		}
 	}
 	backColor->setCurrentIndex(c);
+	// draw color box
+	handleBackColorBox();
 }
 
 void PropertyWidget_TextColor::showTextEffects(int s)
@@ -332,6 +341,7 @@ void PropertyWidget_TextColor::handleTextShade()
 		}
 	}
 }
+
 
 /*********************************************************************
 *

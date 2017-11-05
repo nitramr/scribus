@@ -102,16 +102,19 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 
 	setLayout(flowLayout);
 
-
-
 	languageChange();
 
 	connect(textAlignmentWidgets, SIGNAL(handleAlignment()), this, SLOT(handleAlignment(int)));
 	connect(fontfeaturesWidget, SIGNAL(needsRelayout()), popupFontFeatures, SLOT(updateSize()));
 
 	m_haveItem = false;
-	setEnabled(false);
 }
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 {
@@ -132,6 +135,12 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 
 
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 {
@@ -197,15 +206,20 @@ void PropertiesPalette_Text::unsetDoc()
 
 	m_haveItem = false;
 
-	setEnabled(false);
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertiesPalette_Text::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	colorWidgets->setCurrentItem(m_item); // trigger disconnect
-	textAlignmentWidgets->setCurrentItem(m_item); // trigger disconnect
+//	colorWidgets->setCurrentItem(m_item); // trigger disconnect
+//	textAlignmentWidgets->setCurrentItem(m_item); // trigger disconnect
 	handleSelectionChanged();
 }
 
@@ -226,6 +240,62 @@ PageItem* PropertiesPalette_Text::currentItemFromSelection()
 	return currentItem;
 }
 
+/*********************************************************************
+*
+* Features
+*
+**********************************************************************/
+
+void PropertiesPalette_Text::showLanguage(QString w)
+{
+
+	textAdvancedWidgets->showLanguage(w);
+
+}
+
+void PropertiesPalette_Text::showFontSize(double s)
+{
+	textWidgets->showFontSize(s);
+}
+
+void PropertiesPalette_Text::showAlignment(int e)
+{
+	textAlignmentWidgets->showAlignment(e);
+}
+
+void PropertiesPalette_Text::showDirection(int e)
+{
+	textAlignmentWidgets->showDirection(e);
+
+}
+
+void PropertiesPalette_Text::showCharStyle(const QString& name)
+{
+	textStylesWidgets->showCharStyle(name);
+}
+
+void PropertiesPalette_Text::showParStyle(const QString& name)
+{
+	textStylesWidgets->showParStyle(name);
+}
+
+
+void PropertiesPalette_Text::handleAlignment()
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	if (m_item->isPathText())
+		pathTextWidgets->handleSelectionChanged();
+}
+
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
 void PropertiesPalette_Text::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -235,49 +305,28 @@ void PropertiesPalette_Text::handleSelectionChanged()
 
 	if (currItem)
 	{
-		setCurrentItem(currItem);
+
+		//CB We shouldn't really need to process this if our item is the same one
+		//maybe we do if the item has been changed by scripter.. but that should probably
+		//set some status if so.
+
+		if (!m_doc)
+			setDoc(currItem->doc());
+
+		m_item = currItem;
+		m_haveItem = true;
+
+		if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
+		{
+			ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
+			if (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable)
+				m_item->currentTextProps(parStyle);
+			updateStyle(parStyle);
+		}
 	}
-	updateGeometry();
 
 }
 
-void PropertiesPalette_Text::setCurrentItem(PageItem *i)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	//CB We shouldn't really need to process this if our item is the same one
-	//maybe we do if the item has been changed by scripter.. but that should probably
-	//set some status if so.
-	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
-	//if (m_item == i)
-	//	return;
-
-	if (!m_doc)
-		setDoc(i->doc());
-
-	m_item = i;
-
-	m_haveItem = true;
-
-	if (!sender())
-	{
-//		//textWidgets->handleSelectionChanged();
-//		//textStylesWidgets->handleSelectionChanged();
-//		//textAdvancedWidgets->handleSelectionChanged();
-		colorWidgets->handleSelectionChanged();
-//		//textAlignmentWidgets->handleSelectionChanged();
-		distanceWidgets->handleSelectionChanged();
-		parEffectWidgets->handleSelectionChanged();
-	}
-
-	if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
-	{
-		ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
-		if (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable)
-			m_item->currentTextProps(parStyle);
-		updateStyle(parStyle);
-	}
-}
 
 void PropertiesPalette_Text::unitChange()
 {
@@ -298,16 +347,21 @@ void PropertiesPalette_Text::unitChange()
 	m_haveItem = tmp;
 }
 
-void PropertiesPalette_Text::showLanguage(QString w)
+void PropertiesPalette_Text::languageChange()
 {
 
-	textAdvancedWidgets->showLanguage(w);
-
-}
-
-void PropertiesPalette_Text::showFontSize(double s)
-{
-	textWidgets->showFontSize(s);
+	textWidgets->languageChange();
+	colorWidgets->languageChange();
+	textAlignmentWidgets->languageChange();
+	orphanBox->languageChange();
+	distanceWidgets->languageChange();
+	optMargins->languageChange();
+	advancedWidgets->languageChange();
+	pathTextWidgets->languageChange();
+	fontfeaturesWidget->languageChange();
+	hyphenationWidget->languageChange();
+	textStylesWidgets->languageChange();
+	textAdvancedWidgets->languageChange();
 }
 
 void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
@@ -348,37 +402,6 @@ void PropertiesPalette_Text::updateParagraphStyles()
 	parEffectWidgets->updateCharStyles();
 }
 
-void PropertiesPalette_Text::showAlignment(int e)
-{
-	textAlignmentWidgets->showAlignment(e);
-}
-
-void PropertiesPalette_Text::showDirection(int e)
-{
-	textAlignmentWidgets->showDirection(e);
-
-}
-
-void PropertiesPalette_Text::showCharStyle(const QString& name)
-{
-	textStylesWidgets->showCharStyle(name);
-}
-
-void PropertiesPalette_Text::showParStyle(const QString& name)
-{
-	textStylesWidgets->showParStyle(name);
-}
-
-
-void PropertiesPalette_Text::handleAlignment()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	if (m_item->isPathText())
-		pathTextWidgets->handleSelectionChanged();
-}
-
 
 void PropertiesPalette_Text::updateColorList()
 {
@@ -389,6 +412,14 @@ void PropertiesPalette_Text::updateColorList()
 	textWidgets->updateColorList();
 }
 
+
+
+/*********************************************************************
+*
+* Event
+*
+**********************************************************************/
+
 void PropertiesPalette_Text::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -398,21 +429,3 @@ void PropertiesPalette_Text::changeEvent(QEvent *e)
 	}
 	QWidget::changeEvent(e);
 }
-
-void PropertiesPalette_Text::languageChange()
-{
-
-	textWidgets->languageChange();
-	colorWidgets->languageChange();
-	textAlignmentWidgets->languageChange();
-	orphanBox->languageChange();
-	distanceWidgets->languageChange();
-	optMargins->languageChange();
-	advancedWidgets->languageChange();
-	pathTextWidgets->languageChange();
-	fontfeaturesWidget->languageChange();
-	hyphenationWidget->languageChange();
-	textStylesWidgets->languageChange();
-	textAdvancedWidgets->languageChange();
-}
-
