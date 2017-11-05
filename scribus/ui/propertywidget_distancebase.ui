@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>102</height>
+    <height>95</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,13 +39,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="leftMargin">
     <number>4</number>
    </property>
    <property name="topMargin">
-    <number>4</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
     <number>4</number>
@@ -300,6 +300,9 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_10">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="ScrSpinBox" name="rightDistance">
          <property name="toolTip">

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>66</height>
+    <height>60</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,15 +31,12 @@
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>2</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,0">
    <property name="leftMargin">
     <number>4</number>
    </property>
    <property name="topMargin">
-    <number>4</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
     <number>4</number>
@@ -47,137 +44,100 @@
    <property name="bottomMargin">
     <number>4</number>
    </property>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,1,0">
-     <property name="spacing">
-      <number>2</number>
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <item row="1" column="1">
+    <widget class="CharStyleComboBox" name="charStyleCombo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <item>
-      <widget class="QLabel" name="paraStyleLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Paragraph Style:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="ParaStyleComboBox" name="paraStyleCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Paragraph style of currently selected text or paragraph</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="paraStyleClear">
-       <property name="maximumSize">
-        <size>
-         <width>1677215</width>
-         <height>1677215</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Remove Direct Paragraph Formatting</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../../resources/icons/16/edit-clear.png</normaloff>../../resources/icons/16/edit-clear.png</iconset>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     <property name="toolTip">
+      <string>Character style of currently selected text or paragraph</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,1,0">
-     <property name="spacing">
-      <number>2</number>
+   <item row="0" column="2">
+    <widget class="QToolButton" name="paraStyleClear">
+     <property name="maximumSize">
+      <size>
+       <width>1677215</width>
+       <height>1677215</height>
+      </size>
      </property>
-     <item>
-      <widget class="QLabel" name="charStyleLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Character Style:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="CharStyleComboBox" name="charStyleCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Character style of currently selected text or paragraph</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="charStyleClear">
-       <property name="maximumSize">
-        <size>
-         <width>1677215</width>
-         <height>1677215</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Remove Direct Character Formatting</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../../resources/icons/16/edit-clear.png</normaloff>../../resources/icons/16/edit-clear.png</iconset>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     <property name="toolTip">
+      <string>Remove Direct Paragraph Formatting</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../resources/icons/16/edit-clear.png</normaloff>../../resources/icons/16/edit-clear.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="paraStyleLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Paragraph Style:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QToolButton" name="charStyleClear">
+     <property name="maximumSize">
+      <size>
+       <width>1677215</width>
+       <height>1677215</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Remove Direct Character Formatting</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../resources/icons/16/edit-clear.png</normaloff>../../resources/icons/16/edit-clear.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="charStyleLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Character Style:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="ParaStyleComboBox" name="paraStyleCombo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Paragraph style of currently selected text or paragraph</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

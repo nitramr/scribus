@@ -73,7 +73,7 @@ void PropertyWidget_TextStyles::setDoc(ScribusDoc *d)
 
 	if (m_doc)
 	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		//disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 
@@ -86,7 +86,7 @@ void PropertyWidget_TextStyles::setDoc(ScribusDoc *d)
 	paraStyleCombo->setDoc(m_doc);
 	charStyleCombo->setDoc(m_doc);
 
-	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+//	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));  // -> Crash Signal 11
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));	
 }
 
@@ -94,7 +94,7 @@ void PropertyWidget_TextStyles::unsetDoc()
 {
 	if (m_doc)
 	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		//disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 

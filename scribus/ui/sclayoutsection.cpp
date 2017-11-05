@@ -95,17 +95,18 @@ ScLayoutSection::ScLayoutSection(QString text, QWidget *menu, bool toggle, QWidg
 {
 
 	m_flowLayout = new FlowLayout();
-
 	m_header = new ScLayoutSectionHeader(text, menu, toggle);
 
 
 	QVBoxLayout * m_mainLayout = new QVBoxLayout();
 	m_mainLayout->setContentsMargins(0,0,0,0);
 	m_mainLayout->setMargin(0);
+	m_mainLayout->setSpacing(4);
 	m_mainLayout->addWidget(m_header);
 	m_mainLayout->addLayout(m_flowLayout);
-	this->setLayout(m_mainLayout);
 
+
+	this->setLayout(m_mainLayout);
 	this->connect(m_header, SIGNAL(toggleState(bool)),this, SLOT(setToggleIsOff(bool)));
 
 }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>97</height>
+    <height>95</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,13 +33,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="leftMargin">
     <number>4</number>
    </property>
    <property name="topMargin">
-    <number>4</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
     <number>4</number>
@@ -50,7 +50,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0">
      <property name="spacing">
-      <number>2</number>
+      <number>4</number>
      </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -126,7 +126,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,1,0">
      <property name="spacing">
-      <number>2</number>
+      <number>4</number>
      </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_fontColor">
@@ -152,6 +152,9 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_fillShade">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="label_3">
          <property name="font">

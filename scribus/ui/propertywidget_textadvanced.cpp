@@ -48,6 +48,7 @@ PropertyWidget_TextAdvanced::PropertyWidget_TextAdvanced(QWidget* parent) : QWid
 void PropertyWidget_TextAdvanced::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
+	connect(m_ScMW, SIGNAL(UpdateRequest(int))     , this  , SLOT(handleUpdateRequest(int))); // neccessary
 }
 
 /*********************************************************************
@@ -64,7 +65,7 @@ void PropertyWidget_TextAdvanced::setDoc(ScribusDoc *d)
 
 	if (m_doc)
 	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		//disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 
@@ -74,15 +75,15 @@ void PropertyWidget_TextAdvanced::setDoc(ScribusDoc *d)
 	m_haveDoc  = true;
 	m_haveItem = false;
 
-	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));	
+	//connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged())); // -> Crash Signal 11
+	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
 void PropertyWidget_TextAdvanced::unsetDoc()
 {
 	if (m_doc)
 	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		//disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 

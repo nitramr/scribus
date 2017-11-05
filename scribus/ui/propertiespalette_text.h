@@ -60,8 +60,6 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
-//	double m_unitRatio;
-//	int    m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
@@ -75,7 +73,6 @@ protected:
 
 	PropertyWidget_Advanced* advancedWidgets;
 	PropertyWidget_Distance* distanceWidgets;
-//	PropertyWidget_Flop* flopBox;
 	PropertyWidget_FontFeatures* fontfeaturesWidget;
 	PropertyWidget_Hyphenation* hyphenationWidget;
 	PropertyWidget_OptMargins* optMargins;
@@ -101,7 +98,6 @@ public slots:
 	void unsetItem();
 
 	void handleSelectionChanged();
-	void handleUpdateRequest(int);
 
 	void languageChange();
 	void unitChange();
@@ -121,7 +117,6 @@ public slots:
 	
 private slots:
 	void handleAlignment();
-//	void handleFirstLinePolicy(int);
 
 };
 
