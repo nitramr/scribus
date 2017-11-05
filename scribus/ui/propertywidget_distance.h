@@ -58,8 +58,6 @@ private slots:
 	void handleColumns();
 	void handleColumnGap();
 	void handleGapSwitch();
-	void handleTabs();
-//	void handleVAlign();
 	void handleTextDistances();
 };
 

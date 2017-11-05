@@ -11,6 +11,7 @@ ScPopupMenu::ScPopupMenu(QWidget *widget)
 	m_layout = new QVBoxLayout();
 	m_layout->setSizeConstraint(QLayout::SetMinimumSize);
 	m_layout->setMargin(1);
+	m_layout->setAlignment( Qt::AlignTop );
 
 	if(widget){
 		addWidget(widget);

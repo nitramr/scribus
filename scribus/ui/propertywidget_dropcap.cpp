@@ -29,107 +29,18 @@ PropertyWidget_DropCap::PropertyWidget_DropCap(QWidget *parent) : QWidget(parent
 	dropCapCharStyleCombo->updateFormatList();
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_DropCap::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
-}
-
-void PropertyWidget_DropCap::setDoc(ScribusDoc *doc)
-{
-	if(doc == (ScribusDoc*) m_doc)
-		return;
-
-	if (m_doc)
-	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-	}
-
-	m_doc = doc;
-	dropCapCharStyleCombo->setDoc(doc);
-
-	if (m_doc.isNull())
-	{
-		disconnectSignals();
-		return;
-	}
-
-	m_unitRatio   = m_doc->unitRatio();
-	m_unitIndex   = m_doc->unitIndex();
-	dropCapOffset->setSuffix(unitGetSuffixFromIndex(0));
-
-	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-}
-
-void PropertyWidget_DropCap::setCurrentItem(PageItem *item)
-{
-	if (item && m_doc.isNull())
-		setDoc(item->doc());
-
-	m_item = item;
-
-	disconnectSignals();
-	configureWidgets();
-
-	if (!m_item) return;
-
-	if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
-	{
-		ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
-		if (m_doc->appMode == modeEdit)
-			m_item->currentTextProps(parStyle);
-		else if (m_doc->appMode == modeEditTable)
-			m_item->asTable()->activeCell().textFrame()->currentTextProps(parStyle);
-		updateStyle(parStyle);
-
-		connectSignals();
-	}
-}
-
-void PropertyWidget_DropCap::unitChange()
-{
-	if (!m_doc)
-		return;
-
-	m_unitRatio = m_doc->unitRatio();
-	m_unitIndex = m_doc->unitIndex();
-
-	dropCapOffset->blockSignals(true);
-	dropCapOffset->setNewUnit( m_unitIndex );
-	dropCapOffset->blockSignals(false);
-}
-
-void PropertyWidget_DropCap::updateCharStyles()
-{
-	dropCapCharStyleCombo->updateFormatList();
-}
-
-void PropertyWidget_DropCap::displayCharStyle(const QString& name)
-{
-	bool blocked = dropCapCharStyleCombo->blockSignals(true);
-	dropCapCharStyleCombo->setFormat(name);
-	dropCapCharStyleCombo->blockSignals(blocked);
-}
-
-void PropertyWidget_DropCap::enableDropCap(bool enable)
-{
-	dropCapLines->setEnabled(enable);
-	dropCapOffset->setEnabled(enable);
-	dropCapCharStyleCombo->setEnabled(enable);
-}
-
-void PropertyWidget_DropCap::updateStyle(const ParagraphStyle& newCurrent)
-{
-	disconnectSignals ();
-	dropCapBox->setChecked(newCurrent.hasDropCap());
-	dropCapLines->setValue(newCurrent.dropCapLines());
-	dropCapOffset->setValue(newCurrent.dropCapOffset() * m_unitRatio);
-	displayCharStyle(newCurrent.dcCharStyleName());
-	connectSignals ();
 }
 
 void PropertyWidget_DropCap::connectSignals()
@@ -162,32 +73,76 @@ void PropertyWidget_DropCap::configureWidgets(void)
 	setEnabled(enabled);
 }
 
-void PropertyWidget_DropCap::handleAppModeChanged(int oldMode, int mode)
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
+
+void PropertyWidget_DropCap::setDoc(ScribusDoc *doc)
 {
-	if (oldMode == modeEditTable || mode == modeEditTable)
+	if(doc == (ScribusDoc*) m_doc)
+		return;
+
+	if (m_doc)
 	{
-		setCurrentItem(m_item);
+		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+	}
+
+	m_doc = doc;
+	dropCapCharStyleCombo->setDoc(doc);
+
+	if (m_doc.isNull())
+	{
+		disconnectSignals();
+		return;
+	}
+
+	m_unitRatio   = m_doc->unitRatio();
+	m_unitIndex   = m_doc->unitIndex();
+	dropCapOffset->setSuffix(unitGetSuffixFromIndex(0));
+
+	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+}
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+void PropertyWidget_DropCap::setCurrentItem(PageItem *item)
+{
+	if (item && m_doc.isNull())
+		setDoc(item->doc());
+
+	m_item = item;
+
+	disconnectSignals();
+	configureWidgets();
+
+	if (!m_item) return;
+
+	if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
+	{
+		ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
+		if (m_doc->appMode == modeEdit)
+			m_item->currentTextProps(parStyle);
+		else if (m_doc->appMode == modeEditTable)
+			m_item->asTable()->activeCell().textFrame()->currentTextProps(parStyle);
+		updateStyle(parStyle);
+
+		connectSignals();
 	}
 }
 
-void PropertyWidget_DropCap::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-	setCurrentItem(currItem);
-	updateGeometry();
-	repaint();
-}
-
-void PropertyWidget_DropCap::handleUpdateRequest(int updateFlags)
-{
-	if (updateFlags & reqCharStylesUpdate)
-		updateCharStyles();
-	if (updateFlags & reqStyleComboDocUpdate)
-		setDoc(m_doc ? m_doc : 0);
-}
+/*********************************************************************
+*
+* DropCap
+*
+**********************************************************************/
 
 void PropertyWidget_DropCap::handleDropCapUse()
 {
@@ -263,14 +218,23 @@ void PropertyWidget_DropCap::handleDropCapCharStyle()
 	}
 }
 
-void PropertyWidget_DropCap::changeEvent(QEvent *e)
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidget_DropCap::unitChange()
 {
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
+	if (!m_doc)
 		return;
-	}
-	QWidget::changeEvent(e);
+
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+
+	dropCapOffset->blockSignals(true);
+	dropCapOffset->setNewUnit( m_unitIndex );
+	dropCapOffset->blockSignals(false);
 }
 
 void PropertyWidget_DropCap::languageChange()
@@ -281,4 +245,81 @@ void PropertyWidget_DropCap::languageChange()
 	dropCapCharStyleLabel->setText(tr("Drop Cap use character style..."));
 	dropCapCharStyleCombo->setToolTip("<qt>" + tr("Choose character style or leave blank for use default paragraph style"));
 }
+
+
+void PropertyWidget_DropCap::updateCharStyles()
+{
+	dropCapCharStyleCombo->updateFormatList();
+}
+
+void PropertyWidget_DropCap::displayCharStyle(const QString& name)
+{
+	bool blocked = dropCapCharStyleCombo->blockSignals(true);
+	dropCapCharStyleCombo->setFormat(name);
+	dropCapCharStyleCombo->blockSignals(blocked);
+}
+
+void PropertyWidget_DropCap::enableDropCap(bool enable)
+{
+	dropCapLines->setEnabled(enable);
+	dropCapOffset->setEnabled(enable);
+	dropCapCharStyleCombo->setEnabled(enable);
+}
+
+void PropertyWidget_DropCap::updateStyle(const ParagraphStyle& newCurrent)
+{
+	disconnectSignals ();
+	dropCapBox->setChecked(newCurrent.hasDropCap());
+	dropCapLines->setValue(newCurrent.dropCapLines());
+	dropCapOffset->setValue(newCurrent.dropCapOffset() * m_unitRatio);
+	displayCharStyle(newCurrent.dcCharStyleName());
+	connectSignals ();
+}
+
+
+void PropertyWidget_DropCap::handleAppModeChanged(int oldMode, int mode)
+{
+	if (oldMode == modeEditTable || mode == modeEditTable)
+	{
+		setCurrentItem(m_item);
+	}
+}
+
+void PropertyWidget_DropCap::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	setCurrentItem(currItem);
+	updateGeometry();
+	repaint();
+}
+
+void PropertyWidget_DropCap::handleUpdateRequest(int updateFlags)
+{
+	if (updateFlags & reqCharStylesUpdate)
+		updateCharStyles();
+	if (updateFlags & reqStyleComboDocUpdate)
+		setDoc(m_doc ? m_doc : 0);
+}
+
+
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidget_DropCap::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	QWidget::changeEvent(e);
+}
+
 

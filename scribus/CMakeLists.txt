@@ -179,8 +179,8 @@ set(SCRIBUS_UI_SRC
 	ui/propertywidget_pathtextbase.ui
 	ui/propertywidget_textadvanced.ui
 	ui/propertywidget_textalignment.ui
-	ui/propertywidget_textbase.ui
 	ui/propertywidget_textcolorbase.ui
+    ui/propertywidget_textfont.ui
     ui/propertywidget_textstyles.ui
 	ui/recoverdialog.ui
 	ui/replacecolors.ui
@@ -479,8 +479,8 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertywidget_pathtext.h
     ui/propertywidget_textadvanced.h
 	ui/propertywidget_textalignment.h
-	ui/propertywidget_textbase.h
 	ui/propertywidget_textcolor.h
+    ui/propertywidget_textfont.h
 	ui/propertywidget_textstyles.h
 	ui/propertywidget_fontfeatures.h
 	ui/proptree.h
@@ -966,9 +966,9 @@ set(SCRIBUS_SOURCES
 	ui/propertywidget_pathtext.cpp
     ui/propertywidget_textadvanced.cpp
 	ui/propertywidget_textalignment.cpp
-	ui/propertywidget_textbase.cpp
 	ui/propertywidget_textcolor.cpp
 	ui/propertywidget_textstyles.cpp
+	ui/propertywidget_textfont.cpp
 	ui/propertywidget_fontfeatures.cpp
 	ui/propertywidgetbase.cpp
 	ui/proptree.cpp

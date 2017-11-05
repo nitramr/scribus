@@ -31,7 +31,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertywidget_pathtext.h"
 #include "propertywidget_textadvanced.h"
 #include "propertywidget_textalignment.h"
-#include "propertywidget_textbase.h"
+#include "propertywidget_textfont.h"
 #include "propertywidget_textcolor.h"
 #include "propertywidget_textstyles.h"
 #include "scpopupmenu.h"
@@ -57,7 +57,7 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 //	m_unitIndex = 0;
 //	m_unitRatio = 1.0;
 
-	textWidgets = new PropertyWidget_TextBase();
+	textWidgets = new PropertyWidget_TextFont();
 	textAdvancedWidgets = new PropertyWidget_TextAdvanced();
 	textAlignmentWidgets = new PropertyWidget_TextAlignment();
 	colorWidgets = new PropertyWidget_TextColor();

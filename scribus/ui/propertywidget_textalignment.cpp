@@ -21,22 +21,81 @@ PropertyWidget_TextAlignment::PropertyWidget_TextAlignment(QWidget* parent) : QW
 
 	setupUi(this);
 
-
-	//effectsLayout->setAlignment( Qt::AlignLeft );
-
 	languageChange();
 
-	// Alignment
+	// Horizontal Alignment
 	connect(textAlignment , SIGNAL(State(int))   , this, SLOT(handleAlignment(int)));
+
+	// Direction
 	connect(textDirection , SIGNAL(State(int))   , this, SLOT(handleDirection(int)));
-	// Alignment End
 
 }
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::setMainWindow(ScribusMainWindow *mw)
 {
 	m_ScMW = mw;
 }
+
+void PropertyWidget_TextAlignment::connectSignals()
+{
+	// Emphasize
+	connect(textEffects, SIGNAL(State(int))      , this, SLOT(handleTypeStyle(int)), Qt::UniqueConnection);
+	connect(textEffects->ShadowVal->Xoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()), Qt::UniqueConnection);
+	connect(textEffects->ShadowVal->Yoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()), Qt::UniqueConnection);
+	connect(textEffects->OutlineVal->LWidth  , SIGNAL(valueChanged(double)), this, SLOT(handleOutlineWidth()), Qt::UniqueConnection);
+	connect(textEffects->UnderlineVal->LPos  , SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()) , Qt::UniqueConnection);
+	connect(textEffects->UnderlineVal->LWidth, SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()) , Qt::UniqueConnection);
+	connect(textEffects->StrikeVal->LPos     , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()), Qt::UniqueConnection);
+	connect(textEffects->StrikeVal->LWidth   , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()), Qt::UniqueConnection);
+
+	// Alignment
+	connect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()), Qt::UniqueConnection);
+}
+
+void PropertyWidget_TextAlignment::disconnectSignals()
+{
+	// Emphasize
+	disconnect(textEffects, SIGNAL(State(int))      , this, SLOT(handleTypeStyle(int)));
+	disconnect(textEffects->ShadowVal->Xoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()));
+	disconnect(textEffects->ShadowVal->Yoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()));
+	disconnect(textEffects->OutlineVal->LWidth  , SIGNAL(valueChanged(double)), this, SLOT(handleOutlineWidth()));
+	disconnect(textEffects->UnderlineVal->LPos  , SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()));
+	disconnect(textEffects->UnderlineVal->LWidth, SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()));
+	disconnect(textEffects->StrikeVal->LPos     , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()));
+	disconnect(textEffects->StrikeVal->LWidth   , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()));
+
+	// Alignment
+	disconnect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()));
+}
+
+void PropertyWidget_TextAlignment::configureWidgets(void)
+{
+	bool enabled = false;
+	if (m_item && m_doc)
+	{
+		if (m_item->asPathText() || m_item->asTextFrame() || m_item->asTable())
+			enabled = true;
+		if ((m_item->isGroup()) && (!m_item->isSingleSel))
+			enabled = false;
+		if (m_item->asOSGFrame() || m_item->asSymbolFrame())
+			enabled = false;
+		if (m_doc->m_Selection->count() > 1)
+			enabled = false;
+	}
+	setEnabled(enabled);
+}
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::setDoc(ScribusDoc *d)
 {
@@ -63,6 +122,12 @@ void PropertyWidget_TextAlignment::setDoc(ScribusDoc *d)
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::setCurrentItem(PageItem *item)
 {
@@ -106,97 +171,17 @@ void PropertyWidget_TextAlignment::setCurrentItem(PageItem *item)
 	if (!textItem) return;
 
 	verticalAlign->setCurrentIndex(textItem->verticalAlignment());
-		// Alignment End
+
 
 	connectSignals();
 }
 
-void PropertyWidget_TextAlignment::connectSignals()
-{
-	connect(textEffects, SIGNAL(State(int))      , this, SLOT(handleTypeStyle(int)), Qt::UniqueConnection);
-	connect(textEffects->ShadowVal->Xoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()), Qt::UniqueConnection);
-	connect(textEffects->ShadowVal->Yoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()), Qt::UniqueConnection);
-	connect(textEffects->OutlineVal->LWidth  , SIGNAL(valueChanged(double)), this, SLOT(handleOutlineWidth()), Qt::UniqueConnection);
-	connect(textEffects->UnderlineVal->LPos  , SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()) , Qt::UniqueConnection);
-	connect(textEffects->UnderlineVal->LWidth, SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()) , Qt::UniqueConnection);
-	connect(textEffects->StrikeVal->LPos     , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()), Qt::UniqueConnection);
-	connect(textEffects->StrikeVal->LWidth   , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()), Qt::UniqueConnection);
 
-	connect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()), Qt::UniqueConnection);
-}
-
-void PropertyWidget_TextAlignment::disconnectSignals()
-{
-	disconnect(textEffects, SIGNAL(State(int))      , this, SLOT(handleTypeStyle(int)));
-	disconnect(textEffects->ShadowVal->Xoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()));
-	disconnect(textEffects->ShadowVal->Yoffset  , SIGNAL(valueChanged(double)), this, SLOT(handleShadowOffs()));
-	disconnect(textEffects->OutlineVal->LWidth  , SIGNAL(valueChanged(double)), this, SLOT(handleOutlineWidth()));
-	disconnect(textEffects->UnderlineVal->LPos  , SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()));
-	disconnect(textEffects->UnderlineVal->LWidth, SIGNAL(valueChanged(double)), this, SLOT(handleUnderline()));
-	disconnect(textEffects->StrikeVal->LPos     , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()));
-	disconnect(textEffects->StrikeVal->LWidth   , SIGNAL(valueChanged(double)), this, SLOT(handleStrikeThru()));
-
-	disconnect(verticalAlign , SIGNAL(activated(int))      , this, SLOT(handleVAlign()));
-}
-
-void PropertyWidget_TextAlignment::configureWidgets(void)
-{
-	bool enabled = false;
-	if (m_item && m_doc)
-	{
-		if (m_item->asPathText() || m_item->asTextFrame() || m_item->asTable())
-			enabled = true;
-		if ((m_item->isGroup()) && (!m_item->isSingleSel))
-			enabled = false;
-		if (m_item->asOSGFrame() || m_item->asSymbolFrame())
-			enabled = false;
-		if (m_doc->m_Selection->count() > 1)
-			enabled = false;
-	}
-	setEnabled(enabled);
-}
-
-void PropertyWidget_TextAlignment::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-	setCurrentItem(currItem);
-	updateGeometry();
-}
-
-
-void PropertyWidget_TextAlignment::updateCharStyle(const CharStyle& charStyle)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	showOutlineW  (charStyle.outlineWidth());
-	showShadowOffset(charStyle.shadowXOffset(), charStyle.shadowYOffset());
-	showTextEffects(charStyle.effects());
-	showStrikeThru(charStyle.strikethruOffset()  , charStyle.strikethruWidth());
-	showUnderline (charStyle.underlineOffset(), charStyle.underlineWidth());
-}
-
-void PropertyWidget_TextAlignment::updateStyle(const ParagraphStyle& newCurrent)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	const CharStyle& charStyle = newCurrent.charStyle();
-
-	showOutlineW  (charStyle.outlineWidth());
-	showShadowOffset(charStyle.shadowXOffset(), charStyle.shadowYOffset());
-	showTextEffects(charStyle.effects());
-	showStrikeThru(charStyle.strikethruOffset()  , charStyle.strikethruWidth());
-	showUnderline (charStyle.underlineOffset(), charStyle.underlineWidth());
-
-	//Alignment
-	textAlignment->setStyle(newCurrent.alignment(), newCurrent.direction());
-	textDirection->setStyle(newCurrent.direction());
-	// Alignment End
-}
+/*********************************************************************
+*
+* Emphasize
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::showOutlineW(double x)
 {
@@ -327,7 +312,11 @@ void PropertyWidget_TextAlignment::handleUnderline()
 }
 
 
-// Alignment & Direction Start
+/*********************************************************************
+*
+* Alignment
+*
+**********************************************************************/
 
 
 
@@ -341,6 +330,42 @@ void PropertyWidget_TextAlignment::showAlignment(int e)
 	textAlignment->setStyle(e, textDirection->getStyle());
 	m_haveItem = tmp;
 }
+
+void PropertyWidget_TextAlignment::handleVAlign()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	PageItem *textItem = m_item;
+	if (m_doc->appMode == modeEditTable)
+		textItem = m_item->asTable()->activeCell().textFrame();
+	if (textItem != NULL)
+	{
+		textItem->setVerticalAlignment(verticalAlign->currentIndex());
+		textItem->update();
+		if (m_doc->appMode == modeEditTable)
+			m_item->asTable()->update();
+		m_doc->regionsChanged()->update(QRect());
+	}
+}
+
+
+void PropertyWidget_TextAlignment::handleAlignment(int a)
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_SetAlignment(a, &tempSelection);
+
+	emit handleAlignment();
+}
+
+
+/*********************************************************************
+*
+* Direction
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::showDirection(int e)
 {
@@ -373,39 +398,83 @@ void PropertyWidget_TextAlignment::handleDirection(int d)
 	}
 }
 
-void PropertyWidget_TextAlignment::handleVAlign()
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+
+void PropertyWidget_TextAlignment::updateCharStyle(const CharStyle& charStyle)
 {
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	PageItem *textItem = m_item;
-	if (m_doc->appMode == modeEditTable)
-		textItem = m_item->asTable()->activeCell().textFrame();
-	if (textItem != NULL)
-	{
-		textItem->setVerticalAlignment(verticalAlign->currentIndex());
-		textItem->update();
-		if (m_doc->appMode == modeEditTable)
-			m_item->asTable()->update();
-		m_doc->regionsChanged()->update(QRect());
-	}
+
+	// Emphasize
+	showOutlineW  (charStyle.outlineWidth());
+	showShadowOffset(charStyle.shadowXOffset(), charStyle.shadowYOffset());
+	showTextEffects(charStyle.effects());
+	showStrikeThru(charStyle.strikethruOffset()  , charStyle.strikethruWidth());
+	showUnderline (charStyle.underlineOffset(), charStyle.underlineWidth());
 }
 
-
-void PropertyWidget_TextAlignment::handleAlignment(int a)
+void PropertyWidget_TextAlignment::updateStyle(const ParagraphStyle& newCurrent)
 {
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetAlignment(a, &tempSelection);
 
-	emit handleAlignment();
+	const CharStyle& charStyle = newCurrent.charStyle();
+
+	// Emphasize
+	showOutlineW  (charStyle.outlineWidth());
+	showShadowOffset(charStyle.shadowXOffset(), charStyle.shadowYOffset());
+	showTextEffects(charStyle.effects());
+	showStrikeThru(charStyle.strikethruOffset()  , charStyle.strikethruWidth());
+	showUnderline (charStyle.underlineOffset(), charStyle.underlineWidth());
+
+	// Alignment
+	textAlignment->setStyle(newCurrent.alignment(), newCurrent.direction());
+
+	// Direction
+	textDirection->setStyle(newCurrent.direction());
 }
 
-// Alignment & Direction End
+void PropertyWidget_TextAlignment::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
 
+	PageItem* currItem = currentItemFromSelection();
+	setCurrentItem(currItem);
+	updateGeometry();
+}
 
+void PropertyWidget_TextAlignment::languageChange()
+{
+	retranslateUi(this);
+	textEffects->languageChange();
 
+	// Alignment
+	QSignalBlocker verticalAlignBlocker(verticalAlign);
+	int oldAlignIndex = verticalAlign->currentIndex();
+	verticalAlign->clear();
+	verticalAlign->addItem( tr("Top"));
+	verticalAlign->addItem( tr("Middle"));
+	verticalAlign->addItem( tr("Bottom"));
+	verticalAlign->setCurrentIndex(oldAlignIndex);
+
+	textAlignment->languageChange();
+
+	// Direction
+	textDirection->languageChange();
+
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
 
 void PropertyWidget_TextAlignment::changeEvent(QEvent *e)
 {
@@ -417,21 +486,4 @@ void PropertyWidget_TextAlignment::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 }
 
-void PropertyWidget_TextAlignment::languageChange()
-{
-	retranslateUi(this);
-	textEffects->languageChange();
 
-
-	QSignalBlocker verticalAlignBlocker(verticalAlign);
-	int oldAlignIndex = verticalAlign->currentIndex();
-	verticalAlign->clear();
-	verticalAlign->addItem( tr("Top"));
-	verticalAlign->addItem( tr("Middle"));
-	verticalAlign->addItem( tr("Bottom"));
-	verticalAlign->setCurrentIndex(oldAlignIndex);
-
-	textAlignment->languageChange();
-	textDirection->languageChange();
-
-}

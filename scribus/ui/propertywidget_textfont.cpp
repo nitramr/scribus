@@ -5,7 +5,7 @@ a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
 
-#include "propertywidget_textbase.h"
+#include "propertywidget_textfont.h"
 
 #include "appmodes.h"
 #include "pageitem_table.h"
@@ -19,21 +19,21 @@ for which a new license (GPL+exception) is in place.
 //#include "sccolorpicker.h"
 #include "scpopupmenu.h"
 
-PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(parent)
+PropertyWidget_TextFont::PropertyWidget_TextFont(QWidget* parent) : QWidget(parent)
 {
 	m_ScMW=0;
 	m_doc=0;
 	m_item=0;
 	m_haveDoc = false;
 	m_haveItem = false;
-	m_unitIndex = 0;
-	m_unitRatio = 1.0;
+//	m_unitIndex = 0;
+//	m_unitRatio = 1.0;
 
-	setupUi(this);
+	setupUi(this);	
 
+	// Text
 	fontSize->setPrefix( "" );
 
-	// Fills
 	fillColor = new ColorCombo();
 	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
 	ScPopupMenu * fillsColorMenu = new ScPopupMenu(fillColor);
@@ -44,32 +44,28 @@ PropertyWidget_TextBase::PropertyWidget_TextBase(QWidget* parent) : QWidget(pare
 	fillShade = new ShadeButton(this);
 	verticalLayout_fillShade->insertWidget(0,fillShade);
 
-//	// Setup ScColorPicker in ScPopupMenu and add it to ScColorFillsBox
-//	ScColorPicker * colorPicker = new ScColorPicker();
-//	colorPicker->setFixedSize(100,100);
-//	ScPopupMenu * colorPickerMenu = new ScPopupMenu(colorPicker);
-//	ScColorFillsBox * fontColorFillsBox = new ScColorFillsBox();
-//	fontColorFillsBox->setMenu(colorPickerMenu);
-//	verticalLayout_fontColor->insertWidget(0,fontColorFillsBox);
-
-	// connect ScFillsBox with ScColorPicker
-//	connect(colorPicker, SIGNAL(setPreview(QPixmap)), fontColorFillsBox, SLOT(setPixmap(QPixmap)));
-//	connect(colorPicker, SIGNAL(resetColor()), fontColorFillsBox, SLOT(resetColor()));
-
-
 	languageChange();
 
+	// Line Space
 	connect(lineSpacing   , SIGNAL(valueChanged(double)), this, SLOT(handleLineSpacing()));
+	connect(lineSpacingModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLineSpacingMode(int)));
+
+	// Text
 	connect(fonts         , SIGNAL(fontSelected(QString )), this, SLOT(handleTextFont(QString)));
 	connect(fontSize      , SIGNAL(valueChanged(double)), this, SLOT(handleFontSize()));
 
-	connect(lineSpacingModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLineSpacingMode(int)));
 
 	m_haveItem = false;
 	setEnabled(false);
 }
 
-void PropertyWidget_TextBase::setMainWindow(ScribusMainWindow* mw)
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
@@ -77,23 +73,29 @@ void PropertyWidget_TextBase::setMainWindow(ScribusMainWindow* mw)
 }
 
 
-void PropertyWidget_TextBase::connectSignals()
+void PropertyWidget_TextFont::connectSignals()
 {
-	// Fills
+	// Text
 	connect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill())     , Qt::UniqueConnection);
 	connect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
 
 }
 
-void PropertyWidget_TextBase::disconnectSignals()
+void PropertyWidget_TextFont::disconnectSignals()
 {
-	// Fills
+	// Text
 	disconnect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill()));
 	disconnect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
 
 }
 
-void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::setDoc(ScribusDoc *d)
 {
 
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
@@ -108,31 +110,34 @@ void PropertyWidget_TextBase::setDoc(ScribusDoc *d)
 	m_doc  = d;
 	m_item = NULL;
 
-
-	m_unitRatio   = m_doc->unitRatio();
-	m_unitIndex   = m_doc->unitIndex();
-
-	m_haveDoc  = true;
-	m_haveItem = false;
-
-	fontSize->setValues( 0.5, 2048, 2, 1);
-	lineSpacing->setValues( 1, 2048, 2, 1);
-
-	fonts->RebuildList(m_doc);
-
 	if (m_doc.isNull())
 	{
 		disconnectSignals();
 		return;
 	}
 
+
+//	m_unitRatio   = m_doc->unitRatio();
+//	m_unitIndex   = m_doc->unitIndex();
+
+	m_haveDoc  = true;
+	m_haveItem = false;
+
+	// set values
 	updateColorList();
+
+	fontSize->setValues( 0.5, 2048, 2, 1);
+	fonts->RebuildList(m_doc);
+
+	lineSpacing->setValues( 1, 2048, 2, 1);
+
+
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));	
 }
 
-void PropertyWidget_TextBase::unsetDoc()
+void PropertyWidget_TextFont::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -148,7 +153,13 @@ void PropertyWidget_TextBase::unsetDoc()
 	setEnabled(false);
 }
 
-void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::setCurrentItem(PageItem *i)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -195,7 +206,7 @@ void PropertyWidget_TextBase::setCurrentItem(PageItem *i)
 }
 
 
-PageItem* PropertyWidget_TextBase::currentItemFromSelection()
+PageItem* PropertyWidget_TextFont::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 
@@ -212,7 +223,275 @@ PageItem* PropertyWidget_TextBase::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertyWidget_TextBase::handleSelectionChanged()
+
+
+/*********************************************************************
+*
+* Line Space
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::handleLineSpacingMode(int id)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		Selection tempSelection(this, false);
+		tempSelection.addItem(m_item, true);
+		m_doc->itemSelection_SetLineSpacingMode(id, &tempSelection);
+		updateStyle(((m_doc->appMode == modeEdit) || (m_doc->appMode == modeEditTable)) ? m_item->currentStyle() : m_item->itemText.defaultStyle());
+		m_doc->regionsChanged()->update(QRect());
+	}
+}
+
+void PropertyWidget_TextFont::showLineSpacing(double r)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	bool inEditMode = (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable);
+	bool tmp = m_haveItem;
+	m_haveItem = false;
+	lineSpacing->showValue(r);
+	const ParagraphStyle& curStyle(m_haveItem && inEditMode ? m_item->currentStyle() : m_item->itemText.defaultStyle());
+	if (tmp)
+	{
+		setupLineSpacingSpinbox(curStyle.lineSpacingMode(), r);
+		lineSpacingModeCombo->setCurrentIndex(curStyle.lineSpacingMode());
+	}
+	m_haveItem = tmp;
+}
+
+void PropertyWidget_TextFont::setupLineSpacingSpinbox(int mode, double value)
+{
+	bool blocked = lineSpacing->blockSignals(true);
+	if (mode > 0)
+	{
+		if (mode==1)
+			lineSpacing->setSpecialValueText( tr( "Auto" ) );
+		if (mode==2)
+			lineSpacing->setSpecialValueText( tr( "Baseline" ) );
+		lineSpacing->setMinimum(0);
+		lineSpacing->setValue(0);
+		lineSpacing->setEnabled(false);
+	}
+	else
+	{
+		lineSpacing->setSpecialValueText("");
+		lineSpacing->setMinimum(1);
+		lineSpacing->setValue(value);
+		lineSpacing->setEnabled(true);
+	}
+	lineSpacing->blockSignals(blocked);
+}
+
+void PropertyWidget_TextFont::handleLineSpacing()
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_SetLineSpacing(lineSpacing->value(), &tempSelection);
+}
+
+/*********************************************************************
+*
+* Text (Font, Weight, Color, Size)
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::showFontFace(const QString& newFont)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	bool tmp = m_haveItem;
+	m_haveItem = false;
+	if (m_item != NULL)
+		fonts->RebuildList(m_doc, m_item->isAnnotation());
+	fonts->setCurrentFont(newFont);
+	m_haveItem = tmp;
+}
+
+void PropertyWidget_TextFont::showFontSize(double s)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	fontSize->showValue(s / 10.0);
+}
+
+
+void PropertyWidget_TextFont::showTextColors(QString b, double shb)
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	ColorList::Iterator it;
+	int c = 0;
+
+	fillShade->setValue(qRound(shb));	// Fills
+
+	if ((b != CommonStrings::None) && (!b.isEmpty()))
+	{
+		c++;
+		for (it = m_doc->PageColors.begin(); it != m_doc->PageColors.end(); ++it)
+		{
+			if (it.key() == b)
+				break;
+			c++;
+		}
+	}
+	fillColor->setCurrentIndex(c);
+
+	// Update Color Box
+	handleFillColorBox();
+
+
+}
+
+void PropertyWidget_TextFont::handleFontSize()
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_SetFontSize(qRound(fontSize->value()*10.0), &tempSelection);
+}
+
+
+void PropertyWidget_TextFont::handleTextFont(QString c)
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	m_ScMW->SetNewFont(c);
+}
+
+// Fills
+void PropertyWidget_TextFont::handleFillColorBox(){
+
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	QString color = fillColor->currentColor();
+
+	if (color == CommonStrings::tr_NoneColor)
+		color = CommonStrings::None;
+
+	if(color != CommonStrings::None){
+		const ScColor& col = m_doc->PageColors[color];
+		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, fillShade->getValue());
+		fillsColorBox->setColor(tmp);
+	} else fillsColorBox->resetColor();
+}
+
+// Fills
+void PropertyWidget_TextFont::handleTextFill()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	PageItem *i2 = m_item;
+	if (m_doc->appMode == modeEditTable)
+		i2 = m_item->asTable()->activeCell().textFrame();
+	if (i2 != NULL)
+	{
+		Selection tempSelection(this, false);
+		tempSelection.addItem(i2, true);
+		m_doc->itemSelection_SetFillColor(fillColor->currentColor(), &tempSelection);
+
+		// draw color box
+		handleFillColorBox();
+	}
+}
+
+void PropertyWidget_TextFont::handleTextShade()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if (fillShade == sender()) // Fills
+	{
+		int b = fillShade->getValue();
+		PageItem *i2 = m_item;
+		if (m_doc->appMode == modeEditTable)
+			i2 = m_item->asTable()->activeCell().textFrame();
+		if (i2 != NULL)
+		{
+			Selection tempSelection(this, false);
+			tempSelection.addItem(i2, true);
+			m_doc->itemSelection_SetFillShade(b, &tempSelection);
+			// draw color box
+			handleFillColorBox();
+		}
+	}
+}
+
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::updateColorList()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	if (m_item)
+		disconnectSignals();
+
+	// Fills
+	fillColor->setColors(m_doc->PageColors, true);
+	fillColor->view()->setMinimumWidth(100);//fillColor->view()->maximumViewportSize().width());// + 24);
+
+	if (m_item)
+		setCurrentItem(m_item);
+}
+
+
+void PropertyWidget_TextFont::updateCharStyle(const CharStyle& charStyle)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	showTextColors(charStyle.fillColor(), charStyle.fillShade());
+	showFontFace(charStyle.font().scName());
+	showFontSize(charStyle.fontSize());
+}
+
+void PropertyWidget_TextFont::updateStyle(const ParagraphStyle& newCurrent)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	const CharStyle& charStyle = newCurrent.charStyle();
+
+	showTextColors(charStyle.fillColor(), charStyle.fillShade());
+	showFontFace(charStyle.font().scName());
+	showFontSize(charStyle.fontSize());
+
+	bool tmp = m_haveItem;
+	m_haveItem = false;
+
+	setupLineSpacingSpinbox(newCurrent.lineSpacingMode(), newCurrent.lineSpacing());
+	lineSpacingModeCombo->setCurrentIndex(newCurrent.lineSpacingMode());
+
+	m_haveItem = tmp;
+}
+
+
+void PropertyWidget_TextFont::handleUpdateRequest(int updateFlags)
+{
+
+	// ColorWidget will handle its update itself
+	/*if (updateFlags & reqColorsUpdate)
+		updateColorList();*/
+
+	if (updateFlags & reqDefFontListUpdate)
+		fonts->RebuildList(0);
+	if (updateFlags & reqDocFontListUpdate)
+		fonts->RebuildList(m_haveDoc ? m_doc : 0);
+	if (updateFlags & reqColorsUpdate)
+		updateColorList();
+
+}
+
+void PropertyWidget_TextFont::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -254,258 +533,7 @@ void PropertyWidget_TextBase::handleSelectionChanged()
 
 }
 
-
-void PropertyWidget_TextBase::handleLineSpacingMode(int id)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		Selection tempSelection(this, false);
-		tempSelection.addItem(m_item, true);
-		m_doc->itemSelection_SetLineSpacingMode(id, &tempSelection);
-		updateStyle(((m_doc->appMode == modeEdit) || (m_doc->appMode == modeEditTable)) ? m_item->currentStyle() : m_item->itemText.defaultStyle());
-		m_doc->regionsChanged()->update(QRect());
-	}
-}
-
-void PropertyWidget_TextBase::showLineSpacing(double r)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool inEditMode = (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable);
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-	lineSpacing->showValue(r);
-	const ParagraphStyle& curStyle(m_haveItem && inEditMode ? m_item->currentStyle() : m_item->itemText.defaultStyle());
-	if (tmp)
-	{
-		setupLineSpacingSpinbox(curStyle.lineSpacingMode(), r);
-		lineSpacingModeCombo->setCurrentIndex(curStyle.lineSpacingMode());
-	}
-	m_haveItem = tmp;
-}
-
-void PropertyWidget_TextBase::showFontFace(const QString& newFont)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-	if (m_item != NULL)
-		fonts->RebuildList(m_doc, m_item->isAnnotation());
-	fonts->setCurrentFont(newFont);
-	m_haveItem = tmp;
-}
-
-void PropertyWidget_TextBase::showFontSize(double s)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	fontSize->showValue(s / 10.0);
-}
-
-
-void PropertyWidget_TextBase::showTextColors(QString b, double shb)
-{
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	ColorList::Iterator it;
-	int c = 0;
-
-	fillShade->setValue(qRound(shb));	// Fills
-
-	if ((b != CommonStrings::None) && (!b.isEmpty()))
-	{
-		c++;
-		for (it = m_doc->PageColors.begin(); it != m_doc->PageColors.end(); ++it)
-		{
-			if (it.key() == b)
-				break;
-			c++;
-		}
-	}
-	fillColor->setCurrentIndex(c);
-
-}
-
-void PropertyWidget_TextBase::setupLineSpacingSpinbox(int mode, double value)
-{
-	bool blocked = lineSpacing->blockSignals(true);
-	if (mode > 0)
-	{
-		if (mode==1)
-			lineSpacing->setSpecialValueText( tr( "Auto" ) );
-		if (mode==2)
-			lineSpacing->setSpecialValueText( tr( "Baseline" ) );
-		lineSpacing->setMinimum(0);
-		lineSpacing->setValue(0);
-		lineSpacing->setEnabled(false);
-	}
-	else
-	{
-		lineSpacing->setSpecialValueText("");
-		lineSpacing->setMinimum(1);
-		lineSpacing->setValue(value);
-		lineSpacing->setEnabled(true);
-	}
-	lineSpacing->blockSignals(blocked);
-}
-
-void PropertyWidget_TextBase::updateColorList()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	if (m_item)
-		disconnectSignals();
-
-	// Fills
-	fillColor->setColors(m_doc->PageColors, true);
-	fillColor->view()->setMinimumWidth(100);//fillColor->view()->maximumViewportSize().width());// + 24);
-
-	if (m_item)
-		setCurrentItem(m_item);
-}
-
-
-void PropertyWidget_TextBase::updateCharStyle(const CharStyle& charStyle)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	showTextColors(charStyle.fillColor(), charStyle.fillShade());
-	showFontFace(charStyle.font().scName());
-	showFontSize(charStyle.fontSize());
-}
-
-void PropertyWidget_TextBase::updateStyle(const ParagraphStyle& newCurrent)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	const CharStyle& charStyle = newCurrent.charStyle();
-
-	showTextColors(charStyle.fillColor(), charStyle.fillShade());
-	showFontFace(charStyle.font().scName());
-	showFontSize(charStyle.fontSize());
-
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-
-	setupLineSpacingSpinbox(newCurrent.lineSpacingMode(), newCurrent.lineSpacing());
-	lineSpacingModeCombo->setCurrentIndex(newCurrent.lineSpacingMode());
-
-	m_haveItem = tmp;
-}
-
-void PropertyWidget_TextBase::handleLineSpacing()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetLineSpacing(lineSpacing->value(), &tempSelection);
-}
-
-void PropertyWidget_TextBase::handleFontSize()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetFontSize(qRound(fontSize->value()*10.0), &tempSelection);
-}
-
-
-void PropertyWidget_TextBase::handleTextFont(QString c)
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->SetNewFont(c);
-}
-
-// Fills
-void PropertyWidget_TextBase::handleFillColorBox(){
-
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	QString color = fillColor->currentColor();
-
-	if(color != CommonStrings::None){
-		const ScColor& col = m_doc->PageColors[color];
-		QColor tmp = ScColorEngine::getShadeColorProof(col, m_doc, fillShade->getValue());
-		fillsColorBox->setColor(tmp);
-	} else fillsColorBox->resetColor();
-}
-
-// Fills
-void PropertyWidget_TextBase::handleTextFill()
-{
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	PageItem *i2 = m_item;
-	if (m_doc->appMode == modeEditTable)
-		i2 = m_item->asTable()->activeCell().textFrame();
-	if (i2 != NULL)
-	{
-		Selection tempSelection(this, false);
-		tempSelection.addItem(i2, true);
-		m_doc->itemSelection_SetFillColor(fillColor->currentColor(), &tempSelection);
-
-		// draw color box
-		handleFillColorBox();
-	}
-}
-
-void PropertyWidget_TextBase::handleTextShade()
-{
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if (fillShade == sender()) // Fills
-	{
-		int b = fillShade->getValue();
-		PageItem *i2 = m_item;
-		if (m_doc->appMode == modeEditTable)
-			i2 = m_item->asTable()->activeCell().textFrame();
-		if (i2 != NULL)
-		{
-			Selection tempSelection(this, false);
-			tempSelection.addItem(i2, true);
-			m_doc->itemSelection_SetFillShade(b, &tempSelection);
-			// draw color box
-			handleFillColorBox();
-		}
-	}
-}
-
-void PropertyWidget_TextBase::handleUpdateRequest(int updateFlags)
-{
-
-	// ColorWidget will handle its update itself
-	/*if (updateFlags & reqColorsUpdate)
-		updateColorList();*/
-
-	if (updateFlags & reqDefFontListUpdate)
-		fonts->RebuildList(0);
-	if (updateFlags & reqDocFontListUpdate)
-		fonts->RebuildList(m_haveDoc ? m_doc : 0);
-	if (updateFlags & reqColorsUpdate)
-		updateColorList();
-
-}
-
-
-void PropertyWidget_TextBase::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	QWidget::changeEvent(e);
-}
-
-void PropertyWidget_TextBase::languageChange()
+void PropertyWidget_TextFont::languageChange()
 {
 	retranslateUi(this);
 
@@ -518,3 +546,21 @@ void PropertyWidget_TextBase::languageChange()
 	lineSpacingModeCombo->setCurrentIndex(oldLineSpacingMode);
 
 }
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidget_TextFont::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	QWidget::changeEvent(e);
+}
+
+

@@ -50,6 +50,8 @@ public slots:
 
 private slots:
 	void handleNewValues();
+	void handleFillColorBox();
+	void showColor(QString b, double sb);
 
 protected slots:
 	void updateSpinBoxConstants();

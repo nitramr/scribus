@@ -16,7 +16,6 @@ for which a new license (GPL+exception) is in place.
 #include "scribus.h"
 #include "scribusdoc.h"
 #include "selection.h"
-#include "tabmanager.h"
 #include "units.h"
 
 PropertyWidget_Distance::PropertyWidget_Distance(QWidget* parent) : QWidget(parent)
@@ -54,6 +53,12 @@ PropertyWidget_Distance::PropertyWidget_Distance(QWidget* parent) : QWidget(pare
 	columnGapLabel->setCurrentIndex(0);
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_Distance::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
@@ -61,6 +66,64 @@ void PropertyWidget_Distance::setMainWindow(ScribusMainWindow* mw)
 	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 	connect(m_ScMW, SIGNAL(UpdateRequest(int))      , this, SLOT(handleUpdateRequest(int)));
 }
+
+void PropertyWidget_Distance::connectSignals()
+{
+	// Columns
+	connect(columns       , SIGNAL(valueChanged(double))   , this, SLOT(handleColumns()), Qt::UniqueConnection);
+	connect(columnGap     , SIGNAL(valueChanged(double)), this, SLOT(handleColumnGap()), Qt::UniqueConnection);
+	connect(columnGapLabel, SIGNAL(activated(int))      , this, SLOT(handleGapSwitch()), Qt::UniqueConnection);
+
+	// Distances
+	connect(topDistance   , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
+	connect(leftDistance  , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
+	connect(rightDistance , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
+	connect(bottomDistance, SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
+}
+
+void PropertyWidget_Distance::disconnectSignals()
+{
+	// Columns
+	disconnect(columns       , SIGNAL(valueChanged(double))   , this, SLOT(handleColumns()));
+	disconnect(columnGap     , SIGNAL(valueChanged(double)), this, SLOT(handleColumnGap()));
+	disconnect(columnGapLabel, SIGNAL(activated(int))      , this, SLOT(handleGapSwitch()));
+
+	// Distance
+	disconnect(topDistance   , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
+	disconnect(leftDistance  , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
+	disconnect(rightDistance , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
+	disconnect(bottomDistance, SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
+}
+
+void PropertyWidget_Distance::configureWidgets(void)
+{
+	bool enabled = false;
+	if (m_item && m_doc)
+	{
+		PageItem_TextFrame *textItem = m_item->asTextFrame();
+		if (m_doc->appMode == modeEditTable)
+			textItem = m_item->asTable()->activeCell().textFrame();
+
+		enabled  = (textItem != NULL);
+		enabled &= (m_doc->m_Selection->count() == 1);
+
+		if (textItem)
+		{
+			int numCols = textItem->Cols;
+
+			columnGap->setEnabled(numCols != 1);
+			columnGapLabel->setEnabled(numCols != 1);
+		}
+	}
+	setEnabled(enabled);
+}
+
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_Distance::setDoc(ScribusDoc *d)
 {
@@ -96,6 +159,12 @@ void PropertyWidget_Distance::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
 void PropertyWidget_Distance::setCurrentItem(PageItem *item)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
@@ -122,6 +191,7 @@ void PropertyWidget_Distance::setCurrentItem(PageItem *item)
 		textItem = m_item->asTable()->activeCell().textFrame();
 	if (!textItem) return;
 
+	// Columns
 	//#14427: columns->setMaximum(qMax(qRound(textItem->width() / qMax(textItem->ColGap, 10.0)), 1));
 	columns->setMinimum(1);
 	columns->setValue(textItem->Cols);
@@ -136,10 +206,14 @@ void PropertyWidget_Distance::setCurrentItem(PageItem *item)
 		columnGap->setMaximum(qMax((textItem->width() / textItem->Cols) * m_unitRatio, 0.0));
 		columnGap->setValue(textItem->columnWidth() * m_unitRatio);
 	}
+
+	// Distances
 	leftDistance->setValue(textItem->textToFrameDistLeft()*m_unitRatio);
 	topDistance->setValue(textItem->textToFrameDistTop()*m_unitRatio);
 	bottomDistance->setValue(textItem->textToFrameDistBottom()*m_unitRatio);
 	rightDistance->setValue(textItem->textToFrameDistRight()*m_unitRatio);
+
+	// Columns
 	if (columns->value() == 1)
 	{
 		columnGap->setEnabled(false);
@@ -155,75 +229,12 @@ void PropertyWidget_Distance::setCurrentItem(PageItem *item)
 	connectSignals();
 }
 
-void PropertyWidget_Distance::connectSignals()
-{
-	connect(columns       , SIGNAL(valueChanged(double))   , this, SLOT(handleColumns()), Qt::UniqueConnection);
-	connect(columnGap     , SIGNAL(valueChanged(double)), this, SLOT(handleColumnGap()), Qt::UniqueConnection);
-	connect(columnGapLabel, SIGNAL(activated(int))      , this, SLOT(handleGapSwitch()), Qt::UniqueConnection);
-	connect(topDistance   , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
-	connect(leftDistance  , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
-	connect(rightDistance , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
-	connect(bottomDistance, SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()), Qt::UniqueConnection);
-	connect(tabsButton    , SIGNAL(clicked())           , this, SLOT(handleTabs()), Qt::UniqueConnection);
-}
 
-void PropertyWidget_Distance::disconnectSignals()
-{
-	disconnect(columns       , SIGNAL(valueChanged(double))   , this, SLOT(handleColumns()));
-	disconnect(columnGap     , SIGNAL(valueChanged(double)), this, SLOT(handleColumnGap()));
-	disconnect(columnGapLabel, SIGNAL(activated(int))      , this, SLOT(handleGapSwitch()));
-	disconnect(topDistance   , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
-	disconnect(leftDistance  , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
-	disconnect(rightDistance , SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
-	disconnect(bottomDistance, SIGNAL(valueChanged(double)), this, SLOT(handleTextDistances()));
-	disconnect(tabsButton    , SIGNAL(clicked())           , this, SLOT(handleTabs()));
-}
-
-void PropertyWidget_Distance::configureWidgets(void)
-{
-	bool enabled = false;
-	if (m_item && m_doc)
-	{
-		PageItem_TextFrame *textItem = m_item->asTextFrame();
-		if (m_doc->appMode == modeEditTable)
-			textItem = m_item->asTable()->activeCell().textFrame();
-
-		enabled  = (textItem != NULL);
-		enabled &= (m_doc->m_Selection->count() == 1);
-
-		if (textItem)
-		{
-			int numCols = textItem->Cols;
-			
-			columnGap->setEnabled(numCols != 1);
-			columnGapLabel->setEnabled(numCols != 1);
-		}
-	}
-	setEnabled(enabled);
-}
-
-void PropertyWidget_Distance::handleAppModeChanged(int oldMode, int mode)
-{
-	if (oldMode == modeEditTable || mode == modeEditTable)
-	{
-		setCurrentItem(m_item);
-	}
-}
-
-void PropertyWidget_Distance::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-	setCurrentItem(currItem);
-	updateGeometry();
-}
-
-void PropertyWidget_Distance::handleUpdateRequest(int /*updateFlags*/)
-{
-	// Nothing to do in this widget
-}
+/*********************************************************************
+*
+* Columns
+*
+**********************************************************************/
 
 void PropertyWidget_Distance::showColumns(int r, double g)
 {
@@ -244,12 +255,12 @@ void PropertyWidget_Distance::showColumns(int r, double g)
 		if (textItem != 0)
 		{
 //#14427: columns->setMaximum(qMax(qRound(textItem->width() / qMax(textItem->ColGap, 10.0)), 1));
-			if (columnGapLabel->currentIndex() == 0)
+			if (columnGapLabel->currentIndex() == 0) // Gap Width
 			{
 				columnGap->setMaximum(qMax((textItem->width() / textItem->Cols - textItem->textToFrameDistLeft() - textItem->textToFrameDistRight()) * m_unitRatio, 0.0));
 				columnGap->setValue(textItem->ColGap * m_unitRatio);
 			}
-			else
+			else // Column Width
 			{
 				columnGap->setMaximum(qMax((textItem->width() / textItem->Cols) * m_unitRatio, 0.0));
 				columnGap->setValue(textItem->columnWidth() * m_unitRatio);
@@ -263,14 +274,6 @@ void PropertyWidget_Distance::showColumns(int r, double g)
 
 	columns->blockSignals(cSigWasBlocked);
 	columnGap->blockSignals(cGapSigWasBlocked);
-}
-
-void PropertyWidget_Distance::showTextDistances(double left, double top, double bottom, double right)
-{
-	leftDistance->showValue(left * m_unitRatio);
-	topDistance->showValue(top * m_unitRatio);
-	bottomDistance->showValue(bottom * m_unitRatio);
-	rightDistance->showValue(right * m_unitRatio);
 }
 
 void PropertyWidget_Distance::handleColumns()
@@ -346,36 +349,19 @@ void PropertyWidget_Distance::handleGapSwitch()
 	columnGap->setToolTip((index == 0) ? tr( "Distance between columns" ) : tr( "Column width" ));
 }
 
+/*********************************************************************
+*
+* Distances
+*
+**********************************************************************/
 
-void PropertyWidget_Distance::handleTabs()
+
+void PropertyWidget_Distance::showTextDistances(double left, double top, double bottom, double right)
 {
-	if (m_doc && m_item)
-	{
-		PageItem_TextFrame *tItem = m_item->asTextFrame();
-		if (tItem == 0)
-			return;
-		const ParagraphStyle& style(m_doc->appMode == modeEdit ? tItem->currentStyle() : tItem->itemText.defaultStyle());
-		TabManager *dia = new TabManager(this, m_doc->unitIndex(), style.tabValues(), tItem->columnWidth());
-		if (dia->exec())
-		{
-			if (m_doc->appMode != modeEdit)
-			{
-				ParagraphStyle newStyle(m_item->itemText.defaultStyle());
-				newStyle.setTabValues(dia->tmpTab);
-				Selection tempSelection(this, false);
-				tempSelection.addItem(m_item, true);
-				m_doc->itemSelection_ApplyParagraphStyle(newStyle, &tempSelection);
-			}
-			else
-			{
-				ParagraphStyle newStyle;
-				newStyle.setTabValues(dia->tmpTab);
-				m_doc->itemSelection_ApplyParagraphStyle(newStyle);
-			}
-			m_item->update();
-		}
-		delete dia;
-	}
+	leftDistance->showValue(left * m_unitRatio);
+	topDistance->showValue(top * m_unitRatio);
+	bottomDistance->showValue(bottom * m_unitRatio);
+	rightDistance->showValue(right * m_unitRatio);
 }
 
 void PropertyWidget_Distance::handleTextDistances()
@@ -401,14 +387,34 @@ void PropertyWidget_Distance::handleTextDistances()
 	m_doc->regionsChanged()->update(QRect());
 }
 
-void PropertyWidget_Distance::changeEvent(QEvent *e)
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidget_Distance::handleAppModeChanged(int oldMode, int mode)
 {
-	if (e->type() == QEvent::LanguageChange)
+	if (oldMode == modeEditTable || mode == modeEditTable)
 	{
-		languageChange();
-		return;
+		setCurrentItem(m_item);
 	}
-	QWidget::changeEvent(e);
+}
+
+void PropertyWidget_Distance::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	setCurrentItem(currItem);
+	updateGeometry();
+}
+
+void PropertyWidget_Distance::handleUpdateRequest(int /*updateFlags*/)
+{
+	// Nothing to do in this widget
 }
 
 void PropertyWidget_Distance::languageChange()
@@ -458,4 +464,22 @@ void PropertyWidget_Distance::unitChange()
 	topDistance->blockSignals(false);
 	bottomDistance->blockSignals(false);
 	rightDistance->blockSignals(false);
+}
+
+
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidget_Distance::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	QWidget::changeEvent(e);
 }

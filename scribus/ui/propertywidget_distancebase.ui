@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>104</height>
+    <height>102</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,10 @@
   <property name="windowTitle">
    <string notr="true">Frame</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <property name="leftMargin">
     <number>4</number>
    </property>
@@ -50,181 +53,313 @@
    <property name="bottomMargin">
     <number>4</number>
    </property>
-   <property name="spacing">
-    <number>2</number>
-   </property>
-   <item row="2" column="1">
-    <widget class="QLabel" name="topLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&amp;Top</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QLabel" name="leftLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&amp;Left</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="distancesLabel">
-     <property name="text">
-      <string>Distances:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="ScrSpinBox" name="columnGap">
-     <property name="toolTip">
-      <string>Distance between columns</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="columnsLabel">
-     <property name="text">
-      <string>Colu&amp;mns:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2" colspan="2">
-    <widget class="ScComboBox" name="columnGapLabel">
-     <property name="toolTip">
-      <string>Switches between Gap or Column width</string>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0,0">
+     <property name="spacing">
+      <number>4</number>
      </property>
      <item>
-      <property name="text">
-       <string>Gap:</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="columnsLabel">
+         <property name="text">
+          <string>Colu&amp;mns:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>1</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </item>
      <item>
-      <property name="text">
-       <string>Width:</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="columns">
+         <property name="toolTip">
+          <string>Number of columns in text frame</string>
+         </property>
+         <property name="minimum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>3000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Amount</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
-    </widget>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScComboBox" name="columnGapLabel">
+         <property name="toolTip">
+          <string>Switches between Gap or Column width</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Gap:</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Width:</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Mode</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="columnGap">
+         <property name="toolTip">
+          <string>Distance between columns</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Size</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="bottomLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0,0,0,0">
+     <property name="spacing">
+      <number>4</number>
      </property>
-     <property name="text">
-      <string>&amp;Bottom</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="ScrSpinBox" name="bottomDistance">
-     <property name="toolTip">
-      <string>Distance of text from bottom of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="ScrSpinBox" name="columns">
-     <property name="toolTip">
-      <string>Number of columns in text frame</string>
-     </property>
-     <property name="minimum">
-      <double>1.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>3000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="ScrSpinBox" name="leftDistance">
-     <property name="maximumSize">
-      <size>
-       <width>300</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Distance of text from left of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="ScrSpinBox" name="rightDistance">
-     <property name="toolTip">
-      <string>Distance of text from right of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4">
-    <widget class="QLabel" name="rightLabel">
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&amp;Right</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="ScrSpinBox" name="topDistance">
-     <property name="toolTip">
-      <string>Distance of text from top of frame</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QToolButton" name="tabsButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>Edit tab settings of text frame...</string>
-     </property>
-     <property name="text">
-      <string>T&amp;abulators...</string>
-     </property>
-    </widget>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="distancesLabel">
+         <property name="text">
+          <string>Distances:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>1</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="leftDistance">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Distance of text from left of frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="leftLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&amp;Left</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="topDistance">
+         <property name="toolTip">
+          <string>Distance of text from top of frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="topLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&amp;Top</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="ScrSpinBox" name="rightDistance">
+         <property name="toolTip">
+          <string>Distance of text from right of frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="rightLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&amp;Right</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="bottomDistance">
+         <property name="toolTip">
+          <string>Distance of text from bottom of frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="bottomLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>&amp;Bottom</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

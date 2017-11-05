@@ -14,6 +14,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusdoc.h"
 #include "selection.h"
 #include "units.h"
+#include "tabmanager.h"
 #include "iconmanager.h"
 
 PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(parent)
@@ -23,7 +24,16 @@ PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(
 
 	setupUi(this);
 
+	// First Line Offset
+	flopRealHeight->setIcon(IconManager::instance()->loadPixmap("16/flob-align-realheight.png"));
+	flopRealHeight->setCheckable(true);
 	flopRealHeight->setChecked(true);
+	flopFontAscent->setIcon(IconManager::instance()->loadPixmap("16/flob-align-fontascent.png"));
+	flopFontAscent->setCheckable(true);
+	flopLineSpacing->setIcon(IconManager::instance()->loadPixmap("16/flob-align-linespace.png"));
+	flopLineSpacing->setCheckable(true);
+	flopBaselineGrid->setIcon(IconManager::instance()->loadPixmap("16/flob-align-baseline.png"));
+	flopBaselineGrid->setCheckable(true);
 
 	flopGroup->setId(flopRealHeight,  RealHeightID);
 	flopGroup->setId(flopFontAscent,  FontAscentID);
@@ -31,20 +41,26 @@ PropertyWidget_OptMargins::PropertyWidget_OptMargins(QWidget* parent) : QWidget(
 	flopGroup->setId(flopBaselineGrid, BaselineGridID);
 
 
-	flopRealHeight->setIcon(IconManager::instance()->loadPixmap("16/flob-align-realheight.png"));
-	flopFontAscent->setIcon(IconManager::instance()->loadPixmap("16/flob-align-fontascent.png"));
-	flopLineSpacing->setIcon(IconManager::instance()->loadPixmap("16/flob-align-linespace.png"));
-	flopBaselineGrid->setIcon(IconManager::instance()->loadPixmap("16/flob-align-baseline.png"));
-
+	// Optical Margins
 	optMarginRadioBoth->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-both.png"));
+	optMarginRadioBoth->setCheckable(true);
 	optMarginRadioLeft->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-left.png"));
+	optMarginRadioLeft->setCheckable(true);
 	optMarginRadioRight->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-right.png"));
+	optMarginRadioRight->setCheckable(true);
 	optMarginRadioNone->setIcon(IconManager::instance()->loadPixmap("16/optmar-align-none.png"));
+	optMarginRadioNone->setCheckable(true);
 
 	languageChange();
 
 	connect(flopGroup, SIGNAL(buttonClicked( int )), this, SLOT(handleFirstLinePolicy(int)));
 }
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertyWidget_OptMargins::setMainWindow(ScribusMainWindow* mw)
 {
@@ -53,6 +69,55 @@ void PropertyWidget_OptMargins::setMainWindow(ScribusMainWindow* mw)
 	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
+
+void PropertyWidget_OptMargins::connectSignals()
+{
+	//Optical Margins
+	connect(optMarginRadioNone  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	connect(optMarginRadioBoth  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	connect(optMarginRadioLeft  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	connect(optMarginRadioRight , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	connect(optMarginResetButton, SIGNAL(clicked()), this, SLOT(resetOpticalMargins()) );
+
+	//Tabs
+	connect(tabsButton    , SIGNAL(clicked())           , this, SLOT(handleTabs()), Qt::UniqueConnection);
+}
+
+void PropertyWidget_OptMargins::disconnectSignals()
+{
+	//Optical Margins
+	disconnect(optMarginRadioNone  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	disconnect(optMarginRadioBoth  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	disconnect(optMarginRadioLeft  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	disconnect(optMarginRadioRight , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
+	disconnect(optMarginResetButton, SIGNAL(clicked()), this, SLOT(resetOpticalMargins()) );
+
+	//Tabs
+	disconnect(tabsButton    , SIGNAL(clicked())           , this, SLOT(handleTabs()));
+}
+
+void PropertyWidget_OptMargins::configureWidgets(void)
+{
+	bool enabled = false;
+	if (m_item && m_doc)
+	{
+		PageItem_TextFrame* textItem = m_item->asTextFrame();
+		if (m_doc->appMode == modeEditTable)
+			textItem = m_item->asTable()->activeCell().textFrame();
+
+		enabled  = (m_item->isPathText() || (textItem != NULL));
+		enabled &= (m_doc->m_Selection->count() == 1);
+
+		showFirstLinePolicy(m_item->firstLineOffset()); // flopBox
+	}
+	setEnabled(enabled);
+}
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_OptMargins::setDoc(ScribusDoc *d)
 {
@@ -77,6 +142,12 @@ void PropertyWidget_OptMargins::setDoc(ScribusDoc *d)
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidget_OptMargins::setCurrentItem(PageItem *item)
 {
@@ -109,65 +180,6 @@ void PropertyWidget_OptMargins::setCurrentItem(PageItem *item)
 
 		connectSignals();
 	}
-}
-
-void PropertyWidget_OptMargins::connectSignals()
-{
-	connect(optMarginRadioNone  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	connect(optMarginRadioBoth  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	connect(optMarginRadioLeft  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	connect(optMarginRadioRight , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	connect(optMarginResetButton, SIGNAL(clicked()), this, SLOT(resetOpticalMargins()) );
-}
-
-void PropertyWidget_OptMargins::disconnectSignals()
-{
-	disconnect(optMarginRadioNone  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	disconnect(optMarginRadioBoth  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	disconnect(optMarginRadioLeft  , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	disconnect(optMarginRadioRight , SIGNAL(clicked()), this, SLOT(handleOpticalMargins()) );
-	disconnect(optMarginResetButton, SIGNAL(clicked()), this, SLOT(resetOpticalMargins()) );
-}
-
-void PropertyWidget_OptMargins::configureWidgets(void)
-{
-	bool enabled = false;
-	if (m_item && m_doc)
-	{
-		PageItem_TextFrame* textItem = m_item->asTextFrame();
-		if (m_doc->appMode == modeEditTable)
-			textItem = m_item->asTable()->activeCell().textFrame();
-
-		enabled  = (m_item->isPathText() || (textItem != NULL));
-		enabled &= (m_doc->m_Selection->count() == 1);
-
-		showFirstLinePolicy(m_item->firstLineOffset()); // flopBox
-	}
-	setEnabled(enabled);
-}
-
-void PropertyWidget_OptMargins::handleAppModeChanged(int oldMode, int mode)
-{
-	if (oldMode == modeEditTable || mode == modeEditTable)
-	{
-		setCurrentItem(m_item);
-	}
-}
-
-void PropertyWidget_OptMargins::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-
-	if (m_doc->m_Selection->count() > 1 )
-	{
-		flopRealHeight->setChecked(true);
-	}
-
-	setCurrentItem(currItem);
-	updateGeometry();
 }
 
 
@@ -278,6 +290,79 @@ void PropertyWidget_OptMargins::handleFirstLinePolicy(int radioFlop)
 
 /*********************************************************************
 *
+* Tabs
+*
+**********************************************************************/
+
+void PropertyWidget_OptMargins::handleTabs()
+{
+	if (m_doc && m_item)
+	{
+		PageItem_TextFrame *tItem = m_item->asTextFrame();
+		if (tItem == 0)
+			return;
+		const ParagraphStyle& style(m_doc->appMode == modeEdit ? tItem->currentStyle() : tItem->itemText.defaultStyle());
+		TabManager *dia = new TabManager(this, m_doc->unitIndex(), style.tabValues(), tItem->columnWidth());
+		if (dia->exec())
+		{
+			if (m_doc->appMode != modeEdit)
+			{
+				ParagraphStyle newStyle(m_item->itemText.defaultStyle());
+				newStyle.setTabValues(dia->tmpTab);
+				Selection tempSelection(this, false);
+				tempSelection.addItem(m_item, true);
+				m_doc->itemSelection_ApplyParagraphStyle(newStyle, &tempSelection);
+			}
+			else
+			{
+				ParagraphStyle newStyle;
+				newStyle.setTabValues(dia->tmpTab);
+				m_doc->itemSelection_ApplyParagraphStyle(newStyle);
+			}
+			m_item->update();
+		}
+		delete dia;
+	}
+}
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidget_OptMargins::handleAppModeChanged(int oldMode, int mode)
+{
+	if (oldMode == modeEditTable || mode == modeEditTable)
+	{
+		setCurrentItem(m_item);
+	}
+}
+
+void PropertyWidget_OptMargins::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+
+	if (m_doc->m_Selection->count() > 1 )
+	{
+		flopRealHeight->setChecked(true);
+	}
+
+	setCurrentItem(currItem);
+	updateGeometry();
+}
+
+void PropertyWidget_OptMargins::languageChange()
+{
+	retranslateUi(this);
+}
+
+
+/*********************************************************************
+*
 * Events
 *
 **********************************************************************/
@@ -290,9 +375,4 @@ void PropertyWidget_OptMargins::changeEvent(QEvent *e)
 		return;
 	}
 	QWidget::changeEvent(e);
-}
-
-void PropertyWidget_OptMargins::languageChange()
-{
-	retranslateUi(this);
 }

@@ -24,21 +24,20 @@ PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : QWidget(pare
 
 	setupUi(this);
 
-
-	//layout()->setAlignment( Qt::AlignLeft );
-
+	// Space
 	textBase->setValue( 0 );
 	textBaseLabel->setPixmap(IconManager::instance()->loadPixmap("textbase.png"));
 	trackingLabel->setPixmap(IconManager::instance()->loadPixmap("textkern.png"));
 
+	minWordTrackingLabel->setBuddy(minWordTrackingSpinBox);
+	normWordTrackingLabel->setBuddy(normWordTrackingSpinBox);
+
+	// Glyph Scale
 	scaleH->setValues(10, 400, 2, 100 );
 	scaleHLabel->setPixmap(IconManager::instance()->loadPixmap("textscaleh.png"));
 
 	scaleV->setValues(10, 400, 2, 100 );
 	scaleVLabel->setPixmap(IconManager::instance()->loadPixmap("textscalev.png"));
-
-	minWordTrackingLabel->setBuddy(minWordTrackingSpinBox);
-	normWordTrackingLabel->setBuddy(normWordTrackingSpinBox);
 
 	minGlyphExtensionLabel->setBuddy(minGlyphExtSpinBox);
 	maxGlyphExtensionLabel->setBuddy(maxGlyphExtSpinBox);
@@ -46,10 +45,80 @@ PropertyWidget_Advanced::PropertyWidget_Advanced(QWidget* parent) : QWidget(pare
 	languageChange();
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_Advanced::setMainWindow(ScribusMainWindow *mw)
 {
 	m_ScMW = mw;
 }
+
+void PropertyWidget_Advanced::connectSignals()
+{
+	// Space
+	connect(textBase, SIGNAL(valueChanged(double)), this, SLOT(handleBaselineOffset()));
+	connect(tracking, SIGNAL(valueChanged(double)), this, SLOT(handleTracking()));
+	connect(minWordTrackingSpinBox , SIGNAL(valueChanged(double)), this, SLOT(handleMinWordTracking()) );
+	connect(normWordTrackingSpinBox, SIGNAL(valueChanged(double)), this, SLOT(handleNormWordTracking()) );
+
+	// Glyph Scale
+	connect(scaleH  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleH()));
+	connect(scaleV  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleV()));
+	connect(minGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMinGlyphExtension()) );
+	connect(maxGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMaxGlyphExtension()) );
+
+	// Hyphenation
+	connect( hyphenateButton, SIGNAL(pressed()), this, SLOT(handleHyphenate()) );
+	connect( dehyphenateButton, SIGNAL(pressed()), this, SLOT(handleDeHyphenate()) );
+
+}
+
+void PropertyWidget_Advanced::disconnectSignals()
+{
+	// Space
+	disconnect(textBase, SIGNAL(valueChanged(double)), this, SLOT(handleBaselineOffset()));
+	disconnect(tracking, SIGNAL(valueChanged(double)), this, SLOT(handleTracking()));
+	disconnect(minWordTrackingSpinBox , SIGNAL(valueChanged(double)), this, SLOT(handleMinWordTracking()) );
+	disconnect(normWordTrackingSpinBox, SIGNAL(valueChanged(double)), this, SLOT(handleNormWordTracking()) );
+
+	// Glyph Scale
+	disconnect(scaleH  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleH()));
+	disconnect(scaleV  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleV()));
+	disconnect(minGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMinGlyphExtension()) );
+	disconnect(maxGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMaxGlyphExtension()) );
+
+	// Hyphenation
+	disconnect( hyphenateButton, SIGNAL(pressed()), this, SLOT(handleHyphenate()) );
+	disconnect( dehyphenateButton, SIGNAL(pressed()), this, SLOT(handleDeHyphenate()) );
+}
+
+void PropertyWidget_Advanced::configureWidgets(void)
+{
+	bool enabled = false;
+	if (m_item && m_doc)
+	{
+		if (m_item->asPathText() || m_item->asTextFrame() || m_item->asTable())
+			enabled = true;
+		if ((m_item->isGroup()) && (!m_item->isSingleSel))
+			enabled = false;
+		if (m_item->asOSGFrame() || m_item->asSymbolFrame())
+			enabled = false;
+		if (m_doc->m_Selection->count() > 1)
+			enabled = false;
+	}
+	setEnabled(enabled);
+}
+
+
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_Advanced::setDoc(ScribusDoc *d)
 {
@@ -74,15 +143,24 @@ void PropertyWidget_Advanced::setDoc(ScribusDoc *d)
 	m_unitRatio   = m_doc->unitRatio();
 	m_unitIndex   = m_doc->unitIndex();
 
+	// Space
 	tracking->setValues( -300, 300, 2, 0);
 	minWordTrackingSpinBox->setValues(1, 100, 2, 100);
 	normWordTrackingSpinBox->setValues(1, 2000, 2, 100);
+
+	// Glyph Scale
 	minGlyphExtSpinBox->setValues(90, 110, 2, 100);
 	maxGlyphExtSpinBox->setValues(90, 110, 2, 100);
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidget_Advanced::setCurrentItem(PageItem *item)
 {
@@ -116,56 +194,37 @@ void PropertyWidget_Advanced::setCurrentItem(PageItem *item)
 	}
 }
 
-void PropertyWidget_Advanced::connectSignals()
-{
-	connect(textBase, SIGNAL(valueChanged(double)), this, SLOT(handleBaselineOffset()));
-	connect(tracking, SIGNAL(valueChanged(double)), this, SLOT(handleTracking()));
-	connect(scaleH  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleH()));
-	connect(scaleV  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleV()));
-	connect(minWordTrackingSpinBox , SIGNAL(valueChanged(double)), this, SLOT(handleMinWordTracking()) );
-	connect(normWordTrackingSpinBox, SIGNAL(valueChanged(double)), this, SLOT(handleNormWordTracking()) );
-	connect(minGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMinGlyphExtension()) );
-	connect(maxGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMaxGlyphExtension()) );
-}
 
-void PropertyWidget_Advanced::disconnectSignals()
-{
-	disconnect(textBase, SIGNAL(valueChanged(double)), this, SLOT(handleBaselineOffset()));
-	disconnect(tracking, SIGNAL(valueChanged(double)), this, SLOT(handleTracking()));
-	disconnect(scaleH  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleH()));
-	disconnect(scaleV  , SIGNAL(valueChanged(double)), this, SLOT(handleTextScaleV()));
-	disconnect(minWordTrackingSpinBox , SIGNAL(valueChanged(double)), this, SLOT(handleMinWordTracking()) );
-	disconnect(normWordTrackingSpinBox, SIGNAL(valueChanged(double)), this, SLOT(handleNormWordTracking()) );
-	disconnect(minGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMinGlyphExtension()) );
-	disconnect(maxGlyphExtSpinBox     , SIGNAL(valueChanged(double)), this, SLOT(handleMaxGlyphExtension()) );
-}
+/*********************************************************************
+*
+* Hyphenation
+*
+**********************************************************************/
 
-void PropertyWidget_Advanced::configureWidgets(void)
-{
-	bool enabled = false;
-	if (m_item && m_doc)
-	{
-		if (m_item->asPathText() || m_item->asTextFrame() || m_item->asTable())
-			enabled = true;
-		if ((m_item->isGroup()) && (!m_item->isSingleSel))
-			enabled = false;
-		if (m_item->asOSGFrame() || m_item->asSymbolFrame())
-			enabled = false;
-		if (m_doc->m_Selection->count() > 1)
-			enabled = false;
-	}
-	setEnabled(enabled);
-}
+void PropertyWidget_Advanced::handleHyphenate(){
 
-void PropertyWidget_Advanced::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	PageItem* currItem = currentItemFromSelection();
-	setCurrentItem(currItem);
-	updateGeometry();
+	m_doc->itemSelection_DoHyphenate();
+
 }
+
+void PropertyWidget_Advanced::handleDeHyphenate(){
+
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	m_doc->itemSelection_DoDeHyphenate();
+}
+
+/*********************************************************************
+*
+* Space
+*
+**********************************************************************/
+
+
 
 void PropertyWidget_Advanced::showBaseLineOffset(double e)
 {
@@ -174,19 +233,6 @@ void PropertyWidget_Advanced::showBaseLineOffset(double e)
 	textBase->showValue(e / 10.0);
 }
 
-void PropertyWidget_Advanced::showTextScaleH(double e)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	scaleH->showValue(e / 10.0);
-}
-
-void PropertyWidget_Advanced::showTextScaleV(double e)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	scaleV->showValue(e / 10.0);
-}
 
 void PropertyWidget_Advanced::showTracking(double e)
 {
@@ -243,6 +289,43 @@ void PropertyWidget_Advanced::handleNormWordTracking()
 		m_doc->itemSelection_ApplyParagraphStyle(newStyle, &tempSelection);
 	}
 }
+
+void PropertyWidget_Advanced::handleTracking()
+{
+	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	PageItem *i2 = m_item;
+	if (m_doc->appMode == modeEditTable)
+		i2 = m_item->asTable()->activeCell().textFrame();
+	if (i2 != NULL)
+	{
+		Selection tempSelection(this, false);
+		tempSelection.addItem(i2, true);
+		m_doc->itemSelection_SetTracking(qRound(tracking->value() * 10.0), &tempSelection);
+	}
+}
+
+/*********************************************************************
+*
+* Glyph Scale
+*
+**********************************************************************/
+
+void PropertyWidget_Advanced::showTextScaleH(double e)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	scaleH->showValue(e / 10.0);
+}
+
+void PropertyWidget_Advanced::showTextScaleV(double e)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	scaleV->showValue(e / 10.0);
+}
+
+
 
 void PropertyWidget_Advanced::handleMinGlyphExtension()
 {
@@ -308,20 +391,11 @@ void PropertyWidget_Advanced::handleTextScaleV()
 	}
 }
 
-void PropertyWidget_Advanced::handleTracking()
-{
-	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	PageItem *i2 = m_item;
-	if (m_doc->appMode == modeEditTable)
-		i2 = m_item->asTable()->activeCell().textFrame();
-	if (i2 != NULL)
-	{
-		Selection tempSelection(this, false);
-		tempSelection.addItem(i2, true);
-		m_doc->itemSelection_SetTracking(qRound(tracking->value() * 10.0), &tempSelection);
-	}
-}
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
 
 void PropertyWidget_Advanced::updateCharStyle(const CharStyle& charStyle)
 {
@@ -354,6 +428,27 @@ void PropertyWidget_Advanced::updateStyle(const ParagraphStyle& newCurrent)
 	maxGlyphExtSpinBox->showValue(newCurrent.maxGlyphExtension() * 100.0);
 }
 
+void PropertyWidget_Advanced::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	setCurrentItem(currItem);
+	updateGeometry();
+}
+
+void PropertyWidget_Advanced::languageChange()
+{
+	retranslateUi(this);
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
 void PropertyWidget_Advanced::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -362,9 +457,4 @@ void PropertyWidget_Advanced::changeEvent(QEvent *e)
 		return;
 	}
 	QWidget::changeEvent(e);
-}
-
-void PropertyWidget_Advanced::languageChange()
-{
-	retranslateUi(this);
 }

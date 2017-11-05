@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTBASE_H
-#define PROPERTYWIDGET_TEXTBASE_H
+#ifndef PROPERTYWIDGET_TEXTFONT_H
+#define PROPERTYWIDGET_TEXTFONT_H
 
-#include "ui_propertywidget_textbase.h"
+#include "ui_propertywidget_textfont.h"
 #include "propertywidgetbase.h"
 //#include "scribus.h"
 #include "shadebutton.h"
@@ -20,14 +20,14 @@ class ParagraphStyle;
 class ScribusDoc;
 class ScribusMainWindow;
 
-class PropertyWidget_TextBase : public QWidget, Ui::PropertyWidget_TextBase,
+class PropertyWidget_TextFont : public QWidget, Ui::PropertyWidget_TextFont,
 		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidget_TextBase(QWidget* parent = 0);
-	~PropertyWidget_TextBase() {}
+	PropertyWidget_TextFont(QWidget* parent = 0);
+	~PropertyWidget_TextFont() {}
 
 	void updateColorList();
 	virtual void changeEvent(QEvent *e);
@@ -41,8 +41,8 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
-	double m_unitRatio;
-	int    m_unitIndex;
+//	double m_unitRatio;
+//	int    m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;

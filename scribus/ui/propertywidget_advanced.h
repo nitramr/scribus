@@ -68,6 +68,9 @@ private slots:
 	void handleTextScaleV();
 	void handleTracking();
 
+	void handleHyphenate();
+	void handleDeHyphenate();
+
 };
 
 #endif

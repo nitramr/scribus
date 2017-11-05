@@ -65,6 +65,7 @@ public slots:
 private slots:
 	void handleFirstLinePolicy(int radioFlop);
 	void handleOpticalMargins();
+	void handleTabs();
 	void resetOpticalMargins();
 
 };

@@ -43,6 +43,12 @@ PropertyWidget_TextStyles::PropertyWidget_TextStyles(QWidget* parent) : QWidget(
 	setEnabled(false);
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_TextStyles::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
@@ -52,6 +58,12 @@ void PropertyWidget_TextStyles::setMainWindow(ScribusMainWindow* mw)
 	connect(paraStyleCombo, SIGNAL(newStyle(const QString&)), m_ScMW, SLOT(setNewParStyle(const QString&)), Qt::UniqueConnection);
 	connect(charStyleCombo, SIGNAL(newStyle(const QString&)), m_ScMW, SLOT(setNewCharStyle(const QString&)), Qt::UniqueConnection);
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_TextStyles::setDoc(ScribusDoc *d)
 {
@@ -100,6 +112,12 @@ void PropertyWidget_TextStyles::unsetDoc()
 	setEnabled(false);
 }
 
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
 void PropertyWidget_TextStyles::setCurrentItem(PageItem *i)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
@@ -143,8 +161,6 @@ void PropertyWidget_TextStyles::setCurrentItem(PageItem *i)
 }
 
 
-// Remove Candidate?
-
 PageItem* PropertyWidget_TextStyles::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
@@ -161,6 +177,76 @@ PageItem* PropertyWidget_TextStyles::currentItemFromSelection()
 
 	return currentItem;
 }
+
+/*********************************************************************
+*
+* Styles
+*
+**********************************************************************/
+
+void PropertyWidget_TextStyles::updateCharStyles()
+{
+	charStyleCombo->updateFormatList();
+}
+
+void PropertyWidget_TextStyles::updateParagraphStyles()
+{
+	paraStyleCombo->updateFormatList();
+	charStyleCombo->updateFormatList();
+}
+
+void PropertyWidget_TextStyles::updateTextStyles()
+{
+	paraStyleCombo->updateFormatList();
+	charStyleCombo->updateFormatList();
+}
+
+
+void PropertyWidget_TextStyles::showCharStyle(const QString& name)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	bool blocked = charStyleCombo->blockSignals(true);
+	charStyleCombo->setFormat(name);
+	charStyleCombo->blockSignals(blocked);
+}
+
+void PropertyWidget_TextStyles::showParStyle(const QString& name)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	bool blocked = paraStyleCombo->blockSignals(true);
+	paraStyleCombo->setFormat(name);
+	paraStyleCombo->blockSignals(blocked);
+}
+
+void PropertyWidget_TextStyles::doClearCStyle()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
+		return;
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_EraseCharStyle(&tempSelection);
+}
+
+
+void PropertyWidget_TextStyles::doClearPStyle()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
+		return;
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_ClearBulNumStrings(&tempSelection);
+	m_doc->itemSelection_EraseParagraphStyle(&tempSelection);
+	CharStyle emptyCStyle;
+	m_doc->itemSelection_SetCharStyle(emptyCStyle, &tempSelection);
+}
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
 
 void PropertyWidget_TextStyles::handleSelectionChanged()
 {
@@ -217,41 +303,7 @@ void PropertyWidget_TextStyles::updateStyle(const ParagraphStyle& newCurrent)
 
 }
 
-void PropertyWidget_TextStyles::updateCharStyles()
-{
-	charStyleCombo->updateFormatList();
-}
 
-void PropertyWidget_TextStyles::updateParagraphStyles()
-{
-	paraStyleCombo->updateFormatList();
-	charStyleCombo->updateFormatList();
-}
-
-void PropertyWidget_TextStyles::updateTextStyles()
-{
-	paraStyleCombo->updateFormatList();
-	charStyleCombo->updateFormatList();
-}
-
-
-void PropertyWidget_TextStyles::showCharStyle(const QString& name)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool blocked = charStyleCombo->blockSignals(true);
-	charStyleCombo->setFormat(name);
-	charStyleCombo->blockSignals(blocked);
-}
-
-void PropertyWidget_TextStyles::showParStyle(const QString& name)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	bool blocked = paraStyleCombo->blockSignals(true);
-	paraStyleCombo->setFormat(name);
-	paraStyleCombo->blockSignals(blocked);
-}
 
 void PropertyWidget_TextStyles::handleUpdateRequest(int updateFlags)
 {
@@ -272,29 +324,17 @@ void PropertyWidget_TextStyles::handleUpdateRequest(int updateFlags)
 	}
 }
 
-void PropertyWidget_TextStyles::doClearCStyle()
+void PropertyWidget_TextStyles::languageChange()
 {
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_EraseCharStyle(&tempSelection);
+	retranslateUi(this);
+
 }
 
-
-void PropertyWidget_TextStyles::doClearPStyle()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_ClearBulNumStrings(&tempSelection);
-	m_doc->itemSelection_EraseParagraphStyle(&tempSelection);
-	CharStyle emptyCStyle;
-	m_doc->itemSelection_SetCharStyle(emptyCStyle, &tempSelection);
-}
-
-
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
 
 void PropertyWidget_TextStyles::changeEvent(QEvent *e)
 {
@@ -306,8 +346,4 @@ void PropertyWidget_TextStyles::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 }
 
-void PropertyWidget_TextStyles::languageChange()
-{
-	retranslateUi(this);
 
-}

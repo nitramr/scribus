@@ -31,7 +31,7 @@ class PropertyWidget_Orphans;
 class PropertyWidget_PathText;
 class PropertyWidget_TextAdvanced;
 class PropertyWidget_TextAlignment;
-class PropertyWidget_TextBase;
+class PropertyWidget_TextFont;
 class PropertyWidget_TextColor;
 class PropertyWidget_TextStyles;
 //class ScComboBox;
@@ -84,7 +84,7 @@ protected:
 	PropertyWidget_PathText* pathTextWidgets;
 	PropertyWidget_TextAdvanced* textAdvancedWidgets;
 	PropertyWidget_TextAlignment* textAlignmentWidgets;
-	PropertyWidget_TextBase* textWidgets;
+	PropertyWidget_TextFont* textWidgets;
 	PropertyWidget_TextColor* colorWidgets;
 	PropertyWidget_TextStyles* textStylesWidgets;
 

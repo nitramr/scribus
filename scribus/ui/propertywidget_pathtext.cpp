@@ -35,12 +35,55 @@ PropertyWidget_PathText::PropertyWidget_PathText(QWidget* parent) : QWidget(pare
 	languageChange();
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_PathText::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
+
+void PropertyWidget_PathText::connectSignals()
+{
+	connect(showCurveCheckBox, SIGNAL(clicked())     , this, SLOT(handlePathLine()));
+	connect(pathTextType     , SIGNAL(activated(int)), this, SLOT(handlePathType()));
+	connect(flippedPathText  , SIGNAL(clicked())     , this, SLOT(handlePathFlip()));
+	connect(startOffset      , SIGNAL(valueChanged(double)), this, SLOT(handlePathDist()));
+	connect(distFromCurve    , SIGNAL(valueChanged(double)), this, SLOT(handlePathOffs()));
+}
+
+void PropertyWidget_PathText::disconnectSignals()
+{
+	disconnect(showCurveCheckBox, SIGNAL(clicked())     , this, SLOT(handlePathLine()));
+	disconnect(pathTextType     , SIGNAL(activated(int)), this, SLOT(handlePathType()));
+	disconnect(flippedPathText  , SIGNAL(clicked())     , this, SLOT(handlePathFlip()));
+	disconnect(startOffset      , SIGNAL(valueChanged(double)), this, SLOT(handlePathDist()));
+	disconnect(distFromCurve    , SIGNAL(valueChanged(double)), this, SLOT(handlePathOffs()));
+}
+
+void PropertyWidget_PathText::configureWidgets(void)
+{
+	bool enabled = false;
+	if (m_item && m_doc)
+	{
+		enabled  = m_item->isPathText();
+		enabled &= (m_doc->m_Selection->count() == 1);
+	}
+	//setEnabled(enabled);
+	setVisible(enabled);
+
+}
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_PathText::setDoc(ScribusDoc *d)
 {
@@ -75,6 +118,12 @@ void PropertyWidget_PathText::setDoc(ScribusDoc *d)
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidget_PathText::setCurrentItem(PageItem *item)
 {
@@ -117,51 +166,12 @@ void PropertyWidget_PathText::setCurrentItem(PageItem *item)
 	}
 }
 
-void PropertyWidget_PathText::connectSignals()
-{
-	connect(showCurveCheckBox, SIGNAL(clicked())     , this, SLOT(handlePathLine()));
-	connect(pathTextType     , SIGNAL(activated(int)), this, SLOT(handlePathType()));
-	connect(flippedPathText  , SIGNAL(clicked())     , this, SLOT(handlePathFlip()));
-	connect(startOffset      , SIGNAL(valueChanged(double)), this, SLOT(handlePathDist()));
-	connect(distFromCurve    , SIGNAL(valueChanged(double)), this, SLOT(handlePathOffs()));
-}
 
-void PropertyWidget_PathText::disconnectSignals()
-{
-	disconnect(showCurveCheckBox, SIGNAL(clicked())     , this, SLOT(handlePathLine()));
-	disconnect(pathTextType     , SIGNAL(activated(int)), this, SLOT(handlePathType()));
-	disconnect(flippedPathText  , SIGNAL(clicked())     , this, SLOT(handlePathFlip()));
-	disconnect(startOffset      , SIGNAL(valueChanged(double)), this, SLOT(handlePathDist()));
-	disconnect(distFromCurve    , SIGNAL(valueChanged(double)), this, SLOT(handlePathOffs()));
-}
-
-void PropertyWidget_PathText::configureWidgets(void)
-{
-	bool enabled = false;
-	if (m_item && m_doc)
-	{
-		enabled  = m_item->isPathText();
-		enabled &= (m_doc->m_Selection->count() == 1);
-	}
-	//setEnabled(enabled);
-	setVisible(enabled);
-
-}
-
-void PropertyWidget_PathText::handleSelectionChanged()
-{
-	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-	setCurrentItem(currItem);
-	updateGeometry();
-}
-
-void PropertyWidget_PathText::handleUpdateRequest(int /*updateFlags*/)
-{
-	// Nothing to do
-}
+/*********************************************************************
+*
+* Path
+*
+**********************************************************************/
 
 void PropertyWidget_PathText::handlePathDist()
 {
@@ -212,15 +222,11 @@ void PropertyWidget_PathText::handlePathType()
 	m_doc->regionsChanged()->update(QRect());
 }
 
-void PropertyWidget_PathText::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	QWidget::changeEvent(e);
-}
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
 
 void PropertyWidget_PathText::languageChange()
 {
@@ -231,13 +237,13 @@ void PropertyWidget_PathText::languageChange()
 	pathTextType->addItem( tr("Stair Step"));
 	pathTextType->addItem( tr("Skew"));
 	pathTextType->setCurrentIndex(oldPathType);
-	
+
 	flippedPathText->setText( tr("Flip Text"));
 	showCurveCheckBox->setText( tr("Show Curve"));
 	pathTextTypeLabel->setText( tr("Type:"));
 	startOffsetLabel->setText( tr("Start Offset:"));
 	distFromCurveLabel->setText( tr("Distance from Curve:"));
-	
+
 	QString ptSuffix = tr(" pt");
 	QString unitSuffix = m_doc ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
 	startOffset->setSuffix(unitSuffix);
@@ -254,4 +260,35 @@ void PropertyWidget_PathText::unitChange()
 
 	startOffset->setNewUnit( m_unitIndex );
 	distFromCurve->setNewUnit( m_unitIndex );
+}
+
+void PropertyWidget_PathText::handleSelectionChanged()
+{
+	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	setCurrentItem(currItem);
+	updateGeometry();
+}
+
+void PropertyWidget_PathText::handleUpdateRequest(int /*updateFlags*/)
+{
+	// Nothing to do
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidget_PathText::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	QWidget::changeEvent(e);
 }

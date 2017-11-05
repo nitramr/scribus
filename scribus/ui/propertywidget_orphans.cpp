@@ -21,6 +21,12 @@ PropertyWidget_Orphans::PropertyWidget_Orphans(QWidget* parent) : QWidget(parent
 	languageChange();
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_Orphans::connectSignals()
 {
 	connect(keepLinesStart, SIGNAL(valueChanged(double)), this, SLOT(handleKeepLinesStart()));
@@ -36,6 +42,12 @@ void PropertyWidget_Orphans::disconnectSignals()
 	disconnect(keepTogether, SIGNAL(stateChanged(int)), this, SLOT(handleKeepTogether()));
 	disconnect(keepWithNext, SIGNAL(stateChanged(int)), this, SLOT(handleKeepWithNext()));
 }
+
+/*********************************************************************
+*
+* Orphans
+*
+**********************************************************************/
 
 void PropertyWidget_Orphans::handleKeepLinesStart()
 {
@@ -69,6 +81,14 @@ void PropertyWidget_Orphans::handleKeepWithNext()
 	m_doc->itemSelection_ApplyParagraphStyle(newStyle);
 }
 
+
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
 void PropertyWidget_Orphans::updateStyle(const ParagraphStyle& newCurrent)
 {
 	disconnectSignals ();
@@ -79,6 +99,17 @@ void PropertyWidget_Orphans::updateStyle(const ParagraphStyle& newCurrent)
 	connectSignals ();
 }
 
+void PropertyWidget_Orphans::languageChange()
+{
+	retranslateUi(this);
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
 void PropertyWidget_Orphans::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -88,9 +119,3 @@ void PropertyWidget_Orphans::changeEvent(QEvent *e)
 	}
 	QWidget::changeEvent(e);
 }
-
-void PropertyWidget_Orphans::languageChange()
-{
-	retranslateUi(this);
-}
-

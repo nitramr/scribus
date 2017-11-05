@@ -32,16 +32,29 @@ PropertyWidget_TextAdvanced::PropertyWidget_TextAdvanced(QWidget* parent) : QWid
 
 	languageChange();
 
+	// Language
 	connect(langCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLang(int)));
 
 	m_haveItem = false;
 	setEnabled(false);
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidget_TextAdvanced::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidget_TextAdvanced::setDoc(ScribusDoc *d)
 {
@@ -80,6 +93,12 @@ void PropertyWidget_TextAdvanced::unsetDoc()
 
 	setEnabled(false);
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidget_TextAdvanced::setCurrentItem(PageItem *i)
 {
@@ -142,6 +161,66 @@ PageItem* PropertyWidget_TextAdvanced::currentItemFromSelection()
 }
 
 
+
+
+/*********************************************************************
+*
+* Language
+*
+**********************************************************************/
+
+void PropertyWidget_TextAdvanced::changeLang(int id)
+{
+	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	QStringList languageList;
+	LanguageManager::instance()->fillInstalledStringList(&languageList);
+	QString abrv = LanguageManager::instance()->getAbbrevFromLang(languageList.value(id),false);
+	Selection tempSelection(this, false);
+	tempSelection.addItem(m_item, true);
+	m_doc->itemSelection_SetLanguage(abrv, &tempSelection);
+}
+
+
+void PropertyWidget_TextAdvanced::showLanguage(QString w)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	QStringList lang;
+	LanguageManager::instance()->fillInstalledStringList(&lang);
+	QString langName = LanguageManager::instance()->getLangFromAbbrev(w, true);
+
+	bool sigBlocked  = langCombo->blockSignals(true);
+	langCombo->setCurrentIndex(lang.indexOf(langName));
+	langCombo->blockSignals(sigBlocked);
+}
+
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidget_TextAdvanced::updateCharStyle(const CharStyle& charStyle)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	showLanguage(charStyle.language());
+}
+
+void PropertyWidget_TextAdvanced::updateStyle(const ParagraphStyle& newCurrent)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	const CharStyle& charStyle = newCurrent.charStyle();
+
+	showLanguage(charStyle.language());
+
+}
+
 void PropertyWidget_TextAdvanced::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -183,63 +262,6 @@ void PropertyWidget_TextAdvanced::handleSelectionChanged()
 	//repaint();
 }
 
-
-void PropertyWidget_TextAdvanced::changeLang(int id)
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	QStringList languageList;
-	LanguageManager::instance()->fillInstalledStringList(&languageList);
-	QString abrv = LanguageManager::instance()->getAbbrevFromLang(languageList.value(id),false);
-	Selection tempSelection(this, false);
-	tempSelection.addItem(m_item, true);
-	m_doc->itemSelection_SetLanguage(abrv, &tempSelection);
-}
-
-
-void PropertyWidget_TextAdvanced::showLanguage(QString w)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	QStringList lang;
-	LanguageManager::instance()->fillInstalledStringList(&lang);
-	QString langName = LanguageManager::instance()->getLangFromAbbrev(w, true);
-
-	bool sigBlocked  = langCombo->blockSignals(true);
-	langCombo->setCurrentIndex(lang.indexOf(langName));
-	langCombo->blockSignals(sigBlocked);
-}
-
-void PropertyWidget_TextAdvanced::updateCharStyle(const CharStyle& charStyle)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	showLanguage(charStyle.language());
-}
-
-void PropertyWidget_TextAdvanced::updateStyle(const ParagraphStyle& newCurrent)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	const CharStyle& charStyle = newCurrent.charStyle();
-
-	showLanguage(charStyle.language());
-
-}
-
-
-void PropertyWidget_TextAdvanced::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	QWidget::changeEvent(e);
-}
-
 void PropertyWidget_TextAdvanced::languageChange()
 {
 	retranslateUi(this);
@@ -252,4 +274,20 @@ void PropertyWidget_TextAdvanced::languageChange()
 	langCombo->addItems(languageList);
 	langCombo->setCurrentIndex(oldLang);
 
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidget_TextAdvanced::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	QWidget::changeEvent(e);
 }
