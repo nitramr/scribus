@@ -33,7 +33,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusview.h"
 #include "selection.h"
 #include "ui/customfdialog.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scmwmenumanager.h"
 #include "undomanager.h"
 #include "util.h"

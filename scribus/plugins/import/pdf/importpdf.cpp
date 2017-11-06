@@ -58,7 +58,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/customfdialog.h"
 #include "ui/missing.h"
 #include "ui/multiprogressdialog.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 
 #define POPPLER_VERSION_ENCODE(major, minor, micro) (	\
 	  ((major) * 10000)				\

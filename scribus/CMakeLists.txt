@@ -168,22 +168,21 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
-	ui/propertywidget_distancebase.ui
-	ui/propertywidget_pareffectbase.ui
-	ui/propertywidget_flopbase.ui
-	ui/propertywidget_fontfeaturesbase.ui
-	ui/propertywidget_glyphspace.ui
-	ui/propertywidget_glyphstretch.ui
-	ui/propertywidget_hyphenate.ui
-	ui/propertywidget_hyphenationbase.ui
-	ui/propertywidget_optmarginsbase.ui
-	ui/propertywidget_orphansbase.ui
-	ui/propertywidget_pathtextbase.ui
-	ui/propertywidget_textadvanced.ui
-	ui/propertywidget_textalignment.ui
-	ui/propertywidget_textcolorbase.ui
-	ui/propertywidget_textfont.ui
-	ui/propertywidget_textstyles.ui
+	ui/propertywidgettext_distancebase.ui
+	ui/propertywidgettext_pareffectbase.ui
+	ui/propertywidgettext_fontfeaturesbase.ui
+	ui/propertywidgettext_glyphspace.ui
+	ui/propertywidgettext_glyphstretch.ui
+	ui/propertywidgettext_hyphenate.ui
+	ui/propertywidgettext_hyphenationbase.ui
+	ui/propertywidgettext_optmarginsbase.ui
+	ui/propertywidgettext_orphansbase.ui
+	ui/propertywidgettext_pathtextbase.ui
+	ui/propertywidgettext_textadvanced.ui
+	ui/propertywidgettext_textalignment.ui
+	ui/propertywidgettext_textcolorbase.ui
+	ui/propertywidgettext_textfont.ui
+	ui/propertywidgettext_textstyles.ui
 	ui/recoverdialog.ui
 	ui/replacecolors.ui
 	ui/replaceonecolor.ui
@@ -461,32 +460,33 @@ set(SCRIBUS_MOC_CLASSES
 	ui/prefspanel.h
 	ui/preview.h
 	ui/printdialog.h
-	ui/propertiespalette.h
+	ui/propertiescontentpalette.h
+	ui/propertiescontentpalette_image.h
+	ui/propertiescontentpalette_text.h
+	ui/propertiesframepalette.h
 	ui/propertiespalette_group.h
 	ui/propertiespalette_image.h
 	ui/propertiespalette_line.h
 	ui/propertiespalette_shadow.h
 	ui/propertiespalette_shape.h
 	ui/propertiespalette_table.h
-	ui/propertiespalette_text.h
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
-	ui/propertywidget_distance.h
-	ui/propertywidget_pareffect.h
-	ui/propertywidget_flop.h
-	ui/propertywidget_glyphspace.h
-	ui/propertywidget_glyphstretch.h
-	ui/propertywidget_hyphenate.h
-	ui/propertywidget_hyphenation.h
-	ui/propertywidget_optmargins.h
-	ui/propertywidget_orphans.h
-	ui/propertywidget_pathtext.h
-	ui/propertywidget_textadvanced.h
-	ui/propertywidget_textalignment.h
-	ui/propertywidget_textcolor.h
-	ui/propertywidget_textfont.h
-	ui/propertywidget_textstyles.h
-	ui/propertywidget_fontfeatures.h
+	ui/propertywidgettext_distance.h
+	ui/propertywidgettext_pareffect.h
+	ui/propertywidgettext_glyphspace.h
+	ui/propertywidgettext_glyphstretch.h
+	ui/propertywidgettext_hyphenate.h
+	ui/propertywidgettext_hyphenation.h
+	ui/propertywidgettext_optmargins.h
+	ui/propertywidgettext_orphans.h
+	ui/propertywidgettext_pathtext.h
+	ui/propertywidgettext_textadvanced.h
+	ui/propertywidgettext_textalignment.h
+	ui/propertywidgettext_textcolor.h
+	ui/propertywidgettext_textfont.h
+	ui/propertywidgettext_textstyles.h
+	ui/propertywidgettext_fontfeatures.h
 	ui/proptree.h
 	ui/query.h
 	ui/recoverdialog.h
@@ -561,7 +561,6 @@ set(SCRIBUS_MOC_CLASSES
 	ui/tabmanager.h
 	ui/tabpdfoptions.h
 	ui/tabruler.h
-	ui/textpalette.h
 	ui/transformdialog.h
 	ui/transparencypalette.h
 	tt/simpletreemodel/treemodel.h
@@ -834,8 +833,8 @@ set(SCRIBUS_SOURCES
 	ui/collectforoutput_ui.cpp
 	ui/colorchart.cpp
 	ui/colorcombo.cpp
-    ui/sccolorfillsbox.cpp
-    ui/sccolorpicker.cpp
+	ui/sccolorfillsbox.cpp
+	ui/sccolorpicker.cpp
 	ui/colorlistbox.cpp
 	ui/colorlistmodel.cpp
 	ui/colorsandfills.cpp
@@ -950,32 +949,33 @@ set(SCRIBUS_SOURCES
 	ui/prefspanel.cpp
 	ui/preview.cpp
 	ui/printdialog.cpp
-	ui/propertiespalette.cpp
+	ui/propertiescontentpalette.cpp
+	ui/propertiescontentpalette_image.cpp
+	ui/propertiescontentpalette_text.cpp
+	ui/propertiesframepalette.cpp
 	ui/propertiespalette_image.cpp
 	ui/propertiespalette_group.cpp
 	ui/propertiespalette_line.cpp
 	ui/propertiespalette_shadow.cpp
 	ui/propertiespalette_shape.cpp
 	ui/propertiespalette_table.cpp
-	ui/propertiespalette_text.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
-	ui/propertywidget_distance.cpp
-	ui/propertywidget_pareffect.cpp
-	ui/propertywidget_flop.cpp
-	ui/propertywidget_glyphspace.cpp
-	ui/propertywidget_glyphstretch.cpp
-	ui/propertywidget_hyphenate.cpp
-	ui/propertywidget_hyphenation.cpp
-	ui/propertywidget_optmargins.cpp
-	ui/propertywidget_orphans.cpp
-	ui/propertywidget_pathtext.cpp
-    ui/propertywidget_textadvanced.cpp
-	ui/propertywidget_textalignment.cpp
-	ui/propertywidget_textcolor.cpp
-	ui/propertywidget_textstyles.cpp
-	ui/propertywidget_textfont.cpp
-	ui/propertywidget_fontfeatures.cpp
+	ui/propertywidgettext_distance.cpp
+	ui/propertywidgettext_pareffect.cpp
+	ui/propertywidgettext_glyphspace.cpp
+	ui/propertywidgettext_glyphstretch.cpp
+	ui/propertywidgettext_hyphenate.cpp
+	ui/propertywidgettext_hyphenation.cpp
+	ui/propertywidgettext_optmargins.cpp
+	ui/propertywidgettext_orphans.cpp
+	ui/propertywidgettext_pathtext.cpp
+    ui/propertywidgettext_textadvanced.cpp
+	ui/propertywidgettext_textalignment.cpp
+	ui/propertywidgettext_textcolor.cpp
+	ui/propertywidgettext_textstyles.cpp
+	ui/propertywidgettext_textfont.cpp
+	ui/propertywidgettext_fontfeatures.cpp
 	ui/propertywidgetbase.cpp
 	ui/proptree.cpp
 	ui/query.cpp
@@ -1050,7 +1050,6 @@ set(SCRIBUS_SOURCES
 	ui/tabmanager.cpp
 	ui/tabpdfoptions.cpp
 	ui/tabruler.cpp
-	ui/textpalette.cpp
 	ui/transformdialog.cpp
 	ui/transparencypalette.cpp
 	tt/simpletreemodel/treeitem.cpp

@@ -58,7 +58,7 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "ui/autoform.h"
 #include "ui/nodeeditpalette.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/propertiespalette_utils.h"
 #include "ui/propertiespalette_xyz.h"
 #include "ui/transparencypalette.h"

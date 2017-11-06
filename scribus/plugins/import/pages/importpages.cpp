@@ -458,7 +458,7 @@ bool PagesPlug::convert(QString fn)
 #include "ui/customfdialog.h"
 #include "ui/missing.h"
 #include "ui/multiprogressdialog.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "undomanager.h"
 #include "util.h"
 #include "util_formats.h"

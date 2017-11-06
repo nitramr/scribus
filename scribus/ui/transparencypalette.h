@@ -52,7 +52,7 @@ class SCRIBUS_API Tpalette : public QWidget, Ui::transparencyPalette
 {
 	Q_OBJECT
 
-	friend class PropertiesPalette;
+	friend class PropertiesFramePalette;
 	friend class PropertiesPalette_Group;
 
 public:

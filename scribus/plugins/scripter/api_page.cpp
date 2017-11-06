@@ -11,10 +11,10 @@ for which a new license (GPL+exception) is in place.
 #include "commonstrings.h"
 #include "../formatidlist.h"
 #include "loadsaveplugin.h"
-#include "ui/propertiespalette.h"
-#include "ui/propertiespalette_text.h"
+#include "ui/propertiesframepalette.h"
+#include "ui/propertiescontentpalette_text.h"
 #include "ui/propertiespalette_line.h"
-#include "ui/textpalette.h"
+#include "ui/propertiescontentpalette.h"
 #include "scribuscore.h"
 #include "scribusview.h"
 #include "api_textitem.h"
@@ -297,9 +297,9 @@ void PageAPI::placeImage(const QString formatExt, const QString & filename, cons
 			    pageXtoDocX(x) - x2, pageYtoDocY(y) - y2);
 			ScCore->primaryMainWindow()->view->endGroupTransaction();
 			ScCore->primaryMainWindow()->propertiesPalette->updateColorList();
-			ScCore->primaryMainWindow()->textPalette->updateColorList();
-			ScCore->primaryMainWindow()->textPalette->textPal->paraStyleCombo->updateFormatList();
-			ScCore->primaryMainWindow()->textPalette->textPal->charStyleCombo->updateFormatList();
+			ScCore->primaryMainWindow()->contentPalette->updateColorList();
+			ScCore->primaryMainWindow()->contentPalette->textPal->paraStyleCombo->updateFormatList();
+			ScCore->primaryMainWindow()->contentPalette->textPal->charStyleCombo->updateFormatList();
 			ScCore->primaryMainWindow()->propertiesPalette->linePal->updateLineStyles();
 		}
 	}

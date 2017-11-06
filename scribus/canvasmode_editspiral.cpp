@@ -41,7 +41,7 @@
 #include "scribusdoc.h"
 #include "scribusview.h"
 #include "selection.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "undomanager.h"
 #include "util.h"
 #include "util_math.h"

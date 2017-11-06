@@ -54,7 +54,7 @@
 #include "ui/contextmenu.h"
 #include "ui/pageselector.h"
 #include "ui/polygonwidget.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "undomanager.h"
 #include "units.h"
 #include "util.h"

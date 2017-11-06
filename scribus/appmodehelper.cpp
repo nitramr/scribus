@@ -34,7 +34,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/modetoolbar.h"
 #include "ui/outlinepalette.h"
 #include "ui/pageselector.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scmwmenumanager.h"
 #include "ui/scrspinbox.h"
 #include "ui/vruler.h"

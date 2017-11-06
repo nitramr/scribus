@@ -31,13 +31,13 @@ for which a new license (GPL+exception) is in place.
 #include "iconmanager.h"
 #include "layers.h"
 #include "outlinepalette.h"
-#include "propertiespalette.h"
+#include "propertiesframepalette.h"
 #include "scpage.h"
 #include "scribus.h"
 #include "scribusdoc.h"
 #include "scribusview.h"
 #include "selection.h"
-#include "textpalette.h"
+#include "propertiescontentpalette.h"
 #include "undomanager.h"
 #include "units.h"
 #include "util.h"
@@ -685,7 +685,7 @@ void OutlinePalette::slotDoRename(QTreeWidgetItem *ite , int col)
 					{
 						item->PageItemObject->setItemName(NameNew);
 						m_MainWindow->propertiesPalette->setCurrentItem(item->PageItemObject);
-						m_MainWindow->textPalette->setCurrentItem(item->PageItemObject);
+						m_MainWindow->contentPalette->setCurrentItem(item->PageItemObject);
 						currDoc->setModified(true);
 					}
 				}

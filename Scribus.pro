@@ -526,26 +526,14 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/prefspanel.h \
            scribus/ui/preview.h \
            scribus/ui/printdialog.h \
-           scribus/ui/propertiespalette.h \
            scribus/ui/propertiespalette_group.h \
            scribus/ui/propertiespalette_image.h \
            scribus/ui/propertiespalette_line.h \
            scribus/ui/propertiespalette_shadow.h \
            scribus/ui/propertiespalette_shape.h \
            scribus/ui/propertiespalette_table.h \
-           scribus/ui/propertiespalette_text.h \
            scribus/ui/propertiespalette_utils.h \
            scribus/ui/propertiespalette_xyz.h \
-           scribus/ui/propertywidget_distance.h \
-           scribus/ui/propertywidget_dropcap.h \
-           scribus/ui/propertywidget_flop.h \
-           scribus/ui/propertywidget_fontfeatures.h \
-           scribus/ui/propertywidget_hyphenation.h \
-           scribus/ui/propertywidget_optmargins.h \
-           scribus/ui/propertywidget_orphans.h \
-           scribus/ui/propertywidget_pareffect.h \
-           scribus/ui/propertywidget_pathtext.h \
-           scribus/ui/propertywidget_textcolor.h \
            scribus/ui/propertywidgetbase.h \
            scribus/ui/proptree.h \
            scribus/ui/query.h \
@@ -625,7 +613,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/tabmanager.h \
            scribus/ui/tabpdfoptions.h \
            scribus/ui/tabruler.h \
-           scribus/ui/textpalette.h \
            scribus/ui/transformdialog.h \
            scribus/ui/transparencypalette.h \
            scribus/ui/unicodesearch.h \
@@ -1005,13 +992,25 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/scpopupmenu.h \
     scribus/ui/sclayoutsegment.h \
     scribus/ui/sclayoutsection.h \
-    scribus/ui/propertywidget_textalignment.h \
-    scribus/ui/propertywidget_textadvanced.h \
-    scribus/ui/propertywidget_textstyles.h \
-    scribus/ui/propertywidget_textfont.h \
-    scribus/ui/propertywidget_glyphstretch.h \
-    scribus/ui/propertywidget_glyphspace.h \
-    scribus/ui/propertywidget_hyphenate.h
+    scribus/ui/propertywidgettext_textstyles.h \
+    scribus/ui/propertywidgettext_textfont.h \
+    scribus/ui/propertywidgettext_textcolor.h \
+    scribus/ui/propertywidgettext_textalignment.h \
+    scribus/ui/propertywidgettext_textadvanced.h \
+    scribus/ui/propertywidgettext_pathtext.h \
+    scribus/ui/propertywidgettext_pareffect.h \
+    scribus/ui/propertywidgettext_orphans.h \
+    scribus/ui/propertywidgettext_optmargins.h \
+    scribus/ui/propertywidgettext_hyphenation.h \
+    scribus/ui/propertywidgettext_hyphenate.h \
+    scribus/ui/propertywidgettext_glyphstretch.h \
+    scribus/ui/propertywidgettext_glyphspace.h \
+    scribus/ui/propertywidgettext_fontfeatures.h \
+    scribus/ui/propertywidgettext_distance.h \
+    scribus/ui/propertiesframepalette.h \
+    scribus/ui/propertiescontentpalette.h \
+    scribus/ui/propertiescontentpalette_text.h \
+    scribus/ui/propertiescontentpalette_image.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1095,16 +1094,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/propertiespalette_shapebase.ui \
          scribus/ui/propertiespalette_tablebase.ui \
          scribus/ui/propertiespalette_xyzbase.ui \
-         scribus/ui/propertywidget_distancebase.ui \
-         scribus/ui/propertywidget_dropcapbase.ui \
-         scribus/ui/propertywidget_flopbase.ui \
-         scribus/ui/propertywidget_fontfeaturesbase.ui \
-         scribus/ui/propertywidget_hyphenationbase.ui \
-         scribus/ui/propertywidget_optmarginsbase.ui \
-         scribus/ui/propertywidget_orphansbase.ui \
-         scribus/ui/propertywidget_pareffectbase.ui \
-         scribus/ui/propertywidget_pathtextbase.ui \
-         scribus/ui/propertywidget_textcolorbase.ui \
          scribus/ui/recoverdialog.ui \
          scribus/ui/replacecolors.ui \
          scribus/ui/replaceonecolor.ui \
@@ -1167,13 +1156,21 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.ui \
          scribus/plugins/tools/2geomtools/pathalongpath/pathdialogbase.ui \
     scribus/ui/sccolorpicker.ui \
-    scribus/ui/propertywidget_textalignment.ui \
-    scribus/ui/propertywidget_textadvanced.ui \
-    scribus/ui/propertywidget_textstyles.ui \
-    scribus/ui/propertywidget_textfont.ui \
-    scribus/ui/propertywidget_glyphstretch.ui \
-    scribus/ui/propertywidget_glyphspace.ui \
-    scribus/ui/propertywidget_hyphenate.ui
+    scribus/ui/propertywidgettext_textstyles.ui \
+    scribus/ui/propertywidgettext_textfont.ui \
+    scribus/ui/propertywidgettext_textcolorbase.ui \
+    scribus/ui/propertywidgettext_textalignment.ui \
+    scribus/ui/propertywidgettext_textadvanced.ui \
+    scribus/ui/propertywidgettext_pathtextbase.ui \
+    scribus/ui/propertywidgettext_pareffectbase.ui \
+    scribus/ui/propertywidgettext_orphansbase.ui \
+    scribus/ui/propertywidgettext_optmarginsbase.ui \
+    scribus/ui/propertywidgettext_hyphenationbase.ui \
+    scribus/ui/propertywidgettext_hyphenate.ui \
+    scribus/ui/propertywidgettext_glyphstretch.ui \
+    scribus/ui/propertywidgettext_glyphspace.ui \
+    scribus/ui/propertywidgettext_fontfeaturesbase.ui \
+    scribus/ui/propertywidgettext_distancebase.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1639,26 +1636,14 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/prefspanel.cpp \
            scribus/ui/preview.cpp \
            scribus/ui/printdialog.cpp \
-           scribus/ui/propertiespalette.cpp \
            scribus/ui/propertiespalette_group.cpp \
            scribus/ui/propertiespalette_image.cpp \
            scribus/ui/propertiespalette_line.cpp \
            scribus/ui/propertiespalette_shadow.cpp \
            scribus/ui/propertiespalette_shape.cpp \
            scribus/ui/propertiespalette_table.cpp \
-           scribus/ui/propertiespalette_text.cpp \
            scribus/ui/propertiespalette_utils.cpp \
            scribus/ui/propertiespalette_xyz.cpp \
-           scribus/ui/propertywidget_distance.cpp \
-           scribus/ui/propertywidget_dropcap.cpp \
-           scribus/ui/propertywidget_flop.cpp \
-           scribus/ui/propertywidget_fontfeatures.cpp \
-           scribus/ui/propertywidget_hyphenation.cpp \
-           scribus/ui/propertywidget_optmargins.cpp \
-           scribus/ui/propertywidget_orphans.cpp \
-           scribus/ui/propertywidget_pareffect.cpp \
-           scribus/ui/propertywidget_pathtext.cpp \
-           scribus/ui/propertywidget_textcolor.cpp \
            scribus/ui/propertywidgetbase.cpp \
            scribus/ui/proptree.cpp \
            scribus/ui/query.cpp \
@@ -1738,7 +1723,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/tabmanager.cpp \
            scribus/ui/tabpdfoptions.cpp \
            scribus/ui/tabruler.cpp \
-           scribus/ui/textpalette.cpp \
            scribus/ui/transformdialog.cpp \
            scribus/ui/transparencypalette.cpp \
            scribus/ui/unicodesearch.cpp \
@@ -2139,13 +2123,25 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.cpp \
            scribus/plugins/tools/2geomtools/pathalongpath/pathalongpath.cpp \
 	   scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.cpp \
-    scribus/ui/propertywidget_textalignment.cpp \
-    scribus/ui/propertywidget_textadvanced.cpp \
-    scribus/ui/propertywidget_textstyles.cpp \
-    scribus/ui/propertywidget_textfont.cpp \
-    scribus/ui/propertywidget_glyphstretch.cpp \
-    scribus/ui/propertywidget_glyphspace.cpp \
-    scribus/ui/propertywidget_hyphenate.cpp
+    scribus/ui/propertywidgettext_textstyles.cpp \
+    scribus/ui/propertywidgettext_textfont.cpp \
+    scribus/ui/propertywidgettext_textcolor.cpp \
+    scribus/ui/propertywidgettext_textalignment.cpp \
+    scribus/ui/propertywidgettext_textadvanced.cpp \
+    scribus/ui/propertywidgettext_pathtext.cpp \
+    scribus/ui/propertywidgettext_pareffect.cpp \
+    scribus/ui/propertywidgettext_orphans.cpp \
+    scribus/ui/propertywidgettext_optmargins.cpp \
+    scribus/ui/propertywidgettext_hyphenation.cpp \
+    scribus/ui/propertywidgettext_hyphenate.cpp \
+    scribus/ui/propertywidgettext_glyphstretch.cpp \
+    scribus/ui/propertywidgettext_glyphspace.cpp \
+    scribus/ui/propertywidgettext_fontfeatures.cpp \
+    scribus/ui/propertywidgettext_distance.cpp \
+    scribus/ui/propertiesframepalette.cpp \
+    scribus/ui/propertiescontentpalette.cpp \
+    scribus/ui/propertiescontentpalette_text.cpp \
+    scribus/ui/propertiescontentpalette_image.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

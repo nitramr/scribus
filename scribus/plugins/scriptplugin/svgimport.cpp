@@ -16,9 +16,9 @@ for which a new license (GPL+exception) is in place.
 #include "scribuscore.h"
 #include "scribusview.h"
 #include "selection.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/propertiespalette_line.h"
-#include "ui/propertiespalette_text.h"
+#include "ui/propertiescontentpalette_text.h"
 
 #include <QString>
 

@@ -50,7 +50,7 @@
 #include "ui/insertTable.h"
 #include "ui/oneclick.h"
 #include "ui/pageselector.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scrapbookpalette.h"
 #include "ui/vruler.h"
 #include "undomanager.h"

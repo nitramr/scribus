@@ -32,7 +32,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribuscore.h"
 #include "scribusview.h"
 #include "sccolorengine.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "undomanager.h"
 #include "undostate.h"
 #include "util_color.h"

@@ -55,7 +55,7 @@ for which a new license (GPL+exception) is in place.
 #include "svgimport.h"
 #include "ui/customfdialog.h"
 #include "ui/helpbrowser.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scmwmenumanager.h"
 #include "units.h"
 

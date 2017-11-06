@@ -33,7 +33,7 @@
 #include "scribusview.h"
 #include "selection.h"
 #include "ui/pageselector.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scrspinbox.h"
 #include "undomanager.h"
 #include "util_math.h"

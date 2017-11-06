@@ -10,7 +10,7 @@ for which a new license (GPL+exception) is in place.
 #include "undomanager.h"
 #include "sctextstream.h"
 #include "scribusview.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/propertiespalette_image.h"
 
 ImageAPI::ImageAPI(PageItem_ImageFrame* im) : ItemAPI(im)

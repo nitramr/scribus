@@ -39,7 +39,7 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 #include "ui/customfdialog.h"
 #include "ui/multiprogressdialog.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scmessagebox.h"
 #include "undomanager.h"
 #include "util.h"

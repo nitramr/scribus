@@ -42,7 +42,7 @@ for which a new license (GPL+exception) is in place.
 #include "stylestack.h"
 #include "third_party/zip/scribus_zip.h"
 #include "ui/customfdialog.h"
-#include "ui/propertiespalette.h"
+#include "ui/propertiesframepalette.h"
 #include "ui/scmessagebox.h"
 #include "ui/scmwmenumanager.h"
 #include "undomanager.h"

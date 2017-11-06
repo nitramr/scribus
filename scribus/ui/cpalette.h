@@ -52,7 +52,7 @@ class SCRIBUS_API Cpalette : public QWidget, Ui::colorPalette
 {
 	Q_OBJECT
 
-	friend class PropertiesPalette;
+	friend class PropertiesFramePalette;
 
 public:
 	Cpalette(QWidget* parent);
