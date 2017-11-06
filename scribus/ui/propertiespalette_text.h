@@ -20,11 +20,13 @@ for which a new license (GPL+exception) is in place.
 #include "flowlayout.h"
 
 class PageItem;
-class PropertyWidget_Advanced;
 class PropertyWidget_Distance;
 class PropertyWidget_ParEffect;
 class PropertyWidget_Flop;
 class PropertyWidget_FontFeatures;
+class PropertyWidget_GlyphSpace;
+class PropertyWidget_GlyphStretch;
+class PropertyWidget_Hyphenate;
 class PropertyWidget_Hyphenation;
 class PropertyWidget_OptMargins;
 class PropertyWidget_Orphans;
@@ -34,7 +36,6 @@ class PropertyWidget_TextAlignment;
 class PropertyWidget_TextFont;
 class PropertyWidget_TextColor;
 class PropertyWidget_TextStyles;
-//class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
@@ -71,9 +72,11 @@ protected:
 	ScLayoutSection *layoutSectionLists;
 	ScLayoutSection *layoutSectionTextPath;
 
-	PropertyWidget_Advanced* advancedWidgets;
+	PropertyWidget_GlyphSpace* charSpaceWidgets;
+	PropertyWidget_GlyphStretch* charStretchWidgets;
 	PropertyWidget_Distance* distanceWidgets;
 	PropertyWidget_FontFeatures* fontfeaturesWidget;
+	PropertyWidget_Hyphenate* hyphenateWidget;
 	PropertyWidget_Hyphenation* hyphenationWidget;
 	PropertyWidget_OptMargins* optMargins;
 	PropertyWidget_Orphans* orphanBox;

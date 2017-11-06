@@ -536,7 +536,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/propertiespalette_text.h \
            scribus/ui/propertiespalette_utils.h \
            scribus/ui/propertiespalette_xyz.h \
-           scribus/ui/propertywidget_advanced.h \
            scribus/ui/propertywidget_distance.h \
            scribus/ui/propertywidget_dropcap.h \
            scribus/ui/propertywidget_flop.h \
@@ -1009,7 +1008,10 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertywidget_textalignment.h \
     scribus/ui/propertywidget_textadvanced.h \
     scribus/ui/propertywidget_textstyles.h \
-    scribus/ui/propertywidget_textfont.h
+    scribus/ui/propertywidget_textfont.h \
+    scribus/ui/propertywidget_glyphstretch.h \
+    scribus/ui/propertywidget_glyphspace.h \
+    scribus/ui/propertywidget_hyphenate.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1093,7 +1095,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/propertiespalette_shapebase.ui \
          scribus/ui/propertiespalette_tablebase.ui \
          scribus/ui/propertiespalette_xyzbase.ui \
-         scribus/ui/propertywidget_advancedbase.ui \
          scribus/ui/propertywidget_distancebase.ui \
          scribus/ui/propertywidget_dropcapbase.ui \
          scribus/ui/propertywidget_flopbase.ui \
@@ -1169,7 +1170,10 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidget_textalignment.ui \
     scribus/ui/propertywidget_textadvanced.ui \
     scribus/ui/propertywidget_textstyles.ui \
-    scribus/ui/propertywidget_textfont.ui
+    scribus/ui/propertywidget_textfont.ui \
+    scribus/ui/propertywidget_glyphstretch.ui \
+    scribus/ui/propertywidget_glyphspace.ui \
+    scribus/ui/propertywidget_hyphenate.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1645,7 +1649,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/propertiespalette_text.cpp \
            scribus/ui/propertiespalette_utils.cpp \
            scribus/ui/propertiespalette_xyz.cpp \
-           scribus/ui/propertywidget_advanced.cpp \
            scribus/ui/propertywidget_distance.cpp \
            scribus/ui/propertywidget_dropcap.cpp \
            scribus/ui/propertywidget_flop.cpp \
@@ -2139,7 +2142,10 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertywidget_textalignment.cpp \
     scribus/ui/propertywidget_textadvanced.cpp \
     scribus/ui/propertywidget_textstyles.cpp \
-    scribus/ui/propertywidget_textfont.cpp
+    scribus/ui/propertywidget_textfont.cpp \
+    scribus/ui/propertywidget_glyphstretch.cpp \
+    scribus/ui/propertywidget_glyphspace.cpp \
+    scribus/ui/propertywidget_hyphenate.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

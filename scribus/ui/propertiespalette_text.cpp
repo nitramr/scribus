@@ -20,9 +20,11 @@ for which a new license (GPL+exception) is in place.
 #include "pageitem_table.h"
 #include "pageitem_textframe.h"
 #include "propertiespalette_utils.h"
-#include "propertywidget_advanced.h"
 #include "propertywidget_distance.h"
 #include "propertywidget_fontfeatures.h"
+#include "propertywidget_glyphspace.h"
+#include "propertywidget_glyphstretch.h"
+#include "propertywidget_hyphenate.h"
 #include "propertywidget_hyphenation.h"
 #include "propertywidget_optmargins.h"
 #include "propertywidget_orphans.h"
@@ -60,8 +62,10 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	parEffectWidgets = new PropertyWidget_ParEffect();
 	distanceWidgets = new PropertyWidget_Distance();
 	optMargins = new PropertyWidget_OptMargins();
+	hyphenateWidget = new PropertyWidget_Hyphenate();
 	hyphenationWidget = new PropertyWidget_Hyphenation();
-	advancedWidgets = new PropertyWidget_Advanced();
+	charSpaceWidgets = new PropertyWidget_GlyphSpace();
+	charStretchWidgets = new PropertyWidget_GlyphStretch();
 	fontfeaturesWidget = new PropertyWidget_FontFeatures();
 	pathTextWidgets = new PropertyWidget_PathText();
 	textStylesWidgets = new PropertyWidget_TextStyles();
@@ -87,7 +91,9 @@ PropertiesPalette_Text::PropertiesPalette_Text( QWidget* parent) : QWidget(paren
 	layoutSectionParagraph->addWidget(distanceWidgets);
 	layoutSectionParagraph->addWidget(optMargins);
 
-	layoutSectionCharacter->addWidget(advancedWidgets);
+	layoutSectionCharacter->addWidget(charSpaceWidgets);
+	layoutSectionCharacter->addWidget(charStretchWidgets);
+	layoutSectionCharacter->addWidget(hyphenateWidget);
 
 	layoutSectionLists->addWidget(parEffectWidgets);
 
@@ -120,12 +126,14 @@ void PropertiesPalette_Text::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
-	advancedWidgets->setMainWindow(mw);
+	charSpaceWidgets->setMainWindow(mw);
+	charStretchWidgets->setMainWindow(mw);
 	fontfeaturesWidget->setMainWindow(mw);
 	textWidgets->setMainWindow(mw);
 	textAlignmentWidgets->setMainWindow(mw);
 	colorWidgets->setMainWindow(mw);
 	distanceWidgets->setMainWindow(mw);
+	hyphenateWidget->setMainWindow(mw);
 	hyphenationWidget->setMainWindow(mw);
 	parEffectWidgets->setMainWindow(mw);
 	optMargins->setMainWindow(mw);
@@ -159,13 +167,15 @@ void PropertiesPalette_Text::setDoc(ScribusDoc *d)
 	m_haveDoc  = true;
 	m_haveItem = false;
 
-	advancedWidgets->setDoc(m_doc);
+	charSpaceWidgets->setDoc(m_doc);
+	charStretchWidgets->setDoc(m_doc);
 	fontfeaturesWidget->setDoc(m_doc);
 	textWidgets->setDoc(m_doc);
 	textAlignmentWidgets->setDoc(m_doc);
 	colorWidgets->setDoc(m_doc);
 	distanceWidgets->setDoc(m_doc);
 	parEffectWidgets->setDoc(m_doc);
+	hyphenateWidget->setDoc(m_doc);
 	hyphenationWidget->setDoc(m_doc);
 	optMargins->setDoc(m_doc);
 	orphanBox->setDoc(m_doc);
@@ -190,12 +200,14 @@ void PropertiesPalette_Text::unsetDoc()
 	m_doc      = NULL;
 	m_item     = NULL;
 
-	advancedWidgets->setDoc(0);
+	charSpaceWidgets->setDoc(0);
+	charStretchWidgets->setDoc(0);
 	fontfeaturesWidget->setDoc(0);
 	textWidgets->setDoc(0);
 	textAlignmentWidgets->setDoc(0);
 	colorWidgets->setDoc(0);
 	distanceWidgets->setDoc(0);
+	hyphenateWidget->setDoc(0);
 	hyphenationWidget->setDoc(0);
 	optMargins->setDoc(0);
 	orphanBox->setDoc(0);
@@ -335,7 +347,9 @@ void PropertiesPalette_Text::unitChange()
 	bool tmp = m_haveItem;
 	m_haveItem = false;
 
-	advancedWidgets->unitChange();
+	charSpaceWidgets->unitChange();
+	charStretchWidgets->unitChange();
+	hyphenateWidget->unitChange();
 	fontfeaturesWidget->unitChange();
 	textAlignmentWidgets->unitChange();
 	colorWidgets->unitChange();
@@ -356,9 +370,11 @@ void PropertiesPalette_Text::languageChange()
 	orphanBox->languageChange();
 	distanceWidgets->languageChange();
 	optMargins->languageChange();
-	advancedWidgets->languageChange();
+	charSpaceWidgets->languageChange();
+	charStretchWidgets->languageChange();
 	pathTextWidgets->languageChange();
 	fontfeaturesWidget->languageChange();
+	hyphenateWidget->languageChange();
 	hyphenationWidget->languageChange();
 	textStylesWidgets->languageChange();
 	textAdvancedWidgets->languageChange();
@@ -369,7 +385,8 @@ void PropertiesPalette_Text::updateCharStyle(const CharStyle& charStyle)
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	advancedWidgets->updateCharStyle(charStyle);
+	charSpaceWidgets->updateCharStyle(charStyle);
+	charStretchWidgets->updateCharStyle(charStyle);
 	fontfeaturesWidget->updateCharStyle(charStyle);
 	colorWidgets->updateCharStyle(charStyle);
 	textAlignmentWidgets->updateCharStyle(charStyle);
@@ -383,7 +400,8 @@ void PropertiesPalette_Text::updateStyle(const ParagraphStyle& newCurrent)
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	advancedWidgets->updateStyle(newCurrent);
+	charSpaceWidgets->updateStyle(newCurrent);
+	charStretchWidgets->updateStyle(newCurrent);
 	fontfeaturesWidget->updateStyle(newCurrent);
 	colorWidgets->updateStyle(newCurrent);
 	textAlignmentWidgets->updateStyle(newCurrent);

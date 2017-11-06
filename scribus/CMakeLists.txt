@@ -164,15 +164,17 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_groupbase.ui
 	ui/propertiespalette_imagebase.ui
 	ui/propertiespalette_linebase.ui
-    ui/propertiespalette_shadowbase.ui
+	ui/propertiespalette_shadowbase.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
-	ui/propertywidget_advancedbase.ui
 	ui/propertywidget_distancebase.ui
 	ui/propertywidget_pareffectbase.ui
 	ui/propertywidget_flopbase.ui
 	ui/propertywidget_fontfeaturesbase.ui
+	ui/propertywidget_glyphspace.ui
+	ui/propertywidget_glyphstretch.ui
+	ui/propertywidget_hyphenate.ui
 	ui/propertywidget_hyphenationbase.ui
 	ui/propertywidget_optmarginsbase.ui
 	ui/propertywidget_orphansbase.ui
@@ -180,8 +182,8 @@ set(SCRIBUS_UI_SRC
 	ui/propertywidget_textadvanced.ui
 	ui/propertywidget_textalignment.ui
 	ui/propertywidget_textcolorbase.ui
-    ui/propertywidget_textfont.ui
-    ui/propertywidget_textstyles.ui
+	ui/propertywidget_textfont.ui
+	ui/propertywidget_textstyles.ui
 	ui/recoverdialog.ui
 	ui/replacecolors.ui
 	ui/replaceonecolor.ui
@@ -469,18 +471,20 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiespalette_text.h
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
-	ui/propertywidget_advanced.h
 	ui/propertywidget_distance.h
 	ui/propertywidget_pareffect.h
 	ui/propertywidget_flop.h
+	ui/propertywidget_glyphspace.h
+	ui/propertywidget_glyphstretch.h
+	ui/propertywidget_hyphenate.h
 	ui/propertywidget_hyphenation.h
 	ui/propertywidget_optmargins.h
 	ui/propertywidget_orphans.h
 	ui/propertywidget_pathtext.h
-    ui/propertywidget_textadvanced.h
+	ui/propertywidget_textadvanced.h
 	ui/propertywidget_textalignment.h
 	ui/propertywidget_textcolor.h
-    ui/propertywidget_textfont.h
+	ui/propertywidget_textfont.h
 	ui/propertywidget_textstyles.h
 	ui/propertywidget_fontfeatures.h
 	ui/proptree.h
@@ -956,10 +960,12 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_text.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
-	ui/propertywidget_advanced.cpp
 	ui/propertywidget_distance.cpp
 	ui/propertywidget_pareffect.cpp
 	ui/propertywidget_flop.cpp
+	ui/propertywidget_glyphspace.cpp
+	ui/propertywidget_glyphstretch.cpp
+	ui/propertywidget_hyphenate.cpp
 	ui/propertywidget_hyphenation.cpp
 	ui/propertywidget_optmargins.cpp
 	ui/propertywidget_orphans.cpp
