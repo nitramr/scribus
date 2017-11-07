@@ -10,6 +10,7 @@ for which a new license (GPL+exception) is in place.
 #include <QListWidgetItem>
 #include <QLineEdit>
 #include <QScrollArea>
+#include <QLabel>
 
 class QCloseEvent;
 class QEvent;
@@ -33,6 +34,7 @@ class SCRIBUS_API PropertiesContentPalette : public ScDockPalette
 {
 	Q_OBJECT
 
+
 public:
 	PropertiesContentPalette(QWidget* parent);
 	~PropertiesContentPalette() {}
@@ -51,6 +53,22 @@ public:
 
 	PropertiesContentPalette_Text*  textPal;
 	PropertiesContentPalette_Image*  imagePal;
+
+protected:
+	ScribusMainWindow *m_ScMW;
+
+	bool      m_haveDoc;
+	bool      m_haveItem;
+	double    m_unitRatio;
+	int       m_unitIndex;
+	PageItem* m_item;
+	UndoManager *undoManager;
+
+	ScGuardedPtr<ScribusDoc> m_doc;
+
+	QLabel *emptyPaletteLabel;
+
+//	int idTextItem;
 
 private:
 
@@ -75,19 +93,7 @@ private slots:
 	void NewLineMode(int mode);
 
 
-protected:
-	ScribusMainWindow *m_ScMW;
 
-	bool      m_haveDoc;
-	bool      m_haveItem;
-	double    m_unitRatio;
-	int       m_unitIndex;
-	PageItem* m_item;
-	UndoManager *undoManager;
-	
-	ScGuardedPtr<ScribusDoc> m_doc;
-	
-	int idTextItem;
 };
 
 #endif

@@ -11,7 +11,7 @@ for which a new license (GPL+exception) is in place.
 #include "sctextstream.h"
 #include "scribusview.h"
 #include "ui/propertiesframepalette.h"
-#include "ui/propertiespalette_image.h"
+#include "ui/propertywidgetimage_image.h"
 
 ImageAPI::ImageAPI(PageItem_ImageFrame* im) : ItemAPI(im)
 {
@@ -211,7 +211,7 @@ void ImageAPI::scaleToFrame(bool scaletoframe, bool Proportional)
 	// Force the braindead app to notice the changes
 
 	//FIXME emit or something so we dont need this
-	ScCore->primaryMainWindow()->propertiesPalette->imagePal->showScaleAndOffset(item->imageXScale(), item->imageYScale(), item->imageXOffset(), item->imageYOffset());
+	ScCore->primaryMainWindow()->propertiesFramePalette->imagePal->showScaleAndOffset(item->imageXScale(), item->imageYScale(), item->imageXOffset(), item->imageYOffset());
 	item->AdjustPictScale();
 	//ScCore->primaryMainWindow()->view->AdjustPictScale(item);
 

@@ -48,7 +48,7 @@ private:
      * QDialog object - details in doc/reference_dialogs.html
      */
     QWidget* properties() {
-        return (QWidget*)ScCore->primaryMainWindow()->propertiesPalette;
+        return (QWidget*)ScCore->primaryMainWindow()->propertiesFramePalette;
     };
     /**
      * Scripter.dialogs.nodes

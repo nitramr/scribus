@@ -296,11 +296,11 @@ void PageAPI::placeImage(const QString formatExt, const QString & filename, cons
 			ScCore->primaryMainWindow()->doc->moveGroup(
 			    pageXtoDocX(x) - x2, pageYtoDocY(y) - y2);
 			ScCore->primaryMainWindow()->view->endGroupTransaction();
-			ScCore->primaryMainWindow()->propertiesPalette->updateColorList();
-			ScCore->primaryMainWindow()->contentPalette->updateColorList();
-			ScCore->primaryMainWindow()->contentPalette->textPal->paraStyleCombo->updateFormatList();
-			ScCore->primaryMainWindow()->contentPalette->textPal->charStyleCombo->updateFormatList();
-			ScCore->primaryMainWindow()->propertiesPalette->linePal->updateLineStyles();
+			ScCore->primaryMainWindow()->propertiesFramePalette->updateColorList();
+			ScCore->primaryMainWindow()->propertiesContentPalette->updateColorList();
+			ScCore->primaryMainWindow()->propertiesContentPalette->textPal->paraStyleCombo->updateFormatList();
+			ScCore->primaryMainWindow()->propertiesContentPalette->textPal->charStyleCombo->updateFormatList();
+			ScCore->primaryMainWindow()->propertiesFramePalette->linePal->updateLineStyles();
 		}
 	}
 	else RAISE("Format plug-in not loaded.");

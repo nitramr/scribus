@@ -114,7 +114,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/pageitemattributes.h"
 #include "ui/pageselector.h"
 #include "ui/propertiesframepalette.h"
-#include "ui/propertiespalette_image.h"
+#include "ui/propertywidgetimage_image.h"
 #include "ui/propertiespalette_line.h"
 #include "ui/propertiescontentpalette_text.h"
 #include "ui/rulermover.h"
@@ -2963,7 +2963,7 @@ void ScribusView::editExtendedImageProperties()
 			dia->exec();
 			delete dia;
 			dia=NULL;
-			m_ScMW->propertiesPalette->setTextFlowMode(currItem->textFlowMode());
+			m_ScMW->propertiesFramePalette->setTextFlowMode(currItem->textFlowMode());
 		}
 	}
 }

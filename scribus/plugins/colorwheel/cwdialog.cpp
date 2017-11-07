@@ -342,8 +342,8 @@ void CWDialog::addButton_clicked()
 		m_Doc->scMW()->manageColorsAndFills();
 		return;
 	}
-	m_Doc->scMW()->propertiesPalette->updateColorList();
-	m_Doc->scMW()->contentPalette->updateColorList();
+	m_Doc->scMW()->propertiesFramePalette->updateColorList();
+	m_Doc->scMW()->propertiesContentPalette->updateColorList();
 	accept();
 }
 
@@ -353,8 +353,8 @@ void CWDialog::replaceButton_clicked()
 	{
 		m_Doc->PageColors[it.key()] = it.value();
 	}
-	m_Doc->scMW()->propertiesPalette->updateColorList();
-	m_Doc->scMW()->contentPalette->updateColorList();
+	m_Doc->scMW()->propertiesFramePalette->updateColorList();
+	m_Doc->scMW()->propertiesContentPalette->updateColorList();
 	accept();
 }
 

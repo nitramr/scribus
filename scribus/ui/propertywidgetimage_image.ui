@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PropertiesPalette_ImageBase</class>
- <widget class="QWidget" name="PropertiesPalette_ImageBase">
+ <class>PropertyWidgetImage_Image</class>
+ <widget class="QWidget" name="PropertyWidgetImage_Image">
   <property name="geometry">
    <rect>
     <x>0</x>

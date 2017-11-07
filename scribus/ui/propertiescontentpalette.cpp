@@ -62,8 +62,22 @@ PropertiesContentPalette::PropertiesContentPalette( QWidget* parent) : ScDockPal
 	imagePal = new PropertiesContentPalette_Image( this );
 	textPal = new PropertiesContentPalette_Text( this );
 
+	emptyPaletteLabel = new QLabel(tr("Select a content object to see properties here."));
+	emptyPaletteLabel->setAlignment(Qt::AlignCenter);
+
+	QVBoxLayout *paletteHolderLayout = new QVBoxLayout();
+	paletteHolderLayout->setMargin(0);
+	paletteHolderLayout->setSpacing(0);
+	paletteHolderLayout->setContentsMargins(0,0,0,0);
+	paletteHolderLayout->addWidget(textPal);
+	paletteHolderLayout->addWidget(imagePal);
+	paletteHolderLayout->addWidget(emptyPaletteLabel);
+
+	QWidget * paletteHolder = new QWidget();
+	paletteHolder->setLayout(paletteHolderLayout);
+
 	m_scrollArea = new QScrollArea(this);
-	m_scrollArea->setWidget(textPal);
+	m_scrollArea->setWidget(paletteHolder);
 	m_scrollArea->setMinimumWidth(this->width());
 	m_scrollArea->setWidgetResizable(true);
 
@@ -203,7 +217,9 @@ void PropertiesContentPalette::AppModeChanged()
 			else
 				disconnect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		}
+
 		textPal->handleSelectionChanged();
+		imagePal->handleSelectionChanged();
 	}
 }
 
@@ -232,7 +248,10 @@ void PropertiesContentPalette::setCurrentItem(PageItem *i)
 
 	if ((m_item->isGroup()) && (!m_item->isSingleSel)){
 		textPal->setEnabled(false);
+		textPal->setVisible(false);
 		imagePal->setEnabled(false);
+		imagePal->setVisible(false);
+		emptyPaletteLabel->setVisible(true);
 	}
 
 	m_haveItem = true;
@@ -246,12 +265,18 @@ void PropertiesContentPalette::setCurrentItem(PageItem *i)
 	if (m_item->asOSGFrame())
 	{
 		textPal->setEnabled(false);
+		textPal->setVisible(false);
 		imagePal->setEnabled(false);
+		imagePal->setVisible(false);
+		emptyPaletteLabel->setVisible(true);
 	}
 	if (m_item->asSymbolFrame())
 	{
 		textPal->setEnabled(false);
+		textPal->setVisible(false);
 		imagePal->setEnabled(false);
+		imagePal->setVisible(false);
+		emptyPaletteLabel->setVisible(true);
 	}
 }
 
@@ -264,7 +289,10 @@ void  PropertiesContentPalette::handleSelectionChanged()
 	if (m_doc->m_Selection->count() > 1)
 	{
 		textPal->setEnabled(false);
+		textPal->setVisible(false);
 		imagePal->setEnabled(false);
+		imagePal->setVisible(false);
+		emptyPaletteLabel->setVisible(true);
 	}
 	else
 	{
@@ -274,22 +302,6 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		switch (itemType)
 		{
 		case -1:
-			m_haveItem = false;
-			textPal->setEnabled(false);
-			imagePal->setEnabled(false);
-			break;
-		case PageItem::ImageFrame:
-			imagePal->setEnabled(true);
-			break;
-		case PageItem::LatexFrame:
-		case PageItem::OSGFrame:
-			textPal->setEnabled(false);
-			imagePal->setEnabled(false);
-			break;
-		case PageItem::TextFrame:
-			textPal->setEnabled(true);
-			imagePal->setEnabled(false);
-			break;
 		case PageItem::Line:
 		case PageItem::ItemType1:
 		case PageItem::ItemType3:
@@ -298,20 +310,38 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		case PageItem::Arc:
 		case PageItem::PolyLine:
 		case PageItem::Spiral:
-			textPal->setEnabled(false);
-			imagePal->setEnabled(false);
-			break;
-		case PageItem::PathText:
-			textPal->setEnabled(true);
-			imagePal->setEnabled(false);
-			break;
 		case PageItem::Symbol:
 		case PageItem::Group:
+		case PageItem::LatexFrame:
+		case PageItem::OSGFrame:
+			m_haveItem = false;
 			textPal->setEnabled(false);
+			textPal->setVisible(false);
 			imagePal->setEnabled(false);
+			imagePal->setVisible(false);
+			emptyPaletteLabel->setVisible(true);
+			break;
+		case PageItem::ImageFrame:
+			textPal->setEnabled(false);
+			textPal->setVisible(false);
+			imagePal->setEnabled(true);
+			imagePal->setVisible(true);
+			emptyPaletteLabel->setVisible(false);
+			break;
+		case PageItem::TextFrame:
+		case PageItem::PathText:
+			textPal->setEnabled(true);
+			textPal->setVisible(true);
+			imagePal->setEnabled(false);
+			imagePal->setVisible(false);
+			emptyPaletteLabel->setVisible(false);
 			break;
 		case PageItem::Table:
 			textPal->setEnabled(m_doc->appMode == modeEditTable);
+			textPal->setVisible(m_doc->appMode == modeEditTable);
+			imagePal->setEnabled(false);
+			imagePal->setVisible(false);
+			emptyPaletteLabel->setVisible(false);
 			break;
 		}
 	}

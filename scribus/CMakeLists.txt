@@ -162,12 +162,12 @@ set(SCRIBUS_UI_SRC
 	ui/prefs_documentitemattributesbase.ui
 	ui/printdialogbase.ui
 	ui/propertiespalette_groupbase.ui
-	ui/propertiespalette_imagebase.ui
 	ui/propertiespalette_linebase.ui
 	ui/propertiespalette_shadowbase.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
+	ui/propertywidgetimage_image.ui
 	ui/propertywidgettext_distancebase.ui
 	ui/propertywidgettext_pareffectbase.ui
 	ui/propertywidgettext_fontfeaturesbase.ui
@@ -465,13 +465,13 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiescontentpalette_text.h
 	ui/propertiesframepalette.h
 	ui/propertiespalette_group.h
-	ui/propertiespalette_image.h
 	ui/propertiespalette_line.h
 	ui/propertiespalette_shadow.h
 	ui/propertiespalette_shape.h
 	ui/propertiespalette_table.h
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
+	ui/propertywidgetimage_image.h
 	ui/propertywidgettext_distance.h
 	ui/propertywidgettext_pareffect.h
 	ui/propertywidgettext_glyphspace.h
@@ -953,7 +953,6 @@ set(SCRIBUS_SOURCES
 	ui/propertiescontentpalette_image.cpp
 	ui/propertiescontentpalette_text.cpp
 	ui/propertiesframepalette.cpp
-	ui/propertiespalette_image.cpp
 	ui/propertiespalette_group.cpp
 	ui/propertiespalette_line.cpp
 	ui/propertiespalette_shadow.cpp
@@ -961,6 +960,7 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_table.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
+    ui/propertywidgetimage_image.cpp
 	ui/propertywidgettext_distance.cpp
 	ui/propertywidgettext_pareffect.cpp
 	ui/propertywidgettext_glyphspace.cpp

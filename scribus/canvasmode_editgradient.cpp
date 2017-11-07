@@ -639,7 +639,7 @@ void CanvasMode_EditGradient::mouseMoveEvent(QMouseEvent *m)
 		m_Mxp = newX;
 		m_Myp = newY;
 //		m_view->RefreshGradient(currItem, dx * m_canvas->scale(), dy * m_canvas->scale());
-		m_ScMW->propertiesPalette->updateColorSpecialGradient();
+		m_ScMW->propertiesFramePalette->updateColorSpecialGradient();
 		currItem->update();
 /*		QRectF upRect;
 		if (m_view->editStrokeGradient == 1)

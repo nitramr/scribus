@@ -6,7 +6,7 @@ for which a new license (GPL+exception) is in place.
 */
 
 
-#include "propertiespalette_image.h"
+#include "propertywidgetimage_image.h"
 
 #if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
 #define _USE_MATH_DEFINES
@@ -28,7 +28,7 @@ for which a new license (GPL+exception) is in place.
 #include "util.h"
 #include "util_math.h"
 
-PropertiesPalette_Image::PropertiesPalette_Image( QWidget* parent) : QWidget(parent)
+PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget(parent)
 {
 	m_ScMW = 0;
 	m_doc  = 0;
@@ -115,7 +115,7 @@ PropertiesPalette_Image::PropertiesPalette_Image( QWidget* parent) : QWidget(par
 	connect(compressionQuality , SIGNAL(activated(int))      , this, SLOT(handleCompressionQuality()));
 }
 
-void PropertiesPalette_Image::updateSpinBoxConstants()
+void PropertyWidgetImage_Image::updateSpinBoxConstants()
 {
 	if (!m_haveDoc)
 		return;
@@ -125,7 +125,7 @@ void PropertiesPalette_Image::updateSpinBoxConstants()
 	imageYOffsetSpinBox->setConstants(&m_doc->constants());
 }
 
-void PropertiesPalette_Image::changeEvent(QEvent *e)
+void PropertyWidgetImage_Image::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
 	{
@@ -135,14 +135,14 @@ void PropertiesPalette_Image::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 }
 
-void PropertiesPalette_Image::setMainWindow(ScribusMainWindow* mw)
+void PropertyWidgetImage_Image::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
 
-void PropertiesPalette_Image::setDoc(ScribusDoc *d)
+void PropertyWidgetImage_Image::setDoc(ScribusDoc *d)
 {
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
@@ -178,7 +178,7 @@ void PropertiesPalette_Image::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
-void PropertiesPalette_Image::unsetDoc()
+void PropertyWidgetImage_Image::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -194,14 +194,14 @@ void PropertiesPalette_Image::unsetDoc()
 	setEnabled(false);
 }
 
-void PropertiesPalette_Image::unsetItem()
+void PropertyWidgetImage_Image::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
 }
 
-PageItem* PropertiesPalette_Image::currentItemFromSelection()
+PageItem* PropertyWidgetImage_Image::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 
@@ -220,7 +220,7 @@ PageItem* PropertiesPalette_Image::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertiesPalette_Image::installSniffer(ScrSpinBox *spinBox)
+void PropertyWidgetImage_Image::installSniffer(ScrSpinBox *spinBox)
 {
 	const QList<QObject*> list = spinBox->children();
 	if (!list.isEmpty())
@@ -235,7 +235,7 @@ void PropertiesPalette_Image::installSniffer(ScrSpinBox *spinBox)
 	}
 }
 
-void PropertiesPalette_Image::installSniffer(QSpinBox *spinBox)
+void PropertyWidgetImage_Image::installSniffer(QSpinBox *spinBox)
 {
 	const QList<QObject*> list = spinBox->children();
 	if (!list.isEmpty())
@@ -250,7 +250,7 @@ void PropertiesPalette_Image::installSniffer(QSpinBox *spinBox)
 	}
 }
 
-void PropertiesPalette_Image::updateProfileList()
+void PropertyWidgetImage_Image::updateProfileList()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -320,7 +320,7 @@ void PropertiesPalette_Image::updateProfileList()
 	}
 }
 
-void PropertiesPalette_Image::showCMSOptions()
+void PropertyWidgetImage_Image::showCMSOptions()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -330,7 +330,7 @@ void PropertiesPalette_Image::showCMSOptions()
 		colorMgmtGroup->setVisible(ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse);
 }
 
-void PropertiesPalette_Image::showImageRotation(double rot)
+void PropertyWidgetImage_Image::showImageRotation(double rot)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -340,7 +340,7 @@ void PropertiesPalette_Image::showImageRotation(double rot)
 	imageRotation->showValue(fabs(rrR));
 }
 
-void PropertiesPalette_Image::showScaleAndOffset(double scx, double scy, double x, double y)
+void PropertyWidgetImage_Image::showScaleAndOffset(double scx, double scy, double x, double y)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -373,7 +373,7 @@ void PropertiesPalette_Image::showScaleAndOffset(double scx, double scy, double 
 	keepImageDPIRatioButton->blockSignals(dpiRatioBlocked);
 }
 
-void PropertiesPalette_Image::handleSelectionChanged()
+void PropertyWidgetImage_Image::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -430,13 +430,13 @@ void PropertiesPalette_Image::handleSelectionChanged()
 	//repaint();
 }
 
-void PropertiesPalette_Image::handleUpdateRequest(int updateFlags)
+void PropertyWidgetImage_Image::handleUpdateRequest(int updateFlags)
 {
 	if (updateFlags & reqCmsOptionsUpdate)
 		showCMSOptions();
 }
 
-void PropertiesPalette_Image::setCurrentItem(PageItem *item)
+void PropertyWidgetImage_Image::setCurrentItem(PageItem *item)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -545,14 +545,14 @@ void PropertiesPalette_Image::setCurrentItem(PageItem *item)
 	updateSpinBoxConstants();
 }
 
-void PropertiesPalette_Image::handleLocalXY()
+void PropertyWidgetImage_Image::handleLocalXY()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_SetImageOffset(imageXOffsetSpinBox->value() / m_unitRatio / m_item->imageXScale(), imageYOffsetSpinBox->value() / m_unitRatio / m_item->imageYScale());
 }
 
-void PropertiesPalette_Image::handleLocalScale()
+void PropertyWidgetImage_Image::handleLocalScale()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -565,7 +565,7 @@ void PropertiesPalette_Image::handleLocalScale()
 	}
 }
 
-void PropertiesPalette_Image::handleLocalDpi()
+void PropertyWidgetImage_Image::handleLocalDpi()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -579,7 +579,7 @@ void PropertiesPalette_Image::handleLocalDpi()
 	}
 }
 
-void PropertiesPalette_Image::handleLocalRotation()
+void PropertyWidgetImage_Image::handleLocalRotation()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -591,7 +591,7 @@ void PropertiesPalette_Image::handleLocalRotation()
 	}
 }
 
-void PropertiesPalette_Image::handleScaling()
+void PropertyWidgetImage_Image::handleScaling()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -635,7 +635,7 @@ void PropertiesPalette_Image::handleScaling()
 	}
 }
 
-void PropertiesPalette_Image::handleXScale()
+void PropertyWidgetImage_Image::handleXScale()
 {
 	bool xscaleBlocked = imageXScaleSpinBox->blockSignals(true);
 	bool yscaleBlocked = imageYScaleSpinBox->blockSignals(true);
@@ -646,7 +646,7 @@ void PropertiesPalette_Image::handleXScale()
 	imageYScaleSpinBox->blockSignals(yscaleBlocked);
 }
 
-void PropertiesPalette_Image::handleYScale()
+void PropertyWidgetImage_Image::handleYScale()
 {
 	bool xscaleBlocked = imageXScaleSpinBox->blockSignals(true);
 	bool yscaleBlocked = imageYScaleSpinBox->blockSignals(true);
@@ -657,7 +657,7 @@ void PropertiesPalette_Image::handleYScale()
 	imageYScaleSpinBox->blockSignals(yscaleBlocked);
 }
 
-void PropertiesPalette_Image::handleDpiX()
+void PropertyWidgetImage_Image::handleDpiX()
 {
 	bool dpiXBlocked = imgDpiX->blockSignals(true);
 	bool dpiYBlocked = imgDpiY->blockSignals(true);
@@ -668,7 +668,7 @@ void PropertiesPalette_Image::handleDpiX()
 	imgDpiY->blockSignals(dpiYBlocked);
 }
 
-void PropertiesPalette_Image::handleDpiY()
+void PropertyWidgetImage_Image::handleDpiY()
 {
 	bool dpiXBlocked = imgDpiX->blockSignals(true);
 	bool dpiYBlocked = imgDpiY->blockSignals(true);
@@ -679,7 +679,7 @@ void PropertiesPalette_Image::handleDpiY()
 	imgDpiY->blockSignals(dpiYBlocked);
 }
 
-void PropertiesPalette_Image::handleImageDPIRatio()
+void PropertyWidgetImage_Image::handleImageDPIRatio()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -703,7 +703,7 @@ void PropertiesPalette_Image::handleImageDPIRatio()
 	imgDpiY->blockSignals(dpiYBlocked);
 }
 
-void PropertiesPalette_Image::handleImageWHRatio()
+void PropertyWidgetImage_Image::handleImageWHRatio()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -727,14 +727,14 @@ void PropertiesPalette_Image::handleImageWHRatio()
 	imageYScaleSpinBox->blockSignals(yscaleBlocked);
 }
 
-void PropertiesPalette_Image::handleImageEffects()
+void PropertyWidgetImage_Image::handleImageEffects()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_ScMW->ImageEffects();
 }
 
-void PropertiesPalette_Image::handleExtImgProperties()
+void PropertyWidgetImage_Image::handleExtImgProperties()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -742,7 +742,7 @@ void PropertiesPalette_Image::handleExtImgProperties()
 	m_doc->changed();
 }
 
-void PropertiesPalette_Image::handleImagePageNumber()
+void PropertyWidgetImage_Image::handleImagePageNumber()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -761,35 +761,35 @@ void PropertiesPalette_Image::handleImagePageNumber()
 	m_item->update();
 }
 
-void PropertiesPalette_Image::handleProfile(const QString& prn)
+void PropertyWidgetImage_Image::handleProfile(const QString& prn)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_SetColorProfile(inputProfiles->currentText());
 }
 
-void PropertiesPalette_Image::handleIntent()
+void PropertyWidgetImage_Image::handleIntent()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_SetRenderIntent(renderIntent->currentIndex());
 }
  
-void PropertiesPalette_Image::handleCompressionMethod()
+void PropertyWidgetImage_Image::handleCompressionMethod()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_SetCompressionMethod(compressionMethod->currentIndex() - 1);
 }
 
-void PropertiesPalette_Image::handleCompressionQuality()
+void PropertyWidgetImage_Image::handleCompressionQuality()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_SetCompressionQuality(compressionQuality->currentIndex() - 1);
 }
 
-void PropertiesPalette_Image::languageChange()
+void PropertyWidgetImage_Image::languageChange()
 {
 	retranslateUi(this);
 
@@ -836,7 +836,7 @@ void PropertiesPalette_Image::languageChange()
 	imageYOffsetSpinBox->setSuffix(suffix);
 }
 
-void PropertiesPalette_Image::unitChange()
+void PropertyWidgetImage_Image::unitChange()
 {
 	if (!m_doc)
 		return;
@@ -853,17 +853,17 @@ void PropertiesPalette_Image::unitChange()
 	imageYOffsetSpinBox->blockSignals(false);
 }
 
-bool PropertiesPalette_Image::userActionOn()
+bool PropertyWidgetImage_Image::userActionOn()
 {
 	return m_userActionOn;;
 }
 
-void PropertiesPalette_Image::spinboxStartUserAction()
+void PropertyWidgetImage_Image::spinboxStartUserAction()
 {
 	m_userActionOn = true;
 }
 
-void PropertiesPalette_Image::spinboxFinishUserAction()
+void PropertyWidgetImage_Image::spinboxFinishUserAction()
 {
 	m_userActionOn = false;
 

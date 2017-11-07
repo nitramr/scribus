@@ -4,16 +4,18 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTIESPALETTE_IMAGE_H
-#define PROPERTIESPALETTE_IMAGE_H
+#ifndef PROPERTYWIDGETIMAGE_IMAGE_H
+#define PROPERTYWIDGETIMAGE_IMAGE_H
 
-#include "ui_propertiespalette_imagebase.h"
+#include "ui_propertywidgetimage_image.h"
 
 #include "scribusapi.h"
 #include "scrpalettebase.h"
 #include "scrspinbox.h"
 #include "sclistboxpixmap.h"
-#include "scguardedptr.h"
+//#include "scguardedptr.h"
+
+#include "propertywidgetbase.h"
 
 class PageItem;
 class ScComboBox;
@@ -22,13 +24,14 @@ class ScribusMainWindow;
 class Selection;
 class UserActionSniffer;
 
-class SCRIBUS_API PropertiesPalette_Image : public QWidget, Ui::PropertiesPalette_ImageBase
+class SCRIBUS_API PropertyWidgetImage_Image : public QWidget, Ui::PropertyWidgetImage_Image,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertiesPalette_Image(QWidget* parent);
-	~PropertiesPalette_Image() {};
+	PropertyWidgetImage_Image(QWidget* parent = 0);
+	~PropertyWidgetImage_Image() {};
 
 	virtual void changeEvent(QEvent *e);
 
@@ -47,7 +50,7 @@ protected:
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-	ScGuardedPtr<ScribusDoc> m_doc;
+//	ScGuardedPtr<ScribusDoc> m_doc;
 
 	UserActionSniffer *userActionSniffer;
 	void installSniffer(ScrSpinBox *spinBox);

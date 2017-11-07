@@ -527,7 +527,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/preview.h \
            scribus/ui/printdialog.h \
            scribus/ui/propertiespalette_group.h \
-           scribus/ui/propertiespalette_image.h \
            scribus/ui/propertiespalette_line.h \
            scribus/ui/propertiespalette_shadow.h \
            scribus/ui/propertiespalette_shape.h \
@@ -1010,7 +1009,8 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertiesframepalette.h \
     scribus/ui/propertiescontentpalette.h \
     scribus/ui/propertiescontentpalette_text.h \
-    scribus/ui/propertiescontentpalette_image.h
+    scribus/ui/propertiescontentpalette_image.h \
+    scribus/ui/propertywidgetimage_image.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1088,7 +1088,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/prefs_userinterfacebase.ui \
          scribus/ui/printdialogbase.ui \
          scribus/ui/propertiespalette_groupbase.ui \
-         scribus/ui/propertiespalette_imagebase.ui \
          scribus/ui/propertiespalette_linebase.ui \
          scribus/ui/propertiespalette_shadowbase.ui \
          scribus/ui/propertiespalette_shapebase.ui \
@@ -1170,7 +1169,8 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgettext_glyphstretch.ui \
     scribus/ui/propertywidgettext_glyphspace.ui \
     scribus/ui/propertywidgettext_fontfeaturesbase.ui \
-    scribus/ui/propertywidgettext_distancebase.ui
+    scribus/ui/propertywidgettext_distancebase.ui \
+    scribus/ui/propertywidgetimage_image.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1637,7 +1637,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/preview.cpp \
            scribus/ui/printdialog.cpp \
            scribus/ui/propertiespalette_group.cpp \
-           scribus/ui/propertiespalette_image.cpp \
            scribus/ui/propertiespalette_line.cpp \
            scribus/ui/propertiespalette_shadow.cpp \
            scribus/ui/propertiespalette_shape.cpp \
@@ -2141,7 +2140,8 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertiesframepalette.cpp \
     scribus/ui/propertiescontentpalette.cpp \
     scribus/ui/propertiescontentpalette_text.cpp \
-    scribus/ui/propertiescontentpalette_image.cpp
+    scribus/ui/propertiescontentpalette_image.cpp \
+    scribus/ui/propertywidgetimage_image.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

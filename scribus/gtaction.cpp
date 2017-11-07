@@ -556,7 +556,7 @@ void gtAction::createParagraphStyle(gtParagraphStyle* pstyle)
 	tmp.create(vg);
 	m_textFrame->doc()->redefineStyles(tmp, false);
 	
-	m_ScMW->contentPalette->textPal->updateParagraphStyles();
+	m_ScMW->propertiesContentPalette->textPal->updateParagraphStyles();
 }
 
 void gtAction:: setCharStyleAttributes(gtFont *font, CharStyle& style)
@@ -873,7 +873,7 @@ QString gtAction::parseColor(const QString &s)
 			ScColor tmp;
 			tmp.fromQColor(c);
 			m_textFrame->doc()->PageColors.insert("FromGetText"+c.name(), tmp);
-			m_ScMW->contentPalette->updateColorList();
+			m_ScMW->propertiesContentPalette->updateColorList();
 			ret = "FromGetText"+c.name();
 		}
 	}

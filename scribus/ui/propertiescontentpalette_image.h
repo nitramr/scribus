@@ -20,7 +20,7 @@ for which a new license (GPL+exception) is in place.
 #include "flowlayout.h"
 
 class PageItem;
-class PropertyWidgetText_TextFont;
+class PropertyWidgetImage_Image;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
@@ -44,6 +44,8 @@ protected:
 
 	bool   m_haveDoc;
 	bool   m_haveItem;
+	double    m_unitRatio;
+	int       m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
@@ -51,7 +53,7 @@ protected:
 
 	ScLayoutSection *layoutSectionText;
 
-	PropertyWidgetText_TextFont* textWidgets;
+	PropertyWidgetImage_Image* imageWidget;
 
 private:
 	PageItem* currentItemFromSelection();
@@ -61,6 +63,7 @@ public slots:
 	void setMainWindow(ScribusMainWindow *mw);
 	
 	void setDoc(ScribusDoc *d);
+	void setCurrentItem(PageItem *i);
 	void unsetDoc();
 	void unsetItem();
 
@@ -69,12 +72,7 @@ public slots:
 	void languageChange();
 	void unitChange();
 
-
-	void showFontSize(double s);
-	
-	/// update TB values:
-	void updateCharStyle(const CharStyle& charStyle);
-	void updateStyle(const ParagraphStyle& newCurrent);	
+	void showScaleAndOffset(double scx, double scy, double x, double y);
 
 };
 

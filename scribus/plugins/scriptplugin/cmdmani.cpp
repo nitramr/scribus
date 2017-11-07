@@ -12,7 +12,8 @@ for which a new license (GPL+exception) is in place.
 #include "sctextstream.h"
 #include "selection.h"
 #include "ui/propertiesframepalette.h" //CB argh.. noooooooooooooooooooooooooooooooooooo FIXME see other FIXME
-#include "ui/propertiespalette_image.h"
+#include "ui/propertiescontentpalette.h"
+#include "ui/propertiescontentpalette_image.h"
 #include "undomanager.h"
 
 
@@ -565,7 +566,7 @@ PyObject *scribus_setscaleimagetoframe(PyObject* /* self */, PyObject* args, PyO
 	// Force the braindead app to notice the changes
 
 	//FIXME emit or something so we dont need this
-	ScCore->primaryMainWindow()->propertiesPalette->imagePal->showScaleAndOffset(item->imageXScale(), item->imageYScale(), item->imageXOffset(), item->imageYOffset());
+	ScCore->primaryMainWindow()->propertiesContentPalette->imagePal->showScaleAndOffset(item->imageXScale(), item->imageYScale(), item->imageXOffset(), item->imageYOffset());
 	item->AdjustPictScale();
 	//ScCore->primaryMainWindow()->view->AdjustPictScale(item);
 

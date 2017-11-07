@@ -222,10 +222,10 @@ for which a new license (GPL+exception) is in place.
 #include "ui/preview.h"
 #include "ui/printdialog.h"
 #include "ui/propertiesframepalette.h"
-#include "ui/propertiespalette_image.h"
 #include "ui/propertiespalette_line.h"
 #include "ui/propertiespalette_shape.h"
 #include "ui/propertiescontentpalette_text.h"
+#include "ui/propertiescontentpalette_image.h"
 #include "ui/propertiespalette_xyz.h"
 #include "ui/query.h"
 #include "ui/recoverdialog.h"
@@ -420,8 +420,8 @@ int ScribusMainWindow::initScMW(bool primaryMainWindow)
 	scrActions["stickyTools"]->setChecked(m_prefsManager->appPrefs.uiPrefs.stickyTools);
 	ToggleTips();
 	ToggleMouseTips();
-	propertiesPalette->setFontSize();
-	contentPalette->setFontSize();
+	propertiesFramePalette->setFontSize();
+	propertiesContentPalette->setFontSize();
 	if (scrActions["SaveAsDocumentTemplate"])
 		scrActions["SaveAsDocumentTemplate"]->setEnabled(false);
 
@@ -605,19 +605,19 @@ void ScribusMainWindow::initPalettes()
 	connect( scrActions["toolsOutline"], SIGNAL(toggled(bool)) , outlinePalette, SLOT(setPaletteShown(bool)) );
 	connect( outlinePalette, SIGNAL(paletteShown(bool)), scrActions["toolsOutline"], SLOT(setChecked(bool)));
 
-	propertiesPalette = new PropertiesFramePalette(this);
-	propertiesPalette->setMainWindow(this);
-	connect( scrActions["toolsProperties"], SIGNAL(toggled(bool)) , propertiesPalette, SLOT(setPaletteShown(bool)) );
-	connect( propertiesPalette, SIGNAL(paletteShown(bool)), scrActions["toolsProperties"], SLOT(setChecked(bool)));
+	propertiesFramePalette = new PropertiesFramePalette(this);
+	propertiesFramePalette->setMainWindow(this);
+	connect( scrActions["toolsProperties"], SIGNAL(toggled(bool)) , propertiesFramePalette, SLOT(setPaletteShown(bool)) );
+	connect( propertiesFramePalette, SIGNAL(paletteShown(bool)), scrActions["toolsProperties"], SLOT(setChecked(bool)));
 	emit UpdateRequest(reqDefFontListUpdate);
-	propertiesPalette->installEventFilter(this);
+	propertiesFramePalette->installEventFilter(this);
 
-	contentPalette = new PropertiesContentPalette(this);
-	contentPalette->setMainWindow(this);
-	connect( scrActions["toolsText"], SIGNAL(toggled(bool)) , contentPalette, SLOT(setPaletteShown(bool)) );
-	connect( contentPalette, SIGNAL(paletteShown(bool)), scrActions["toolsText"], SLOT(setChecked(bool)));
+	propertiesContentPalette = new PropertiesContentPalette(this);
+	propertiesContentPalette->setMainWindow(this);
+	connect( scrActions["toolsText"], SIGNAL(toggled(bool)) , propertiesContentPalette, SLOT(setPaletteShown(bool)) );
+	connect( propertiesContentPalette, SIGNAL(paletteShown(bool)), scrActions["toolsText"], SLOT(setChecked(bool)));
 	emit UpdateRequest(reqDefFontListUpdate);
-	contentPalette->installEventFilter(this);
+	propertiesContentPalette->installEventFilter(this);
 	nodePalette = new NodePalette(this);
 	nodePalette->installEventFilter(this);
 	layerPalette = new LayerPalette(this);
@@ -1481,7 +1481,7 @@ void ScribusMainWindow::setTBvals(PageItem *currItem)
 		doc->currentStyle.charStyle().setStyle(item->currentCharStyle());
 	emit TextStyle(doc->currentStyle);
 	// to go: (av)
-	contentPalette->textPal->updateStyle(doc->currentStyle);
+	propertiesContentPalette->textPal->updateStyle(doc->currentStyle);
 	//check if mark in cursor place and enable editMark action
 	if (doc->appMode == modeEdit && item->itemText.cursorPosition() < item->itemText.length())
 	{
@@ -1981,8 +1981,8 @@ void ScribusMainWindow::closeEvent(QCloseEvent *ce)
 			m_prefsManager->appPrefs.uiPrefs.tabbedPalettes.append(currentTab);
 	}
 
-	propertiesPalette->hide();
-	contentPalette->hide();
+	propertiesFramePalette->hide();
+	propertiesContentPalette->hide();
 	outlinePalette->hide();
 	scrapbookPalette->hide();
 	bookmarkPalette->hide();
@@ -2669,8 +2669,8 @@ void ScribusMainWindow::windowsMenuActivated(int id)
 void ScribusMainWindow::SwitchWin()
 {
 	updateActiveWindowCaption(doc->DocName);
-	propertiesPalette->setDoc(doc);
-	contentPalette->setDoc(doc);
+	propertiesFramePalette->setDoc(doc);
+	propertiesContentPalette->setDoc(doc);
 	marksManager->setDoc(doc);
 	nsEditor->setDoc(doc);
 	pagePalette->setView(view);
@@ -2711,8 +2711,8 @@ void ScribusMainWindow::HaveNewDoc()
 
 	//Update palettes
 	updateActiveWindowCaption(doc->DocName);
-	propertiesPalette->setDoc(doc);
-	contentPalette->setDoc(doc);
+	propertiesFramePalette->setDoc(doc);
+	propertiesContentPalette->setDoc(doc);
 	nsEditor->setDoc(doc);
 
 	marksManager->setDoc(doc);
@@ -2741,13 +2741,13 @@ void ScribusMainWindow::HaveNewDoc()
 	connect(view, SIGNAL(ClipPo(double, double)), nodePalette, SLOT(SetXY(double, double)), Qt::UniqueConnection);
 	connect(view, SIGNAL(PolyOpen()), nodePalette, SLOT(IsOpen()), Qt::UniqueConnection);
 	connect(view, SIGNAL(PStatus(int, uint)), nodePalette, SLOT(PolyStatus(int, uint)), Qt::UniqueConnection);
-	connect(view, SIGNAL(ItemGeom()), propertiesPalette->xyzPal, SLOT(handleSelectionChanged()), Qt::UniqueConnection);
+	connect(view, SIGNAL(ItemGeom()), propertiesFramePalette->xyzPal, SLOT(handleSelectionChanged()), Qt::UniqueConnection);
 	connect(view, SIGNAL(ChBMText(PageItem *)), this, SLOT(BookMarkTxT(PageItem *)), Qt::UniqueConnection);
 	connect(view, SIGNAL(HaveSel()), this, SLOT(HaveNewSel()), Qt::UniqueConnection);
 	connect(view, SIGNAL(PaintingDone()), this, SLOT(slotSelect()), Qt::UniqueConnection);
 	connect(view, SIGNAL(DocChanged()), this, SLOT(slotDocCh()), Qt::UniqueConnection);
 	connect(view, SIGNAL(MousePos(double, double)), this, SLOT(setStatusBarMousePosition(double, double)), Qt::UniqueConnection);
-	connect(view, SIGNAL(ItemCharStyle(const CharStyle&)), contentPalette->textPal, SLOT(updateCharStyle(const CharStyle&)), Qt::UniqueConnection);
+	connect(view, SIGNAL(ItemCharStyle(const CharStyle&)), propertiesContentPalette->textPal, SLOT(updateCharStyle(const CharStyle&)), Qt::UniqueConnection);
 	connect(view, SIGNAL(ItemTextEffects(int)), this, SLOT(setStyleEffects(int)), Qt::UniqueConnection);
 	connect(view, SIGNAL(ItemTextAlign(int))  , this, SLOT(setAlignmentValue(int)), Qt::UniqueConnection);
 	connect(view, SIGNAL(HasTextSel()), this, SLOT(EnableTxEdit()), Qt::UniqueConnection);
@@ -2793,7 +2793,7 @@ void ScribusMainWindow::HaveNewSel()
 	{
 	case -1: // None
 		outlinePalette->slotShowSelect(doc->currentPageNumber(), NULL);
-		propertiesPalette->setGradientEditMode(false);
+		propertiesFramePalette->setGradientEditMode(false);
 		break;
 	case PageItem::TextFrame: //Text Frame
 		if (doc->appMode == modeEdit)
@@ -2813,7 +2813,7 @@ void ScribusMainWindow::HaveNewSel()
 			doc->currentStyle = currItem->itemText.defaultStyle();
 			emit TextStyle(doc->currentStyle);
 			// to go: (av)
-			contentPalette->textPal->updateStyle(doc->currentStyle);
+			propertiesContentPalette->textPal->updateStyle(doc->currentStyle);
 			setStyleEffects(doc->currentStyle.charStyle().effects());
 		}
 		break;
@@ -2832,24 +2832,24 @@ void ScribusMainWindow::HaveNewSel()
 		else
 		{
 			doc->currentStyle = currItem->itemText.defaultStyle();
-			contentPalette->textPal->showParStyle(doc->currentStyle.parent());
-			contentPalette->textPal->showCharStyle(doc->currentStyle.charStyle().parent());
+			propertiesContentPalette->textPal->showParStyle(doc->currentStyle.parent());
+			propertiesContentPalette->textPal->showCharStyle(doc->currentStyle.charStyle().parent());
 			emit TextStyle(doc->currentStyle);
 			// to go: (av)
-			contentPalette->textPal->updateStyle(doc->currentStyle);
+			propertiesContentPalette->textPal->updateStyle(doc->currentStyle);
 			setStyleEffects(doc->currentStyle.charStyle().effects());
 		}
 		break;
 	}
 	doc->CurrentSel = SelectedType;
-	propertiesPalette->xyzPal->basePointWidget->setCheckedId(doc->rotationMode());
+	propertiesFramePalette->xyzPal->basePointWidget->setCheckedId(doc->rotationMode());
 
 	if (docSelectionCount != 0)
 	{
 		actionManager->setPDFActions(view);
 		updateItemLayerList();
 		rebuildScrapbookMenu();
-		propertiesPalette->setTextFlowMode(currItem->textFlowMode());
+		propertiesFramePalette->setTextFlowMode(currItem->textFlowMode());
 	}
 
 	if (SelectedType != -1)
@@ -3424,8 +3424,8 @@ bool ScribusMainWindow::loadPage(QString fileName, int Nr, bool Mpa, const QStri
 			if ((ite->asTextFrame()) && (ite->isBookmark))
 				AddBookMark(ite);
 		}
-		propertiesPalette->updateColorList();
-		contentPalette->updateColorList();
+		propertiesFramePalette->updateColorList();
+		propertiesContentPalette->updateColorList();
 		emit UpdateRequest(reqArrowStylesUpdate | reqLineStylesUpdate | reqStyleComboDocUpdate | reqInlinePalUpdate);
 		symbolPalette->updateSymbolList();
 		slotDocCh();
@@ -3962,8 +3962,8 @@ void ScribusMainWindow::slotGetContent()
 			inlinePalette->setDoc(doc);
 			if (outlinePalette->isVisible())
 				outlinePalette->BuildTree();
-			propertiesPalette->updateColorList();
-			contentPalette->updateColorList();
+			propertiesFramePalette->updateColorList();
+			propertiesContentPalette->updateColorList();
 			emit UpdateRequest(reqArrowStylesUpdate | reqLineStylesUpdate | reqStyleComboDocUpdate | reqInlinePalUpdate);
 			symbolPalette->updateSymbolList();
 		}
@@ -3979,8 +3979,8 @@ void ScribusMainWindow::updateFromDrop()
 	inlinePalette->setDoc(doc);
 	if (outlinePalette->isVisible())
 		outlinePalette->BuildTree();
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 	emit UpdateRequest(reqArrowStylesUpdate | reqLineStylesUpdate | reqStyleComboDocUpdate | reqInlinePalUpdate);
 	symbolPalette->updateSymbolList();
 }
@@ -4043,7 +4043,7 @@ void ScribusMainWindow::slotGetClipboardImage()
 					currItem->Pfile = fileName;
 					img.save(fileName, "PNG");
 					doc->loadPict(fileName, currItem, false, true);
-					propertiesPalette->imagePal->showScaleAndOffset(currItem->imageXScale(), currItem->imageYScale(), currItem->imageXOffset(), currItem->imageYOffset());
+					propertiesContentPalette->imagePal->showScaleAndOffset(currItem->imageXScale(), currItem->imageYScale(), currItem->imageXOffset(), currItem->imageYOffset());
 					qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 					view->DrawNew();
 					emit UpdateRequest(reqColorsUpdate | reqCmsOptionsUpdate);
@@ -4302,8 +4302,8 @@ bool ScribusMainWindow::DoFileClose()
 	if (ScCore->haveCMS())
 		doc->CloseCMSProfiles();
 	//<<Palettes
-	propertiesPalette->unsetDoc();
-	contentPalette->unsetDoc();
+	propertiesFramePalette->unsetDoc();
+	propertiesContentPalette->unsetDoc();
 	inlinePalette->unsetDoc();
 	symbolPalette->unsetDoc();
 	pagePalette->setView(0);
@@ -4790,10 +4790,10 @@ void ScribusMainWindow::slotEditPaste()
 			slotElemRead(buffer, 0, 0, false, true, doc, view);
 			// update style lists:
 			m_styleManager->setDoc(doc);
-			propertiesPalette->unsetDoc();
-			propertiesPalette->setDoc(doc);
-			contentPalette->unsetDoc();
-			contentPalette->setDoc(doc);
+			propertiesFramePalette->unsetDoc();
+			propertiesFramePalette->setDoc(doc);
+			propertiesContentPalette->unsetDoc();
+			propertiesContentPalette->setDoc(doc);
 			marksManager->setDoc(doc);
 			nsEditor->setDoc(doc);
 			symbolPalette->unsetDoc();
@@ -4871,10 +4871,10 @@ void ScribusMainWindow::slotEditPaste()
 				retObj->setTextFlowMode(PageItem::TextFlowUsesBoundingBox);
 				retObj->setXYPos(x, y, true);
 				m_styleManager->setDoc(doc);
-				propertiesPalette->unsetDoc();
-				propertiesPalette->setDoc(doc);
-				contentPalette->unsetDoc();
-				contentPalette->setDoc(doc);
+				propertiesFramePalette->unsetDoc();
+				propertiesFramePalette->setDoc(doc);
+				propertiesContentPalette->unsetDoc();
+				propertiesContentPalette->setDoc(doc);
 				marksManager->setDoc(doc);
 				nsEditor->setDoc(doc);
 				symbolPalette->unsetDoc();
@@ -4954,10 +4954,10 @@ void ScribusMainWindow::slotEditPaste()
 			}
 			// update style lists:
 			m_styleManager->setDoc(doc);
-			propertiesPalette->unsetDoc();
-			propertiesPalette->setDoc(doc);
-			contentPalette->unsetDoc();
-			contentPalette->setDoc(doc);
+			propertiesFramePalette->unsetDoc();
+			propertiesFramePalette->setDoc(doc);
+			propertiesContentPalette->unsetDoc();
+			propertiesContentPalette->setDoc(doc);
 			marksManager->setDoc(doc);
 			nsEditor->setDoc(doc);
 			symbolPalette->unsetDoc();
@@ -5556,9 +5556,9 @@ void ScribusMainWindow::ToggleAllPalettes()
 	{
 		m_palettesStatus[PAL_ALL] = false;
 		if (m_palettesStatus[PAL_PROPERTIES])
-			propertiesPalette->show();
+			propertiesFramePalette->show();
 		if (m_palettesStatus[PAL_TEXT])
-			contentPalette->show();
+			propertiesContentPalette->show();
 		if (m_palettesStatus[PAL_OUTLINE])
 			outlinePalette->show();
 		if (m_palettesStatus[PAL_SCRAPBOOK])
@@ -5577,8 +5577,8 @@ void ScribusMainWindow::ToggleAllPalettes()
 	}
 	else
 	{
-		m_palettesStatus[PAL_PROPERTIES] = propertiesPalette->isVisible();
-		m_palettesStatus[PAL_TEXT] = contentPalette->isVisible();
+		m_palettesStatus[PAL_PROPERTIES] = propertiesFramePalette->isVisible();
+		m_palettesStatus[PAL_TEXT] = propertiesContentPalette->isVisible();
 		m_palettesStatus[PAL_OUTLINE] = outlinePalette->isVisible();
 		m_palettesStatus[PAL_SCRAPBOOK] = scrapbookPalette->isVisible();
 		m_palettesStatus[PAL_LAYER] = layerPalette->isVisible();
@@ -5587,8 +5587,8 @@ void ScribusMainWindow::ToggleAllPalettes()
 		m_palettesStatus[PAL_UNDO] = undoPalette->isVisible();
 		m_palettesStatus[PAL_VERIFIER] = docCheckerPalette->isVisible();
 		m_palettesStatus[PAL_DOWNLOADS] = downloadsPalette->isVisible();
-		propertiesPalette->hide();
-		contentPalette->hide();
+		propertiesFramePalette->hide();
+		propertiesContentPalette->hide();
 		outlinePalette->hide();
 		scrapbookPalette->hide();
 		bookmarkPalette->hide();
@@ -6313,7 +6313,7 @@ void ScribusMainWindow::setItemFontSize(int fontSize)
 				doc->itemSelection_SetFontSize(fs*10);
 		}
 	}
-	contentPalette->textPal->showFontSize(fs*10);
+	propertiesContentPalette->textPal->showFontSize(fs*10);
 }
 
 void ScribusMainWindow::setItemLanguage(QString language)
@@ -6324,7 +6324,7 @@ void ScribusMainWindow::setItemLanguage(QString language)
 		doc->itemSelection_SetLanguage(language);
 	}
 
-	contentPalette->textPal->showLanguage(language);
+	propertiesContentPalette->textPal->showLanguage(language);
 }
 
 //CB-->Doc
@@ -6333,7 +6333,7 @@ void ScribusMainWindow::setNewAlignment(int a)
 	if (!HaveDoc)
 		return;
 	doc->itemSelection_SetAlignment(a);
-	contentPalette->textPal->showAlignment(a);
+	propertiesContentPalette->textPal->showAlignment(a);
 	PageItem *currItem = doc->m_Selection->itemAt(0);
 	setTBvals(currItem);
 }
@@ -6343,7 +6343,7 @@ void ScribusMainWindow::setNewDirection(int a)
 	if (!HaveDoc)
 		return;
 	doc->itemSelection_SetDirection(a);
-	contentPalette->textPal->showDirection(a);
+	propertiesContentPalette->textPal->showDirection(a);
 	PageItem *currItem = doc->m_Selection->itemAt(0);
 	setTBvals(currItem);
 }
@@ -6368,7 +6368,7 @@ void ScribusMainWindow::setNewCharStyle(const QString& name)
 
 void ScribusMainWindow::setAlignmentValue(int a)
 {
-	contentPalette->textPal->showAlignment(a);
+	propertiesContentPalette->textPal->showAlignment(a);
 	QString alignment[] = {"Left", "Center", "Right", "Block", "Forced"};
 	for (int b=0; b<5; ++b)
 	{
@@ -6380,7 +6380,7 @@ void ScribusMainWindow::setAlignmentValue(int a)
 
 void ScribusMainWindow::setDirectionValue(int a)
 {
-	contentPalette->textPal->showDirection(a);
+	propertiesContentPalette->textPal->showDirection(a);
 	QString direction[] = {"Left", "Right"};
 	for (int b=0; b<2; ++b)
 	{
@@ -6786,8 +6786,8 @@ void ScribusMainWindow::slotDocSetup()
 
 int ScribusMainWindow::ShowSubs()
 {
-	propertiesPalette->startup();
-	contentPalette->startup();
+	propertiesFramePalette->startup();
+	propertiesContentPalette->startup();
 	outlinePalette->startup();
 	scrapbookPalette->startup();
 	bookmarkPalette->startup();
@@ -7502,8 +7502,8 @@ void ScribusMainWindow::slotChangeUnit(int unitIndex, bool draw)
 	doc->setUnitIndex(unitIndex);
 	setCurrentComboItem(unitSwitcher, unitGetStrFromIndex(doc->unitIndex()));
 	view->unitChange();
-	propertiesPalette->unitChange();
-	contentPalette->unitChange();
+	propertiesFramePalette->unitChange();
+	propertiesContentPalette->unitChange();
 	nodePalette->unitChange();
 	alignDistributePalette->unitChange();
 	guidePalette->setupPage();
@@ -7569,8 +7569,8 @@ void ScribusMainWindow::editSymbolStart(QString temp)
 	}
 	patternsDependingOnThis.prepend(temp);
 	symbolPalette->editingStart(patternsDependingOnThis);
-	propertiesPalette->Cpal->hideEditedPatterns(patternsDependingOnThis);
-	propertiesPalette->Tpal->hideEditedPatterns(patternsDependingOnThis);
+	propertiesFramePalette->Cpal->hideEditedPatterns(patternsDependingOnThis);
+	propertiesFramePalette->Tpal->hideEditedPatterns(patternsDependingOnThis);
 	if (outlinePalette->isVisible())
 		outlinePalette->BuildTree(false);
 	updateActiveWindowCaption( tr("Editing Symbol: %1").arg(temp));
@@ -7603,8 +7603,8 @@ void ScribusMainWindow::editSymbolEnd()
 	view->setContentsPos(static_cast<int>(m_storedViewXCoor * m_storedViewScale), static_cast<int>(m_storedViewYCoor * m_storedViewScale));
 	view->DrawNew();
 	pagePalette->Rebuild();
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 	symbolPalette->editingFinished();
 	layerPalette->setEnabled(true);
 	if (outlinePalette->isVisible())
@@ -7671,10 +7671,10 @@ void ScribusMainWindow::editInlineEnd()
 	doc->currentEditedTextframe = NULL;
 	view->DrawNew();
 	pagePalette->Rebuild();
-	propertiesPalette->unsetItem();
-	propertiesPalette->updateColorList();
-	contentPalette->unsetItem();
-	contentPalette->updateColorList();
+	propertiesFramePalette->unsetItem();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->unsetItem();
+	propertiesContentPalette->updateColorList();
 	inlinePalette->editingFinished();
 	layerPalette->setEnabled(true);
 	if (outlinePalette->isVisible())
@@ -8131,8 +8131,8 @@ void ScribusMainWindow::recalcColors(QProgressBar *dia)
 	if (!HaveDoc)
 		return;
 	doc->recalculateColors();
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 }
 
 void ScribusMainWindow::ModifyAnnot()
@@ -8912,8 +8912,8 @@ void ScribusMainWindow::slotEditPasteContents(int absolute)
 	imageItem->IRender=contentsBuffer.renderingIntent;
 	qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 	view->DrawNew();
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 	emit UpdateRequest(reqCmsOptionsUpdate);
 	currItem->emitAllToGUI();
 	qApp->restoreOverrideCursor();
@@ -9217,8 +9217,8 @@ void ScribusMainWindow::PutToPatterns()
 	doc->Items->removeAll(currItem);
 	doc->m_Selection->clear();
 	doc->m_Selection->delaySignalsOff();
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 	symbolPalette->updateSymbolList();
 	emit UpdateRequest(reqColorsUpdate);
 	doc->minCanvasCoordinate = minSize;
@@ -9248,8 +9248,8 @@ void ScribusMainWindow::ConvertToSymbol()
 	patternName = dia.getEditText();
 	m_undoManager->setUndoEnabled(false);
 	doc->itemSelection_convertItemsToSymbol(patternName);
-	propertiesPalette->updateColorList();
-	contentPalette->updateColorList();
+	propertiesFramePalette->updateColorList();
+	propertiesContentPalette->updateColorList();
 	symbolPalette->updateSymbolList();
 	emit UpdateRequest(reqColorsUpdate);
 	if (outlinePalette->isVisible())
@@ -9331,7 +9331,7 @@ void ScribusMainWindow::manageColorsAndFills()
 			// Update tools colors if needed
 			m_prefsManager->replaceToolColors(dia->replaceColorMap);
 			m_prefsManager->setColorSet(dia->m_colorList);
-			propertiesPalette->Cpal->setColors(m_prefsManager->colorSet());
+			propertiesFramePalette->Cpal->setColors(m_prefsManager->colorSet());
 			m_prefsManager->appPrefs.defaultGradients = dia->dialogGradients;
 			m_prefsManager->appPrefs.defaultPatterns = dia->dialogPatterns;
 			QString Cpfad = QDir::toNativeSeparators(ScPaths::applicationDataDir())+"DefaultColors.xml";
@@ -10024,8 +10024,8 @@ void ScribusMainWindow::setPreviewToolbar()
 	inlinePalette->setEnabled(!doc->drawAsPreview);
 	undoPalette->setEnabled(!doc->drawAsPreview);
 	outlinePalette->setEnabled(!(doc->drawAsPreview && !doc->editOnPreview));
-	propertiesPalette->setEnabled(!(doc->drawAsPreview && !doc->editOnPreview));
-	contentPalette->setEnabled(!(doc->drawAsPreview && !doc->editOnPreview));
+	propertiesFramePalette->setEnabled(!(doc->drawAsPreview && !doc->editOnPreview));
+	propertiesContentPalette->setEnabled(!(doc->drawAsPreview && !doc->editOnPreview));
 	scrMenuMgr->setMenuEnabled("Edit", !doc->drawAsPreview);
 	scrMenuMgr->setMenuEnabled("Item", !doc->drawAsPreview);
 	scrMenuMgr->setMenuEnabled("Insert", !doc->drawAsPreview);

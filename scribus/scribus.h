@@ -230,8 +230,8 @@ public:
 	QLabel* mainWindowYPosDataLabel;
 	GuideManager *guidePalette;
 	CharSelect *charPalette;
-	PropertiesFramePalette *propertiesPalette;
-	PropertiesContentPalette *contentPalette;
+	PropertiesFramePalette *propertiesFramePalette;
+	PropertiesContentPalette *propertiesContentPalette;
 	MarksManager *marksManager;
 	NotesStylesEditor *nsEditor;
 	NodePalette *nodePalette;

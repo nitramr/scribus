@@ -4680,7 +4680,7 @@ bool PageItem::shouldCheck()
 {
 	return ((!m_Doc->view()->mousePressed()) &&
 			(!ScCore->primaryMainWindow()->arrowKeyDown()) &&
-			(!ScCore->primaryMainWindow()->propertiesPalette->userActionOn()));
+			(!ScCore->primaryMainWindow()->propertiesFramePalette->userActionOn()));
 }
 
 void PageItem::moveUndoAction()
@@ -9295,8 +9295,8 @@ bool PageItem::loadImage(const QString& filename, const bool reload, const int g
 					m_Doc->PageColors.insert(pixm.imgInfo.duotoneColors[cc].Name, pixm.imgInfo.duotoneColors[cc].Color);
 				efVal += pixm.imgInfo.duotoneColors[cc].Name+"\n";
 			}
-			m_Doc->scMW()->propertiesPalette->updateColorList();
-			m_Doc->scMW()->contentPalette->updateColorList();
+			m_Doc->scMW()->propertiesFramePalette->updateColorList();
+			m_Doc->scMW()->propertiesContentPalette->updateColorList();
 			struct ImageEffect ef;
 			if (pixm.imgInfo.duotoneColors.count() == 1)
 			{

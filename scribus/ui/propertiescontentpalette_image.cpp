@@ -19,7 +19,7 @@ for which a new license (GPL+exception) is in place.
 #include "pageitem_table.h"
 #include "pageitem_textframe.h"
 #include "propertiespalette_utils.h"
-#include "propertywidgettext_textfont.h"
+#include "propertywidgetimage_image.h"
 #include "scpopupmenu.h"
 #include "scraction.h"
 #include "scribuscore.h"
@@ -35,11 +35,11 @@ PropertiesContentPalette_Image::PropertiesContentPalette_Image( QWidget* parent)
 {
 	m_ScMW=0;
 	m_doc=0;
-	m_item=0;
 	m_haveDoc = false;
 	m_haveItem = false;
+	m_unitRatio = 1.0;
 
-	textWidgets = new PropertyWidgetText_TextFont();
+	imageWidget = new PropertyWidgetImage_Image();
 
 //	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
 //	popupFontFeatures->addWidget(colorWidgets);
@@ -48,9 +48,8 @@ PropertiesContentPalette_Image::PropertiesContentPalette_Image( QWidget* parent)
 //	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
 
 
-	layoutSectionText = new ScLayoutSection(tr("Text"));
-
-	layoutSectionText->addWidget(textWidgets);
+	layoutSectionText = new ScLayoutSection(tr("Image"));
+	layoutSectionText->addWidget(imageWidget);
 
 	FlowLayout *flowLayout = new FlowLayout(0,0,0);
 	flowLayout->addWidget(layoutSectionText);
@@ -73,7 +72,7 @@ void PropertiesContentPalette_Image::setMainWindow(ScribusMainWindow* mw)
 	m_ScMW = mw;
 
 
-	textWidgets->setMainWindow(mw);
+	imageWidget->setMainWindow(mw);
 
 
 }
@@ -95,18 +94,23 @@ void PropertiesContentPalette_Image::setDoc(ScribusDoc *d)
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 
-	m_doc  = d;
+	m_doc = d;
 	m_item = NULL;
+	setEnabled(!m_doc->drawAsPreview);
 
-	m_haveDoc  = true;
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+	m_haveDoc = true;
 	m_haveItem = false;
 
-
-	textWidgets->setDoc(m_doc);
+	imageWidget->setDoc(m_doc);
 
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+
+	// Handle properties update when switching document
+	handleSelectionChanged();
 }
 
 void PropertiesContentPalette_Image::unsetDoc()
@@ -117,13 +121,14 @@ void PropertiesContentPalette_Image::unsetDoc()
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 
-	m_haveDoc  = false;
+	setEnabled(true);
+	m_haveDoc = false;
 	m_haveItem = false;
-	m_doc      = NULL;
-	m_item     = NULL;
+	m_doc=NULL;
+	m_item = NULL;
 
-
-	textWidgets->setDoc(0);
+	imageWidget->unsetItem();
+	imageWidget->unsetDoc();
 
 	m_haveItem = false;
 
@@ -140,8 +145,63 @@ void PropertiesContentPalette_Image::unsetItem()
 	m_haveItem = false;
 	m_item     = NULL;
 
+	imageWidget->unsetItem();
+
 	handleSelectionChanged();
 }
+
+void PropertiesContentPalette_Image::setCurrentItem(PageItem *i)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	//CB We shouldn't really need to process this if our item is the same one
+	//maybe we do if the item has been changed by scripter.. but that should probably
+	//set some status if so.
+	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
+	//if (m_item == i)
+	//	return;
+
+	if (!i)
+	{
+		unsetItem();
+		return;
+	}
+
+
+	if (!m_doc)
+		setDoc(i->doc());
+
+	m_haveItem = false;
+	m_item = i;
+
+	if ((m_item->isGroup()) && (!m_item->isSingleSel))
+	{
+		//TabStack->setItemEnabled(idImageItem, false);
+		imageWidget->setEnabled(false);
+	}
+
+	m_haveItem = true;
+
+
+
+	if (!sender() || (m_doc->appMode == modeEditTable))
+	{
+		imageWidget->handleSelectionChanged();
+	}
+
+	if (m_item->asOSGFrame())
+	{
+		//TabStack->setItemEnabled(idImageItem, false);
+		imageWidget->setEnabled(false);
+	}
+	if (m_item->asSymbolFrame())
+	{
+		//TabStack->setItemEnabled(idImageItem, false);
+		imageWidget->setEnabled(false);
+	}
+
+}
+
 
 PageItem* PropertiesContentPalette_Image::currentItemFromSelection()
 {
@@ -149,16 +209,14 @@ PageItem* PropertiesContentPalette_Image::currentItemFromSelection()
 
 	if (m_doc)
 	{
-		if (m_doc->m_Selection->count() > 1)
+		if (m_doc->m_Selection->count() > 0)
 			currentItem = m_doc->m_Selection->itemAt(0);
-		else if (m_doc->m_Selection->count() == 1)
-			currentItem = m_doc->m_Selection->itemAt(0);
-		if (currentItem  && currentItem->isTable() && m_doc->appMode == modeEditTable)
-			currentItem = currentItem->asTable()->activeCell().textFrame();
+
 	}
 
 	return currentItem;
 }
+
 
 /*********************************************************************
 *
@@ -166,10 +224,10 @@ PageItem* PropertiesContentPalette_Image::currentItemFromSelection()
 *
 **********************************************************************/
 
+void PropertiesContentPalette_Image::showScaleAndOffset(double scx, double scy, double x, double y){
 
-void PropertiesContentPalette_Image::showFontSize(double s)
-{
-	textWidgets->showFontSize(s);
+	imageWidget->showScaleAndOffset(scx,scy,x,y);
+
 }
 
 
@@ -185,29 +243,52 @@ void PropertiesContentPalette_Image::handleSelectionChanged()
 		return;
 
 	PageItem* currItem = currentItemFromSelection();
-
-	if (currItem)
+	if (m_doc->m_Selection->count() > 1)
 	{
 
-		//CB We shouldn't really need to process this if our item is the same one
-		//maybe we do if the item has been changed by scripter.. but that should probably
-		//set some status if so.
+	}
+	else
+	{
+		int itemType = currItem ? (int) currItem->itemType() : -1;
+		m_haveItem   = (itemType != -1);
 
-		if (!m_doc)
-			setDoc(currItem->doc());
-
-		m_item = currItem;
-		m_haveItem = true;
-
-		if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
+		switch (itemType)
 		{
-			ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
-			if (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable)
-				m_item->currentTextProps(parStyle);
-			updateStyle(parStyle);
+		case PageItem::ImageFrame:
+		case PageItem::LatexFrame:
+		case PageItem::OSGFrame:
+			if (currItem->asOSGFrame())
+			{
+				//TabStack->setItemEnabled(idImageItem, false);
+				imageWidget->setEnabled(false);
+			}
+			else
+			{
+				//TabStack->setItemEnabled(idImageItem, true);
+				imageWidget->setEnabled(true);
+			}
+			break;
+		case -1:
+		case PageItem::TextFrame:
+		case PageItem::Line:
+		case PageItem::ItemType1:
+		case PageItem::ItemType3:
+		case PageItem::Polygon:
+		case PageItem::RegularPolygon:
+		case PageItem::Arc:
+		case PageItem::PolyLine:
+		case PageItem::Spiral:
+		case PageItem::PathText:
+		case PageItem::Symbol:
+		case PageItem::Group:
+		case PageItem::Table:
+			//TabStack->setItemEnabled(idImageItem, false);
+			imageWidget->setEnabled(false);
+			break;
 		}
 	}
-
+	updateGeometry();
+	update();
 }
 
 
@@ -218,7 +299,7 @@ void PropertiesContentPalette_Image::unitChange()
 	bool tmp = m_haveItem;
 	m_haveItem = false;
 
-
+	imageWidget->unitChange();
 
 	m_haveItem = tmp;
 }
@@ -226,28 +307,15 @@ void PropertiesContentPalette_Image::unitChange()
 void PropertiesContentPalette_Image::languageChange()
 {
 
-	textWidgets->languageChange();
+	imageWidget->languageChange();
 
 }
 
-void PropertiesContentPalette_Image::updateCharStyle(const CharStyle& charStyle)
+bool PropertiesContentPalette_Image::userActionOn()
 {
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-
-	textWidgets->updateCharStyle(charStyle);
-
-}
-
-void PropertiesContentPalette_Image::updateStyle(const ParagraphStyle& newCurrent)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-
-	textWidgets->updateStyle(newCurrent);
-
+	bool userActionOn = false;
+	userActionOn = imageWidget->userActionOn();
+	return userActionOn;
 }
 
 

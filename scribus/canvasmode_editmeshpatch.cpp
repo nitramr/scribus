@@ -320,7 +320,7 @@ void CanvasMode_EditMeshPatch::deactivate(bool forGesture)
 	m_currItem->selectedMeshPointX = -1;
 	m_currItem->selectedMeshPointY = m_patchPoint;
 	m_currItem->selectedMeshControlPoint = m_gradientPoint;
-	m_ScMW->propertiesPalette->updateColorSpecialGradient();
+	m_ScMW->propertiesFramePalette->updateColorSpecialGradient();
 	m_currItem->snapToPatchGrid = false;
 }
 
@@ -794,7 +794,7 @@ void CanvasMode_EditMeshPatch::mousePressEvent(QMouseEvent *m)
 			m_view->editStrokeGradient = 9;
 			m_click_count = 0;
 			m_clickPointPolygon.clear();
-			m_ScMW->propertiesPalette->endPatchAdd();
+			m_ScMW->propertiesFramePalette->endPatchAdd();
 		}
 	}
 	else
@@ -962,7 +962,7 @@ void CanvasMode_EditMeshPatch::mousePressEvent(QMouseEvent *m)
 		m_currItem->selectedMeshControlPoint = m_gradientPoint;
 	}
 	m_canvas->m_viewMode.m_MouseButtonPressed = true;
-	m_ScMW->propertiesPalette->updateColorSpecialGradient();
+	m_ScMW->propertiesFramePalette->updateColorSpecialGradient();
 	m_view->setCursor(QCursor(Qt::CrossCursor));
 	m_doc->regionsChanged()->update(itemMatrix.mapRect(QRectF(0, 0, m_currItem->width(), m_currItem->height())).adjusted(-m_currItem->width() / 2.0, -m_currItem->height() / 2.0, m_currItem->width(), m_currItem->height()));
 

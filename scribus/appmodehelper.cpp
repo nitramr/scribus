@@ -229,7 +229,7 @@ void AppModeHelper::setApplicationMode(ScribusMainWindow* scmw, ScribusDoc* doc,
 				(*a_scrActions)["editPaste"]->setEnabled(ScMimeData::clipboardHasScribusData());
 				(*a_scrActions)["editTruncateContents"]->setEnabled(currItem != 0);
 
-				scmw->propertiesPalette->setGradientEditMode(false);
+				scmw->propertiesFramePalette->setGradientEditMode(false);
 				scmw->outlinePalette->setEnabled(true);
 			}
 			break;
@@ -331,7 +331,7 @@ void AppModeHelper::setApplicationMode(ScribusMainWindow* scmw, ScribusDoc* doc,
 		case modeEditGradientVectors:
 			{
 				setSpecialEditMode(true);
-				scmw->propertiesPalette->setGradientEditMode(true);
+				scmw->propertiesFramePalette->setGradientEditMode(true);
 			}
 			break;
 		case modeEditMeshGradient:

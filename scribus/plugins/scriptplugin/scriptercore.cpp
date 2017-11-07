@@ -161,8 +161,8 @@ void ScripterCore::FinishScriptRun()
 	ScribusMainWindow* ScMW=ScCore->primaryMainWindow();
 	if (ScMW->HaveDoc)
 	{
-		ScMW->propertiesPalette->setDoc(ScMW->doc);
-		ScMW->contentPalette->setDoc(ScMW->doc);
+		ScMW->propertiesFramePalette->setDoc(ScMW->doc);
+		ScMW->propertiesContentPalette->setDoc(ScMW->doc);
 		ScMW->marksManager->setDoc(ScMW->doc);
 		ScMW->nsEditor->setDoc(ScMW->doc);
 		ScMW->layerPalette->setDoc(ScMW->doc);
@@ -248,8 +248,8 @@ void ScripterCore::slotRunScriptFile(QString fileName, QStringList arguments, bo
 	PyThreadState* global_state = NULL;
 	if (!inMainInterpreter)
 	{
-		ScCore->primaryMainWindow()->propertiesPalette->unsetDoc();
-		ScCore->primaryMainWindow()->contentPalette->unsetDoc();
+		ScCore->primaryMainWindow()->propertiesFramePalette->unsetDoc();
+		ScCore->primaryMainWindow()->propertiesContentPalette->unsetDoc();
 		ScCore->primaryMainWindow()->pagePalette->setView(NULL);
 		ScCore->primaryMainWindow()->setScriptRunning(true);
 		qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -393,8 +393,8 @@ void ScripterCore::slotRunScript(const QString Script)
 		return;
 	disableMainWindowMenu();
 
-	ScCore->primaryMainWindow()->propertiesPalette->unsetDoc();
-	ScCore->primaryMainWindow()->contentPalette->unsetDoc();
+	ScCore->primaryMainWindow()->propertiesFramePalette->unsetDoc();
+	ScCore->primaryMainWindow()->propertiesContentPalette->unsetDoc();
 	ScCore->primaryMainWindow()->pagePalette->setView(NULL);
 	ScCore->primaryMainWindow()->setScriptRunning(true);
 	inValue = Script;
