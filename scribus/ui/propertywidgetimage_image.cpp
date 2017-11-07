@@ -65,8 +65,6 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	installSniffer(imageRotation);
 	imageRotationLabel->setBuddy(imageRotation);
 
-	freeScale->setChecked( true );
-	
 	installSniffer(imageXScaleSpinBox);
 	xscaleLabel->setBuddy(imageXScaleSpinBox);
 	installSniffer(imageYScaleSpinBox);
@@ -86,7 +84,7 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	keepImageDPIRatioButton->setCheckable( true );
 	keepImageDPIRatioButton->setAutoRaise( true );
 
-	frameScale->setText( tr("&To Frame Size"));
+	cbAutoFit->setText( tr("&Auto-Fit"));
 
 	cbProportional->setEnabled( false );
 	cbProportional->setText( "P&roportional" );
@@ -104,8 +102,7 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	connect(imgDpiY            , SIGNAL(valueChanged(double)), this, SLOT(handleDpiY()));
 	connect(keepImageWHRatioButton , SIGNAL(clicked())       , this, SLOT(handleImageWHRatio()));
 	connect(keepImageDPIRatioButton, SIGNAL(clicked())       , this, SLOT(handleImageDPIRatio()));
-	connect(freeScale          , SIGNAL(clicked())           , this, SLOT(handleScaling()));
-	connect(frameScale         , SIGNAL(clicked())           , this, SLOT(handleScaling()));
+	connect(cbAutoFit          , SIGNAL(clicked())           , this, SLOT(handleScaling()));
 	connect(cbProportional     , SIGNAL(stateChanged(int))   , this, SLOT(handleScaling()));
 	connect(imgEffectsButton   , SIGNAL(clicked())           , this, SLOT(handleImageEffects()));
 	connect(imgExtProperties   , SIGNAL(clicked())           , this, SLOT(handleExtImgProperties()));
@@ -478,12 +475,10 @@ void PropertyWidgetImage_Image::setCurrentItem(PageItem *item)
 		imgEffectsButton->setVisible(m_item->imageIsAvailable && m_item->isRaster);
 		imgExtProperties->setVisible(m_item->imageIsAvailable && m_item->pixm.imgInfo.valid);
 		bool setter = m_item->ScaleType;
-		freeScale->setChecked(setter);
-		frameScale->setChecked(!setter);
+		cbAutoFit->setChecked(!setter);
 		if ((m_item->asLatexFrame()) || (m_item->asOSGFrame()))
 		{
-			freeScale->setEnabled(false);
-			frameScale->setEnabled(false);
+			cbAutoFit->setEnabled(false);
 			cbProportional->setEnabled(false);
 			imageXScaleSpinBox->setEnabled(false);
 			imageYScaleSpinBox->setEnabled(false);
@@ -498,8 +493,7 @@ void PropertyWidgetImage_Image::setCurrentItem(PageItem *item)
 			imgDpiY->setEnabled(setter);
 			cbProportional->setEnabled(!setter);
 			cbProportional->setChecked(m_item->AspectRatio);
-			freeScale->setEnabled(true);
-			frameScale->setEnabled(true);
+			cbAutoFit->setEnabled(true);
 			//Necessary for undo action
 			keepImageWHRatioButton->setEnabled(setter);
 			keepImageDPIRatioButton->setEnabled(setter);
@@ -586,7 +580,7 @@ void PropertyWidgetImage_Image::handleLocalRotation()
 	if ((m_haveDoc) && (m_haveItem))
 	{
 		m_doc->itemSelection_SetImageRotation(360 - imageRotation->value());
-		if (frameScale->isChecked())
+		if (cbAutoFit->isChecked())
 			m_item->AdjustPictScale();
 	}
 }
@@ -596,10 +590,8 @@ void PropertyWidgetImage_Image::handleScaling()
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	if (freeScale == sender())
+	if(cbAutoFit->isChecked() == false)
 	{
-		frameScale->setChecked(false);
-		freeScale->setChecked(true);
 		cbProportional->setEnabled(false);
 //		imageXOffsetSpinBox->setEnabled(true);
 //		imageYOffsetSpinBox->setEnabled(true);
@@ -611,10 +603,8 @@ void PropertyWidgetImage_Image::handleScaling()
 		keepImageWHRatioButton->setEnabled(true);
 		keepImageDPIRatioButton->setEnabled(true);
 	}
-	if (frameScale == sender())
+	else
 	{
-		frameScale->setChecked(true);
-		freeScale->setChecked(false);
 		cbProportional->setEnabled(true);
 //		imageXOffsetSpinBox->setEnabled(false);
 //		imageYOffsetSpinBox->setEnabled(false);
@@ -629,7 +619,7 @@ void PropertyWidgetImage_Image::handleScaling()
 
 	if ((m_haveDoc) && (m_haveItem))
 	{
-		m_item->setImageScalingMode(freeScale->isChecked(), cbProportional->isChecked());
+		m_item->setImageScalingMode(!cbAutoFit->isChecked(), cbProportional->isChecked());
 		m_doc->changed();
 		emit UpdtGui(PageItem::ImageFrame);
 	}

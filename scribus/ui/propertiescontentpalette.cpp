@@ -60,7 +60,9 @@ PropertiesContentPalette::PropertiesContentPalette( QWidget* parent) : ScDockPal
 	setFont(f);
 
 	imagePal = new PropertiesContentPalette_Image( this );
+	imagePal->setVisible(false);
 	textPal = new PropertiesContentPalette_Text( this );
+	textPal->setVisible(false);
 
 	emptyPaletteLabel = new QLabel(tr("Select a content object to see properties here."));
 	emptyPaletteLabel->setAlignment(Qt::AlignCenter);
