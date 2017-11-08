@@ -42,7 +42,6 @@ for which a new license (GPL+exception) is in place.
 #include "dasheditor.h"
 #include "pageitem_table.h"
 #include "propertiespalette_group.h"
-//#include "propertywidgetimage_image.h"
 #include "propertiespalette_line.h"
 #include "propertiespalette_shadow.h"
 #include "propertiespalette_shape.h"
@@ -67,44 +66,58 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	m_unitRatio = 1.0;
 
 	setObjectName(QString::fromLocal8Bit("PropertiesFramePalette"));
-	setSizePolicy( QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
+//	setSizePolicy( QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
 
 	QFont f(font());
 	f.setPointSize(f.pointSize()-1);
 	setFont(f);
 
-	TabStack = new ScTreeWidget( this );
-//	Uncomment this line if the new behaviour makes any trouble.
-//	TabStack->setToolBoxMode(true);
-
-	xyzPal = new PropertiesPalette_XYZ( this );
-	idXYZItem = TabStack->addItem( xyzPal, "X, Y, &Z" );
-
-	shadowPal = new PropertiesPalette_Shadow( this );
-	idShadowItem = TabStack->addItem( shadowPal, "Drop Shadow" );
-
-	shapePal = new PropertiesPalette_Shape( this );
-	idShapeItem = TabStack->addItem( shapePal, "&Shape" );
-
-	groupPal = new PropertiesPalette_Group( this );
-	idGroupItem = TabStack->addItem(groupPal, "Groups");
-
-//	imagePal = new PropertyWidgetImage_Image(this);
-//	idImageItem=TabStack->addItem( imagePal, "&Image" );
-
+	xyzPal = new PropertiesPalette_XYZ(this);
+	shadowPal = new PropertiesPalette_Shadow(this);
+	shapePal = new PropertiesPalette_Shape(this);
+	groupPal = new PropertiesPalette_Group(this);
 	linePal = new PropertiesPalette_Line(this);
-	idLineItem=TabStack->addItem( linePal, "&Line" );
-
-	Cpal = new Cpalette(this);
-	idColorsItem = TabStack->addItem(Cpal, "&Colors" );
-
-	Tpal = new Tpalette(this);
-	idTransparencyItem = TabStack->addItem(Tpal, "&Transparency" );
-
+	colorPal = new Cpalette(this);
+	transparencyPal = new Tpalette(this);
 	tablePal = new PropertiesPalette_Table(this);
-	idTableItem = TabStack->addItem(tablePal, "T&able" );
 
-	setWidget( TabStack );
+	layoutSectionXYZ = new ScLayoutSection(tr("XYZ"));
+	layoutSectionXYZ->addWidget(xyzPal);
+	layoutSectionDropShadow = new ScLayoutSection(tr("Drop Shadow"));
+	layoutSectionDropShadow->addWidget(shadowPal);
+	layoutSectionShape = new ScLayoutSection(tr("&Shape"));
+	layoutSectionShape->addWidget(shapePal);
+	layoutSectionGroup = new ScLayoutSection(tr("&Group"));
+	layoutSectionGroup->addWidget(groupPal);
+	layoutSectionLine = new ScLayoutSection(tr("&Line"));
+	layoutSectionLine->addWidget(linePal);
+	layoutSectionColor = new ScLayoutSection(tr("&Colors"));
+	layoutSectionColor->addWidget(colorPal);
+	layoutSectionTransparency = new ScLayoutSection(tr("&Transparency"));
+	layoutSectionTransparency->addWidget(transparencyPal);
+	layoutSectionTable = new ScLayoutSection(tr("&Table"));
+	layoutSectionTable->addWidget(tablePal);
+
+	FlowLayout *flowLayout = new FlowLayout(0,0,0);
+	flowLayout->addWidget(layoutSectionXYZ);
+	flowLayout->addWidget(layoutSectionDropShadow);
+	flowLayout->addWidget(layoutSectionShape);
+	flowLayout->addWidget(layoutSectionGroup);
+	flowLayout->addWidget(layoutSectionLine);
+	flowLayout->addWidget(layoutSectionColor);
+	flowLayout->addWidget(layoutSectionTransparency);
+	flowLayout->addWidget(layoutSectionTable);
+
+	QWidget * paletteHolder = new QWidget();
+	paletteHolder->setLayout(flowLayout);
+
+	m_scrollArea = new QScrollArea(this);
+	m_scrollArea->setWidget(paletteHolder);
+	m_scrollArea->setMinimumWidth(this->width());
+	m_scrollArea->setWidgetResizable(true);
+
+	setWidget( m_scrollArea );
+
 
 	languageChange();
 
@@ -113,19 +126,23 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	connect(groupPal, SIGNAL(shapeChanged(int)) , this, SLOT(handleNewShape(int)));
 	connect(groupPal, SIGNAL(shapeEditStarted()), this, SLOT(handleShapeEdit()));
 
-	connect(TabStack, SIGNAL(currentChanged2(int)), this, SLOT(SelTab(int)));
-
-	connect(Cpal, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradient(double, double, double, double, double, double, double, double, double, double )));
-	connect(Cpal, SIGNAL(editGradient(int)), this, SLOT(toggleGradientEdit(int)));
-	connect(Tpal, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradientM(double, double, double, double, double, double, double, double )));
-	connect(Tpal, SIGNAL(editGradient()), this, SLOT(toggleGradientEditM()));
+	connect(colorPal, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradient(double, double, double, double, double, double, double, double, double, double )));
+	connect(colorPal, SIGNAL(editGradient(int)), this, SLOT(toggleGradientEdit(int)));
+	connect(transparencyPal, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradientM(double, double, double, double, double, double, double, double )));
+	connect(transparencyPal, SIGNAL(editGradient()), this, SLOT(toggleGradientEditM()));
 
 	m_haveItem = false;
-	for (int ws = 1; ws < 10; ++ws)
-		TabStack->setItemEnabled(ws, false);
-	TabStack->setCurrentIndex(0);
-	TabStack->widget(0)->setEnabled(false);
-	TabStack->setItemEnabled(0, false);
+
+//	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
+//	popupFontFeatures->addWidget(colorWidgets);
+//	popupFontFeatures->addWidget(fontfeaturesWidget);
+//	ScPopupMenu * popupOrphans = new ScPopupMenu(orphanBox);
+//	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
+
+
+
+
+
 }
 
 void PropertiesFramePalette::closeEvent(QCloseEvent *closeEvent)
@@ -134,7 +151,7 @@ void PropertiesFramePalette::closeEvent(QCloseEvent *closeEvent)
 	{
 		if ((m_haveDoc) && (m_haveItem))
 		{
-			if (Cpal->gradEditButton->isChecked())
+			if (colorPal->gradEditButton->isChecked())
 			{
 				m_ScMW->view->requestMode(modeNormal);
 				m_ScMW->view->RefreshGradient(m_item);
@@ -161,48 +178,15 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	this->shadowPal->setMainWindow(mw);
 	this->shapePal->setMainWindow(mw);
 	this->groupPal->setMainWindow(mw);
-//	this->imagePal->setMainWindow(mw);
 	this->linePal->setMainWindow(mw);
 	this->tablePal->setMainWindow(mw);
 
 	//connect(this->Cpal, SIGNAL(gradientChanged()), m_ScMW, SLOT(updtGradFill()));
 	//connect(this->Cpal, SIGNAL(strokeGradientChanged()), m_ScMW, SLOT(updtGradStroke()));
-	connect(this->Tpal, SIGNAL(gradientChanged()), this, SLOT(handleGradientChanged()));
+	connect(this->transparencyPal, SIGNAL(gradientChanged()), this, SLOT(handleGradientChanged()));
 	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(AppModeChanged()));
 }
 
-void PropertiesFramePalette::SelTab(int t)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	if (!TabStack->widget(t)->isVisible())
-		return;
-
-	bool focusNowSet = false;
-	foreach (QObject *o, TabStack->widget(t)->children())
-	{
-		// Layouts, boxes etc aren't widgets at all
-		// so let's skip them silently...
-		QWidget *w = qobject_cast<QWidget*>(o);
-		if (!w)
-			continue;
-
-		QWidget *i = TabStack->widget(t);
-		while ((i = i->nextInFocusChain()) != TabStack->widget(t))
-		{
-			if (((i->focusPolicy() & Qt::TabFocus) == Qt::TabFocus) && !i->focusProxy() && i->isEnabled())
-			{
-				focusNowSet = true;
-				i->setFocus();
-				break;
-			}
-		}
-
-		if (focusNowSet)
-			break;
-	}
-}
 
 void PropertiesFramePalette::setDoc(ScribusDoc *d)
 {
@@ -218,10 +202,10 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	m_doc = d;
 	m_item = NULL;
 	setEnabled(!m_doc->drawAsPreview);
-	Cpal->setDocument(m_doc);
-	Cpal->setCurrentItem(NULL);
-	Tpal->setDocument(m_doc);
-	Tpal->setCurrentItem(NULL);
+	colorPal->setDocument(m_doc);
+	colorPal->setCurrentItem(NULL);
+	transparencyPal->setDocument(m_doc);
+	transparencyPal->setCurrentItem(NULL);
 
 	m_unitRatio = m_doc->unitRatio();
 	m_unitIndex = m_doc->unitIndex();
@@ -232,7 +216,6 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	shadowPal->setDoc(m_doc);
 	shapePal->setDoc(m_doc);
 	groupPal->setDoc(m_doc);
-//	imagePal->setDoc(m_doc);
 	linePal->setDoc(m_doc);
 	tablePal->setDocument(m_doc);
 
@@ -258,7 +241,6 @@ void PropertiesFramePalette::unsetDoc()
 	m_doc=NULL;
 	m_item = NULL;
 
-//	imagePal->unsetItem();
 	xyzPal->unsetDoc();
 	shadowPal->unsetItem();
 	shadowPal->unsetDoc();
@@ -266,37 +248,38 @@ void PropertiesFramePalette::unsetDoc()
 	shapePal->unsetDoc();
 	groupPal->unsetItem();
 	groupPal->unsetDoc();
-//	imagePal->unsetItem();
-//	imagePal->unsetDoc();
 	linePal->unsetItem();
 	linePal->unsetDoc();
 	tablePal->unsetItem();
 	tablePal->unsetDocument();
 
-	Cpal->setCurrentItem(NULL);
-	Cpal->setDocument(NULL);
-	Tpal->setCurrentItem(NULL);
-	Tpal->setDocument(NULL);
+	colorPal->setCurrentItem(NULL);
+	colorPal->setDocument(NULL);
+	transparencyPal->setCurrentItem(NULL);
+	transparencyPal->setDocument(NULL);
 
 	m_haveItem = false;
-	for (int ws = 1; ws < 10; ++ws)
-		TabStack->setItemEnabled(ws, false);
-	TabStack->widget(0)->setEnabled(false);
-	TabStack->setItemEnabled(idXYZItem, false);
+
+	layoutSectionXYZ->setEnabled(false);
+	layoutSectionDropShadow->setEnabled(false);
+	layoutSectionShape->setEnabled(false);
+	layoutSectionGroup->setEnabled(false);
+	layoutSectionLine->setEnabled(false);
+	layoutSectionColor->setEnabled(false);
+	layoutSectionTransparency->setEnabled(false);
+	layoutSectionTable->setEnabled(false);
 }
 
 void PropertiesFramePalette::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	Cpal->setCurrentItem(NULL);
-	Tpal->setCurrentItem(NULL);
-//	imagePal->unsetItem();
+	colorPal->setCurrentItem(NULL);
+	transparencyPal->setCurrentItem(NULL);
 	tablePal->unsetItem();
 	shapePal->unsetItem();
 	groupPal->unsetItem();
 	shadowPal->unsetItem();
-//	imagePal->unsetItem();
 	linePal->unsetItem();
 	handleSelectionChanged();
 }
@@ -369,12 +352,9 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		return;
 	}
 
-	int oldTabIndex = TabStack->currentIndex();
-
 	if (!m_doc)
 		setDoc(i->doc());
 
-	disconnect(TabStack, SIGNAL(currentChanged2(int)) , this, SLOT(SelTab(int)));
 	disconnect(linePal , SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
 
 	m_haveItem = false;
@@ -382,7 +362,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 
 	tablePal->setItem(m_item);
 
-	Tpal->setCurrentItem(m_item);
+	transparencyPal->setCurrentItem(m_item);
 
 	setTextFlowMode(m_item->textFlowMode());
 
@@ -393,26 +373,18 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
-		TabStack->setItemEnabled(idXYZItem, true);
-		TabStack->setItemEnabled(idShadowItem, true);
-		TabStack->setItemEnabled(idShapeItem, false);
-		TabStack->setItemEnabled(idGroupItem, true);
-		TabStack->setItemEnabled(idLineItem, false);
-		TabStack->setItemEnabled(idColorsItem, false);
-//		TabStack->setItemEnabled(idImageItem, false);
-		TabStack->setItemEnabled(idTableItem, false);
+		layoutSectionXYZ->setEnabled(true);
+		layoutSectionDropShadow->setEnabled(true);
+		layoutSectionShape->setEnabled(false);
+		layoutSectionGroup->setEnabled(true);
+		layoutSectionLine->setEnabled(false);
+		layoutSectionColor->setEnabled(false);
+		layoutSectionTable->setEnabled(false);
 	}
 	else
-		TabStack->setItemEnabled(idGroupItem, false);
+		layoutSectionGroup->setEnabled(false);
 
 	m_haveItem = true;
-
-	if (oldTabIndex != TabStack->currentIndex())
-	{
-		//Must be called only when necessary : cause focus problem
-		//in spinboxes when processing valueChanged() signals
-		SelTab(TabStack->currentIndex());
-	}
 
 	if (!sender() || (m_doc->appMode == modeEditTable))
 	{
@@ -420,171 +392,146 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		shadowPal->handleSelectionChanged();
 		shapePal->handleSelectionChanged();
 		groupPal->handleSelectionChanged();
-//		imagePal->handleSelectionChanged();
 		linePal->handleSelectionChanged();
 		tablePal->handleSelectionChanged();
-		Cpal->handleSelectionChanged();
+		colorPal->handleSelectionChanged();
 	}
 
 	if (m_item->asOSGFrame())
 	{
-		TabStack->setItemEnabled(idXYZItem, true);
-		TabStack->setItemEnabled(idShadowItem, true);
-		TabStack->setItemEnabled(idShapeItem, true);
-		TabStack->setItemEnabled(idGroupItem, false);
-		TabStack->setItemEnabled(idLineItem, false);
-		TabStack->setItemEnabled(idColorsItem, true);
-		TabStack->setItemEnabled(idTableItem, false);
-		TabStack->setItemEnabled(idTransparencyItem, false);
-//		TabStack->setItemEnabled(idImageItem, false);
-		TabStack->setItemEnabled(idTableItem, false);
+		layoutSectionXYZ->setEnabled(true);
+		layoutSectionDropShadow->setEnabled(true);
+		layoutSectionShape->setEnabled(true);
+		layoutSectionGroup->setEnabled(false);
+		layoutSectionLine->setEnabled(false);
+		layoutSectionColor->setEnabled(true);
+		layoutSectionTransparency->setEnabled(false);
+		layoutSectionTable->setEnabled(false);
 	}
 	if (m_item->asSymbolFrame())
 	{
-		TabStack->setItemEnabled(idXYZItem, true);
-		TabStack->setItemEnabled(idShadowItem, true);
-		TabStack->setItemEnabled(idShapeItem, false);
-		TabStack->setItemEnabled(idGroupItem, true);
-		TabStack->setItemEnabled(idLineItem, false);
-		TabStack->setItemEnabled(idColorsItem, false);
-//		TabStack->setItemEnabled(idImageItem, false);
-		TabStack->setItemEnabled(idTransparencyItem, false);
-		TabStack->setItemEnabled(idTableItem, false);
+		layoutSectionXYZ->setEnabled(true);
+		layoutSectionDropShadow->setEnabled(true);
+		layoutSectionShape->setEnabled(false);
+		layoutSectionGroup->setEnabled(true);
+		layoutSectionLine->setEnabled(false);
+		layoutSectionColor->setEnabled(false);
+		layoutSectionTransparency->setEnabled(false);
+		layoutSectionTable->setEnabled(false);
 	}
-	connect(TabStack, SIGNAL(currentChanged2(int)), this, SLOT(SelTab(int)));
 }
 
 void  PropertiesFramePalette::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	int currentTab = TabStack->currentIndex();
-	disconnect(TabStack, SIGNAL(currentChanged2(int)), this, SLOT(SelTab(int)));
 
 	PageItem* currItem = currentItemFromSelection();
 	if (m_doc->m_Selection->count() > 1)
 	{
-		for (int ws = 1; ws < 10; ++ws)
-			TabStack->setItemEnabled(ws, false);
-		TabStack->widget(0)->setEnabled(true);
-		TabStack->setItemEnabled(idXYZItem, true);
-		TabStack->setItemEnabled(idShadowItem, true);
-		TabStack->setItemEnabled(idLineItem, true);
-		TabStack->setItemEnabled(idColorsItem, true);
-		TabStack->setItemEnabled(idTransparencyItem, true);
-		TabStack->setItemEnabled(idTableItem, false); // At least not for now.
+		layoutSectionXYZ->setEnabled(true);
+		layoutSectionDropShadow->setEnabled(true);
+		layoutSectionLine->setEnabled(true);
+		layoutSectionColor->setEnabled(true);
+		layoutSectionTransparency->setEnabled(false);
+		layoutSectionTable->setEnabled(false);
+
 		if (m_haveItem && m_item)
 		{
 			if ((m_item->isGroup()) && (!m_item->isSingleSel))
-				TabStack->setItemEnabled(idGroupItem, true);
-		}
+				layoutSectionGroup->setEnabled(true);
+			}
 	}
 	else
 	{
 		int itemType = currItem ? (int) currItem->itemType() : -1;
 		m_haveItem   = (itemType != -1);
 
-//		int visID = TabStack->currentIndex();
-		TabStack->widget(0)->setEnabled(true);
-		TabStack->setItemEnabled(idXYZItem, true);
-		TabStack->setItemEnabled(idColorsItem, true);
-		TabStack->setItemEnabled(idTransparencyItem, true);
-		TabStack->setItemEnabled(idTableItem, false);
+		layoutSectionXYZ->setEnabled(true);
+		layoutSectionColor->setEnabled(true);
+		layoutSectionTransparency->setEnabled(false);
+		layoutSectionTable->setEnabled(false);
+
 		switch (itemType)
 		{
 		case -1:
 			m_haveItem = false;
-			for (int ws = 1; ws < 10; ++ws)
-				TabStack->setItemEnabled(ws, false);
-			TabStack->widget(0)->setEnabled(false);
-			TabStack->setItemEnabled(idXYZItem, false);
-			Cpal->showGradient(0);
+
+			layoutSectionXYZ->setEnabled(false);
+			layoutSectionDropShadow->setEnabled(false);
+			layoutSectionShape->setEnabled(false);
+			layoutSectionGroup->setEnabled(false);
+			layoutSectionLine->setEnabled(false);
+			layoutSectionColor->setEnabled(false);
+			layoutSectionTransparency->setEnabled(false);
+			layoutSectionTable->setEnabled(false);
+
+			colorPal->showGradient(0);
 			break;
 		case PageItem::ImageFrame:
 		case PageItem::LatexFrame:
 		case PageItem::OSGFrame:
 			if (currItem->asOSGFrame())
 			{
-				TabStack->setItemEnabled(idXYZItem, true);
-				TabStack->setItemEnabled(idShadowItem, true);
-				TabStack->setItemEnabled(idShapeItem, true);
-				TabStack->setItemEnabled(idGroupItem, false);
-				TabStack->setItemEnabled(idLineItem, false);
-				TabStack->setItemEnabled(idColorsItem, true);
-				TabStack->setItemEnabled(idTransparencyItem, false);
-//				TabStack->setItemEnabled(idImageItem, false);
+				layoutSectionXYZ->setEnabled(true);
+				layoutSectionDropShadow->setEnabled(true);
+				layoutSectionShape->setEnabled(true);
+				layoutSectionGroup->setEnabled(false);
+				layoutSectionLine->setEnabled(false);
+				layoutSectionColor->setEnabled(true);
+				layoutSectionTransparency->setEnabled(false);
+
 			}
 			else
 			{
-				TabStack->setItemEnabled(idXYZItem, true);
-				TabStack->setItemEnabled(idShadowItem, true);
-				TabStack->setItemEnabled(idShapeItem, true);
-//				TabStack->setItemEnabled(idImageItem, true);
-				TabStack->setItemEnabled(idLineItem, true);
+				layoutSectionXYZ->setEnabled(true);
+				layoutSectionDropShadow->setEnabled(true);
+				layoutSectionShape->setEnabled(true);
+				layoutSectionLine->setEnabled(true);
 			}
 			break;
-		case PageItem::TextFrame:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, true);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, true);
-			break;
 		case PageItem::Line:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, false);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, true);
+			layoutSectionDropShadow->setEnabled(true);
+			layoutSectionShape->setEnabled(false);
+			layoutSectionLine->setEnabled(true);
+
 			break;
+		case PageItem::TextFrame:
 		case PageItem::ItemType1:
 		case PageItem::ItemType3:
 		case PageItem::Polygon:
 		case PageItem::RegularPolygon:
 		case PageItem::Arc:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, true);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, true);
-			break;
 		case PageItem::PolyLine:
 		case PageItem::Spiral:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, true);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, true);
-			break;
 		case PageItem::PathText:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, true);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, true);
+			layoutSectionDropShadow->setEnabled(true);
+			layoutSectionShape->setEnabled(true);
+			layoutSectionLine->setEnabled(true);
 			break;
 		case PageItem::Symbol:
 		case PageItem::Group:
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, false);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, false);
-			TabStack->setItemEnabled(idGroupItem, true);
-			TabStack->setItemEnabled(idColorsItem, false);
-			TabStack->setItemEnabled(idTransparencyItem, false);
+			layoutSectionDropShadow->setEnabled(true);
+			layoutSectionShape->setEnabled(false);
+			layoutSectionGroup->setEnabled(true);
+			layoutSectionLine->setEnabled(false);
+			layoutSectionColor->setEnabled(false);
+			layoutSectionTransparency->setEnabled(false);
 			break;
 		case PageItem::Table:
-			TabStack->setItemEnabled(idTableItem, true);
-			TabStack->setItemEnabled(idShadowItem, true);
-			TabStack->setItemEnabled(idShapeItem, true);
-//			TabStack->setItemEnabled(idImageItem, false);
-			TabStack->setItemEnabled(idLineItem, false);
-			TabStack->setItemEnabled(idGroupItem, false);
-			TabStack->setItemEnabled(idColorsItem, false);
-			TabStack->setItemEnabled(idTransparencyItem, false);
+			layoutSectionDropShadow->setEnabled(true);
+			layoutSectionShape->setEnabled(true);
+			layoutSectionGroup->setEnabled(false);
+			layoutSectionLine->setEnabled(false);
+			layoutSectionColor->setEnabled(false);
+			layoutSectionTransparency->setEnabled(false);
+			layoutSectionTable->setEnabled(true);
 			break;
 		}
 	}
-	if (TabStack->isItemEnabled(currentTab) && (TabStack->currentIndex() != currentTab))
-		TabStack->setCurrentIndex(currentTab);
+
 	updateGeometry();
 	update();
-	connect(TabStack, SIGNAL(currentChanged2(int)), this, SLOT(SelTab(int)));
 
 	if (currItem)
 	{
@@ -606,11 +553,10 @@ void PropertiesFramePalette::unitChange()
 	shadowPal->unitChange();
 	shapePal->unitChange();
 	groupPal->unitChange();
-//	imagePal->unitChange();
 	linePal->unitChange();
 
-	Cpal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
-	Tpal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
+	colorPal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
+	transparencyPal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
 	m_haveItem = tmp;
 }
 
@@ -757,14 +703,14 @@ void PropertiesFramePalette::toggleGradientEdit(int stroke)
 		m_ScMW->view->editStrokeGradient = stroke;
 		if (stroke == 1)
 		{
-			if (Cpal->gradEditButtonStroke->isChecked())
+			if (colorPal->gradEditButtonStroke->isChecked())
 				m_ScMW->view->requestMode(modeEditGradientVectors);
 			else
 				m_ScMW->view->requestMode(modeNormal);
 		}
 		else
 		{
-			if ((Cpal->gradEditButton->isChecked()) || (Cpal->editMeshColors->isChecked()))
+			if ((colorPal->gradEditButton->isChecked()) || (colorPal->editMeshColors->isChecked()))
 			{
 				if ((stroke == 5) || (stroke == 6) || (stroke == 7))
 					m_ScMW->view->requestMode(modeEditMeshGradient);
@@ -835,7 +781,7 @@ void PropertiesFramePalette::toggleGradientEditM()
 	if ((m_haveDoc) && (m_haveItem))
 	{
 		m_ScMW->view->editStrokeGradient = 2;
-		if (Tpal->gradEditButton->isChecked())
+		if (transparencyPal->gradEditButton->isChecked())
 			m_ScMW->view->requestMode(modeEditGradientVectors);
 		else
 			m_ScMW->view->requestMode(modeNormal);
@@ -849,8 +795,8 @@ void PropertiesFramePalette::updateColorList()
 
 	groupPal->updateColorList();
 	tablePal->updateColorList();
-	Cpal->updateColorList();
-	Tpal->updateColorList();
+	colorPal->updateColorList();
+	transparencyPal->updateColorList();
 	shadowPal->updateColorList();
 
 	assert (m_doc->PageColors.document());
@@ -871,6 +817,10 @@ void PropertiesFramePalette::changeEvent(QEvent *e)
 		languageChange();
 		return;
 	}
+	if(e->type() == QEvent::Resize){
+		m_scrollArea->setMinimumWidth(this->width());
+		return;
+	}
 	ScDockPalette::changeEvent(e);
 }
 
@@ -878,34 +828,32 @@ void PropertiesFramePalette::languageChange()
 {
 	setWindowTitle( tr("Properties"));
 
-	TabStack->setItemText(idXYZItem, tr("X, Y, &Z"));
-//	TabStack->setItemText(idImageItem, tr("&Image"));
-	TabStack->setItemText(idShadowItem, tr("Drop Shadow"));
-	TabStack->setItemText(idShapeItem, tr("&Shape"));
-	TabStack->setItemText(idLineItem, tr("&Line"));
-	TabStack->setItemText(idColorsItem, tr("&Colors"));
-	TabStack->setItemText(idGroupItem, tr("&Group"));
-	TabStack->setItemText(idTransparencyItem, tr("&Transparency"));
-	TabStack->setItemText(idTableItem, tr("T&able"));
+	layoutSectionXYZ->setTitle(tr("X, Y, &Z"));
+	layoutSectionDropShadow->setTitle(tr("Drop Shadow"));
+	layoutSectionShape->setTitle(tr("&Shape"));
+	layoutSectionGroup->setTitle(tr("&Group"));
+	layoutSectionLine->setTitle(tr("&Line"));
+	layoutSectionColor->setTitle(tr("&Colors"));
+	layoutSectionTransparency->setTitle(tr("&Transparency"));
+	layoutSectionTable->setTitle(tr("T&able"));
 
 	xyzPal->languageChange();
 	shadowPal->languageChange();
 	shapePal->languageChange();
 	groupPal->languageChange();
-//	imagePal->languageChange();
-	Cpal->languageChange();
+	colorPal->languageChange();
 	linePal->languageChange();
 	tablePal->languageChange();
 }
 
 void PropertiesFramePalette::setGradientEditMode(bool on)
 {
-	Cpal->gradEditButton->setChecked(on);
+	colorPal->gradEditButton->setChecked(on);
 }
 
 void PropertiesFramePalette::endPatchAdd()
 {
-	Cpal->endPatchAdd();
+	colorPal->endPatchAdd();
 }
 
 void PropertiesFramePalette::updateColorSpecialGradient()
@@ -921,21 +869,21 @@ void PropertiesFramePalette::updateColorSpecialGradient()
 	if (currItem)
 	{
 		if (m_ScMW->view->editStrokeGradient == 0)
-			Cpal->setSpecialGradient(currItem->GrStartX, currItem->GrStartY, currItem->GrEndX, currItem->GrEndY, currItem->GrFocalX, currItem->GrFocalY, currItem->GrScale, currItem->GrSkew, 0, 0);
+			colorPal->setSpecialGradient(currItem->GrStartX, currItem->GrStartY, currItem->GrEndX, currItem->GrEndY, currItem->GrFocalX, currItem->GrFocalY, currItem->GrScale, currItem->GrSkew, 0, 0);
 		else if (m_ScMW->view->editStrokeGradient == 1)
-			Cpal->setSpecialGradient(currItem->GrStrokeStartX, currItem->GrStrokeStartY, currItem->GrStrokeEndX, currItem->GrStrokeEndY, currItem->GrStrokeFocalX, currItem->GrStrokeFocalY, currItem->GrStrokeScale, currItem->GrStrokeSkew, 0, 0);
+			colorPal->setSpecialGradient(currItem->GrStrokeStartX, currItem->GrStrokeStartY, currItem->GrStrokeEndX, currItem->GrStrokeEndY, currItem->GrStrokeFocalX, currItem->GrStrokeFocalY, currItem->GrStrokeScale, currItem->GrStrokeSkew, 0, 0);
 		else if (m_ScMW->view->editStrokeGradient == 3)
-			Cpal->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), 0, 0);
+			colorPal->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), 0, 0);
 		else if (m_ScMW->view->editStrokeGradient == 4)
-			Cpal->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), currItem->GrControl5.x(), currItem->GrControl5.y());
+			colorPal->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), currItem->GrControl5.x(), currItem->GrControl5.y());
 		else if ((m_ScMW->view->editStrokeGradient == 5) || (m_ScMW->view->editStrokeGradient == 6))
-			Cpal->setMeshPoint();
+			colorPal->setMeshPoint();
 		else if (m_ScMW->view->editStrokeGradient == 8)
-			Cpal->setMeshPatchPoint();
+			colorPal->setMeshPatchPoint();
 		else if (m_ScMW->view->editStrokeGradient == 9)
-			Cpal->setMeshPatch();
+			colorPal->setMeshPatch();
 		else if (!currItem->isGroup())
-			Tpal->setSpecialGradient(currItem->GrMaskStartX, currItem->GrMaskStartY, currItem->GrMaskEndX, currItem->GrMaskEndY, currItem->GrMaskFocalX, currItem->GrMaskFocalY, currItem->GrMaskScale, currItem->GrMaskSkew);
+			transparencyPal->setSpecialGradient(currItem->GrMaskStartX, currItem->GrMaskStartY, currItem->GrMaskEndX, currItem->GrMaskEndY, currItem->GrMaskFocalX, currItem->GrMaskFocalY, currItem->GrMaskScale, currItem->GrMaskSkew);
 	}
 }
 
@@ -958,7 +906,7 @@ void PropertiesFramePalette::handleGradientChanged()
 		return;
 	if ((m_haveDoc) && (m_haveItem))
 	{
-		VGradient vg(Tpal->gradEdit->gradient());
+		VGradient vg(transparencyPal->gradEdit->gradient());
 		m_doc->itemSelection_SetMaskGradient(vg);
 	}
 }

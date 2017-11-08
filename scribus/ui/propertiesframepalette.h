@@ -4,11 +4,12 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTIESPALETTE_H
-#define PROPERTIESPALETTE_H
+#ifndef PROPERTIESFRAMEPALETTE_H
+#define PROPERTIESFRAMEPALETTE_H
 
 #include <QListWidgetItem>
 #include <QLineEdit>
+#include <QScrollArea>
 
 class QCloseEvent;
 class QEvent;
@@ -28,13 +29,13 @@ class QWidget;
 #include "sclistboxpixmap.h"
 #include "scpage.h"
 #include "spalette.h"
-#include "sctreewidget.h"
+#include "sclayoutsection.h" // Indigo Section
+#include "flowlayout.h"
 
 class ColorCombo;
 class Cpalette;
 class NameWidget;
 class PropertiesPalette_Group;
-//class PropertyWidgetImage_Image;
 class PropertiesPalette_Line;
 class PropertiesPalette_Shadow;
 class PropertiesPalette_Shape;
@@ -71,18 +72,20 @@ public:
                          // commmited
 
 	PropertiesPalette_Group* groupPal;
-//	PropertyWidgetImage_Image* imagePal;
 	PropertiesPalette_Line*  linePal;
 	PropertiesPalette_Shadow* shadowPal;
 	PropertiesPalette_Shape* shapePal;
 	PropertiesPalette_Table* tablePal;
 	PropertiesPalette_XYZ*   xyzPal;
-	Cpalette *Cpal;
-	Tpalette *Tpal;
+	Cpalette *colorPal;
+	Tpalette *transparencyPal;
+
+
 
 private:
 
 	PageItem* currentItemFromSelection();
+	QScrollArea *m_scrollArea;
 	
 public slots:
 	void setMainWindow(ScribusMainWindow *mw);
@@ -101,7 +104,6 @@ public slots:
 	void setLocked(bool);
 
 private slots:
-	void SelTab(int t);
 
 	void NewLineMode(int mode);
 	void handleGradientChanged();
@@ -114,7 +116,6 @@ private slots:
 
 protected:
 	ScribusMainWindow *m_ScMW;
-	ScTreeWidget* TabStack;
 
 	bool      m_haveDoc;
 	bool      m_haveItem;
@@ -124,17 +125,16 @@ protected:
 	UndoManager *undoManager;
 	
 	ScGuardedPtr<ScribusDoc> m_doc;
-	
-	
-	int idXYZItem;
-	int idShapeItem;
-	int idTableItem;
-//	int idImageItem;
-	int idLineItem;
-	int idColorsItem;
-	int idTransparencyItem;
-	int idGroupItem;
-	int idShadowItem;
+
+	ScLayoutSection *layoutSectionXYZ;
+	ScLayoutSection *layoutSectionDropShadow;
+	ScLayoutSection *layoutSectionShape;
+	ScLayoutSection *layoutSectionGroup;
+	ScLayoutSection *layoutSectionLine;
+	ScLayoutSection *layoutSectionColor;
+	ScLayoutSection *layoutSectionTransparency;
+	ScLayoutSection *layoutSectionTable;
+
 };
 
 #endif

@@ -15,8 +15,8 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 	m_font.setBold(true);
 
 	m_caption = new QLabel();
-	m_caption->setText(text);
 	m_caption->setFont(m_font);
+	setTitle(text);
 
 	m_btnExtended = new QPushButton();
 	m_btnExtended->setFixedSize(24,24);
@@ -88,6 +88,11 @@ void ScLayoutSectionHeader::setToggleState(){
 
 }
 
+void ScLayoutSectionHeader::setTitle(QString text){
+	m_caption->setText(text);
+
+}
+
 
 
 
@@ -126,5 +131,11 @@ void ScLayoutSection::setToggleOff(bool isOff){
 
 void ScLayoutSection::setToggleIsOff(bool state){
 	emit toggleState(state);
-	qDebug() << "emit: toggle is off " << state;
+	//qDebug() << "emit: toggle is off " << state;
 }
+
+void ScLayoutSection::setTitle(QString text){
+	m_header->setTitle(text);
+
+}
+

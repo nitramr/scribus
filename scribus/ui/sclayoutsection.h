@@ -15,7 +15,9 @@ class SCRIBUS_API ScLayoutSectionHeader : public QWidget
 public:
 	ScLayoutSectionHeader(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
 	~ScLayoutSectionHeader() {};
+
 	void setToggleOff(bool isOff);
+	void setTitle(QString text);
 
 private:
 	void paintEvent(QPaintEvent *);
@@ -37,8 +39,10 @@ class SCRIBUS_API ScLayoutSection : public QWidget
 public:
 	ScLayoutSection(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
 	~ScLayoutSection() {};
+
 	void addWidget(QWidget * item);
 	void setToggleOff(bool isOff);
+	void setTitle(QString text);
 
 private:
 	FlowLayout *m_flowLayout;
