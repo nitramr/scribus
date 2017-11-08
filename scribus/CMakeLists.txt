@@ -168,6 +168,7 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
 	ui/propertywidgetimage_image.ui
+    ui/propertywidgetimage_imagesettings.ui
 	ui/propertywidgettext_distancebase.ui
 	ui/propertywidgettext_pareffectbase.ui
 	ui/propertywidgettext_fontfeaturesbase.ui
@@ -472,6 +473,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
 	ui/propertywidgetimage_image.h
+	ui/propertywidgetimage_imagesettings.h
 	ui/propertywidgettext_distance.h
 	ui/propertywidgettext_pareffect.h
 	ui/propertywidgettext_glyphspace.h
@@ -960,7 +962,8 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_table.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
-    ui/propertywidgetimage_image.cpp
+	ui/propertywidgetimage_image.cpp
+	ui/propertywidgetimage_imagesettings.cpp
 	ui/propertywidgettext_distance.cpp
 	ui/propertywidgettext_pareffect.cpp
 	ui/propertywidgettext_glyphspace.cpp
@@ -970,7 +973,7 @@ set(SCRIBUS_SOURCES
 	ui/propertywidgettext_optmargins.cpp
 	ui/propertywidgettext_orphans.cpp
 	ui/propertywidgettext_pathtext.cpp
-    ui/propertywidgettext_textadvanced.cpp
+	ui/propertywidgettext_textadvanced.cpp
 	ui/propertywidgettext_textalignment.cpp
 	ui/propertywidgettext_textcolor.cpp
 	ui/propertywidgettext_textstyles.cpp

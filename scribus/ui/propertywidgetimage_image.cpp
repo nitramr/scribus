@@ -106,31 +106,23 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	connect(cbProportional     , SIGNAL(stateChanged(int))   , this, SLOT(handleScaling()));
 	connect(imgEffectsButton   , SIGNAL(clicked())           , this, SLOT(handleImageEffects()));
 	connect(imgExtProperties   , SIGNAL(clicked())           , this, SLOT(handleExtImgProperties()));
-	connect(inputProfiles      , SIGNAL(activated(const QString&)), this, SLOT(handleProfile(const QString&)));
-	connect(renderIntent       , SIGNAL(activated(int))      , this, SLOT(handleIntent()));
-	connect(compressionMethod  , SIGNAL(activated(int))      , this, SLOT(handleCompressionMethod()));
-	connect(compressionQuality , SIGNAL(activated(int))      , this, SLOT(handleCompressionQuality()));
+
+//	// Colo Management
+//	connect(inputProfiles      , SIGNAL(activated(const QString&)), this, SLOT(handleProfile(const QString&)));
+//	connect(renderIntent       , SIGNAL(activated(int))      , this, SLOT(handleIntent()));
+
+//	// Compression
+//	connect(compressionMethod  , SIGNAL(activated(int))      , this, SLOT(handleCompressionMethod()));
+//	connect(compressionQuality , SIGNAL(activated(int))      , this, SLOT(handleCompressionQuality()));
 }
 
-void PropertyWidgetImage_Image::updateSpinBoxConstants()
-{
-	if (!m_haveDoc)
-		return;
-	if(m_doc->m_Selection->count()==0)
-		return;
-	imageXOffsetSpinBox->setConstants(&m_doc->constants());
-	imageYOffsetSpinBox->setConstants(&m_doc->constants());
-}
 
-void PropertyWidgetImage_Image::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	QWidget::changeEvent(e);
-}
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertyWidgetImage_Image::setMainWindow(ScribusMainWindow* mw)
 {
@@ -138,6 +130,13 @@ void PropertyWidgetImage_Image::setMainWindow(ScribusMainWindow* mw)
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
+
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidgetImage_Image::setDoc(ScribusDoc *d)
 {
@@ -175,6 +174,7 @@ void PropertyWidgetImage_Image::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
+
 void PropertyWidgetImage_Image::unsetDoc()
 {
 	if (m_doc)
@@ -189,6 +189,118 @@ void PropertyWidgetImage_Image::unsetDoc()
 	m_item  = NULL;
 
 	setEnabled(false);
+}
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+void PropertyWidgetImage_Image::setCurrentItem(PageItem *item)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	//CB We shouldn't really need to process this if our item is the same one
+	//maybe we do if the item has been changed by scripter.. but that should probably
+	//set some status if so.
+	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
+	//if (m_item == i)
+	//	return;
+
+	if (!m_doc)
+		setDoc(item->doc());
+
+	m_haveItem = false;
+	m_item = item;
+
+	if (m_item->asImageFrame())
+	{
+		imagePageNumber->blockSignals(true);
+		if(m_item->imageIsAvailable)
+		{
+			imagePageNumber->setMaximum(m_item->pixm.imgInfo.numberOfPages);
+			imagePageNumber->setEnabled(true);
+		}
+		else
+			imagePageNumber->setEnabled(false);
+		imagePageNumber->setValue(m_item->pixm.imgInfo.actualPageNumber);
+
+//		compressionMethod->setCurrentIndex(m_item->OverrideCompressionMethod ? m_item->CompressionMethodIndex + 1 : 0);
+//		compressionQuality->setCurrentIndex(m_item->OverrideCompressionQuality ? m_item->CompressionQualityIndex + 1 : 0);
+		imagePageNumber->blockSignals(false);
+
+		imageXScaleSpinBox->blockSignals(true);
+		imageYScaleSpinBox->blockSignals(true);
+		imageXOffsetSpinBox->blockSignals(true);
+		imageYOffsetSpinBox->blockSignals(true);
+		imageRotation->blockSignals(true);
+
+		imgEffectsButton->setVisible(m_item->imageIsAvailable && m_item->isRaster);
+		imgExtProperties->setVisible(m_item->imageIsAvailable && m_item->pixm.imgInfo.valid);
+		bool setter = m_item->ScaleType;
+		cbAutoFit->setChecked(!setter);
+		if ((m_item->asLatexFrame()) || (m_item->asOSGFrame()))
+		{
+			cbAutoFit->setEnabled(false);
+			cbProportional->setEnabled(false);
+			imageXScaleSpinBox->setEnabled(false);
+			imageYScaleSpinBox->setEnabled(false);
+			imgDpiX->setEnabled(false);
+			imgDpiY->setEnabled(false);
+		}
+		else
+		{
+			imageXScaleSpinBox->setEnabled(setter);
+			imageYScaleSpinBox->setEnabled(setter);
+			imgDpiX->setEnabled(setter);
+			imgDpiY->setEnabled(setter);
+			cbProportional->setEnabled(!setter);
+			cbProportional->setChecked(m_item->AspectRatio);
+			cbAutoFit->setEnabled(true);
+			//Necessary for undo action
+			keepImageWHRatioButton->setEnabled(setter);
+			keepImageDPIRatioButton->setEnabled(setter);
+			keepImageWHRatioButton->setChecked(m_item->AspectRatio);
+			keepImageDPIRatioButton->setChecked(m_item->AspectRatio);
+		}
+//CB Why do we need this? Setting it too much here
+// 		if (setter == true)
+// 		{
+// 			keepImageWHRatioButton->setChecked(setter);
+// 			keepImageDPIRatioButton->setChecked(setter);
+// 		}
+		//imageXOffsetSpinBox->setEnabled(setter);
+		//imageYOffsetSpinBox->setEnabled(setter);
+		//imageRotation->setEnabled(setter);
+
+		imageXScaleSpinBox->blockSignals(false);
+		imageYScaleSpinBox->blockSignals(false);
+		imageXOffsetSpinBox->blockSignals(false);
+		imageYOffsetSpinBox->blockSignals(false);
+		imageRotation->blockSignals(false);
+	}
+	m_haveItem = true;
+
+	showScaleAndOffset(m_item->imageXScale(), m_item->imageYScale(), m_item->imageXOffset(), m_item->imageYOffset());
+	double rrR = m_item->imageRotation();
+	if (m_item->imageRotation() > 0)
+		rrR = 360 - rrR;
+	imageRotation->showValue(fabs(rrR));
+
+	if (m_item->asImageFrame())
+	{
+		//updateProfileList();
+	}
+	if (m_item->asOSGFrame())
+	{
+		setEnabled(false);
+	}
+	if (m_item->asSymbolFrame())
+	{
+		setEnabled(false);
+	}
+	updateSpinBoxConstants();
 }
 
 void PropertyWidgetImage_Image::unsetItem()
@@ -216,6 +328,12 @@ PageItem* PropertyWidgetImage_Image::currentItemFromSelection()
 
 	return currentItem;
 }
+
+/*********************************************************************
+*
+* Action Sniffer
+*
+**********************************************************************/
 
 void PropertyWidgetImage_Image::installSniffer(ScrSpinBox *spinBox)
 {
@@ -247,85 +365,29 @@ void PropertyWidgetImage_Image::installSniffer(QSpinBox *spinBox)
 	}
 }
 
-void PropertyWidgetImage_Image::updateProfileList()
+bool PropertyWidgetImage_Image::userActionOn()
 {
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if (m_haveDoc)
+	return m_userActionOn;;
+}
+
+void PropertyWidgetImage_Image::spinboxStartUserAction()
+{
+	m_userActionOn = true;
+}
+
+void PropertyWidgetImage_Image::spinboxFinishUserAction()
+{
+	m_userActionOn = false;
+
+	for (int i = 0; i < m_doc->m_Selection->count(); ++i)
+		m_doc->m_Selection->itemAt(i)->checkChanges(true);
+	if (m_ScMW->view->groupTransactionStarted())
 	{
-		if (ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse)
-			colorMgmtGroup->show();
-		else
-		{
-			colorMgmtGroup->hide();
-			return;
-		}
-
-		inputProfiles->blockSignals(true);
-		renderIntent->blockSignals(true);
-
-		inputProfiles->clear();
-		if (m_haveItem)
-		{
-			if (m_item->pixm.imgInfo.colorspace == ColorSpaceCMYK)
-			{
-				ProfilesL::Iterator itP;
-				ProfilesL::Iterator itPend = ScCore->InputProfilesCMYK.end();
-				for (itP = ScCore->InputProfilesCMYK.begin(); itP != itPend; ++itP)
-				{
-					inputProfiles->addItem(itP.key());
-					if (itP.key() == m_item->IProfile)
-						inputProfiles->setCurrentIndex(inputProfiles->count()-1);
-				}
-				if (!ScCore->InputProfilesCMYK.contains(m_item->IProfile))
-				{
-					inputProfiles->addItem(m_item->IProfile);
-					inputProfiles->setCurrentIndex(inputProfiles->count()-1);
-				}
-				else
-				{
-					if (!m_item->EmProfile.isEmpty())
-						inputProfiles->addItem(m_item->EmProfile);
-				}
-			}
-			else
-			{
-				ProfilesL::Iterator itP;
-				ProfilesL::Iterator itPend=ScCore->InputProfiles.end();
-				for (itP = ScCore->InputProfiles.begin(); itP != itPend; ++itP)
-				{
-					inputProfiles->addItem(itP.key());
-					if (itP.key() == m_item->IProfile)
-						inputProfiles->setCurrentIndex(inputProfiles->count()-1);
-				}
-				if (!ScCore->InputProfiles.contains(m_item->IProfile))
-				{
-					inputProfiles->addItem(m_item->IProfile);
-					inputProfiles->setCurrentIndex(inputProfiles->count()-1);
-				}
-				else
-				{
-					if (!m_item->EmProfile.isEmpty())
-						inputProfiles->addItem(m_item->EmProfile);
-				}
-			}
-			renderIntent->setCurrentIndex(m_item->IRender);
-		}
-
-		inputProfiles->blockSignals(false);
-		renderIntent->blockSignals(false);
+		m_ScMW->view->endGroupTransaction();
 	}
 }
 
-void PropertyWidgetImage_Image::showCMSOptions()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if (m_haveItem)
-		updateProfileList();
-	else if (m_doc)
-		colorMgmtGroup->setVisible(ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse);
-}
+
 
 void PropertyWidgetImage_Image::showImageRotation(double rot)
 {
@@ -427,117 +489,12 @@ void PropertyWidgetImage_Image::handleSelectionChanged()
 	//repaint();
 }
 
-void PropertyWidgetImage_Image::handleUpdateRequest(int updateFlags)
-{
-	if (updateFlags & reqCmsOptionsUpdate)
-		showCMSOptions();
-}
 
-void PropertyWidgetImage_Image::setCurrentItem(PageItem *item)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	//CB We shouldn't really need to process this if our item is the same one
-	//maybe we do if the item has been changed by scripter.. but that should probably
-	//set some status if so.
-	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
-	//if (m_item == i)
-	//	return;
-
-	if (!m_doc)
-		setDoc(item->doc());
-
-	m_haveItem = false;
-	m_item = item;
-
-	if (m_item->asImageFrame())
-	{
-		imagePageNumber->blockSignals(true);
-		if(m_item->imageIsAvailable)
-		{
-			imagePageNumber->setMaximum(m_item->pixm.imgInfo.numberOfPages);
-			imagePageNumber->setEnabled(true);
-		}
-		else
-			imagePageNumber->setEnabled(false);
-		imagePageNumber->setValue(m_item->pixm.imgInfo.actualPageNumber);
-
-		compressionMethod->setCurrentIndex(m_item->OverrideCompressionMethod ? m_item->CompressionMethodIndex + 1 : 0);
-		compressionQuality->setCurrentIndex(m_item->OverrideCompressionQuality ? m_item->CompressionQualityIndex + 1 : 0);
-		imagePageNumber->blockSignals(false);
-
-		imageXScaleSpinBox->blockSignals(true);
-		imageYScaleSpinBox->blockSignals(true);
-		imageXOffsetSpinBox->blockSignals(true);
-		imageYOffsetSpinBox->blockSignals(true);
-		imageRotation->blockSignals(true);
-
-		imgEffectsButton->setVisible(m_item->imageIsAvailable && m_item->isRaster);
-		imgExtProperties->setVisible(m_item->imageIsAvailable && m_item->pixm.imgInfo.valid);
-		bool setter = m_item->ScaleType;
-		cbAutoFit->setChecked(!setter);
-		if ((m_item->asLatexFrame()) || (m_item->asOSGFrame()))
-		{
-			cbAutoFit->setEnabled(false);
-			cbProportional->setEnabled(false);
-			imageXScaleSpinBox->setEnabled(false);
-			imageYScaleSpinBox->setEnabled(false);
-			imgDpiX->setEnabled(false);
-			imgDpiY->setEnabled(false);
-		}
-		else
-		{
-			imageXScaleSpinBox->setEnabled(setter);
-			imageYScaleSpinBox->setEnabled(setter);
-			imgDpiX->setEnabled(setter);
-			imgDpiY->setEnabled(setter);
-			cbProportional->setEnabled(!setter);
-			cbProportional->setChecked(m_item->AspectRatio);
-			cbAutoFit->setEnabled(true);
-			//Necessary for undo action
-			keepImageWHRatioButton->setEnabled(setter);
-			keepImageDPIRatioButton->setEnabled(setter);
-			keepImageWHRatioButton->setChecked(m_item->AspectRatio);
-			keepImageDPIRatioButton->setChecked(m_item->AspectRatio);
-		}
-//CB Why do we need this? Setting it too much here
-// 		if (setter == true)
-// 		{
-// 			keepImageWHRatioButton->setChecked(setter);
-// 			keepImageDPIRatioButton->setChecked(setter);
-// 		}
-		//imageXOffsetSpinBox->setEnabled(setter);
-		//imageYOffsetSpinBox->setEnabled(setter);
-		//imageRotation->setEnabled(setter);
-
-		imageXScaleSpinBox->blockSignals(false);
-		imageYScaleSpinBox->blockSignals(false);
-		imageXOffsetSpinBox->blockSignals(false);
-		imageYOffsetSpinBox->blockSignals(false);
-		imageRotation->blockSignals(false);
-	}
-	m_haveItem = true;
-
-	showScaleAndOffset(m_item->imageXScale(), m_item->imageYScale(), m_item->imageXOffset(), m_item->imageYOffset());
-	double rrR = m_item->imageRotation();
-	if (m_item->imageRotation() > 0)
-		rrR = 360 - rrR;
-	imageRotation->showValue(fabs(rrR));
-
-	if (m_item->asImageFrame())
-	{
-		updateProfileList();
-	}
-	if (m_item->asOSGFrame())
-	{
-		setEnabled(false);
-	}
-	if (m_item->asSymbolFrame())
-	{
-		setEnabled(false);
-	}
-	updateSpinBoxConstants();
-}
+/*********************************************************************
+*
+* Features Scale, Transform
+*
+**********************************************************************/
 
 void PropertyWidgetImage_Image::handleLocalXY()
 {
@@ -590,7 +547,7 @@ void PropertyWidgetImage_Image::handleScaling()
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	if(cbAutoFit->isChecked() == false)
+	if(cbAutoFit == sender() && cbAutoFit->isChecked() == false)
 	{
 		cbProportional->setEnabled(false);
 //		imageXOffsetSpinBox->setEnabled(true);
@@ -603,7 +560,7 @@ void PropertyWidgetImage_Image::handleScaling()
 		keepImageWHRatioButton->setEnabled(true);
 		keepImageDPIRatioButton->setEnabled(true);
 	}
-	else
+	if(cbAutoFit == sender() && cbAutoFit->isChecked() == true)
 	{
 		cbProportional->setEnabled(true);
 //		imageXOffsetSpinBox->setEnabled(false);
@@ -717,20 +674,7 @@ void PropertyWidgetImage_Image::handleImageWHRatio()
 	imageYScaleSpinBox->blockSignals(yscaleBlocked);
 }
 
-void PropertyWidgetImage_Image::handleImageEffects()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->ImageEffects();
-}
 
-void PropertyWidgetImage_Image::handleExtImgProperties()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->view->editExtendedImageProperties();
-	m_doc->changed();
-}
 
 void PropertyWidgetImage_Image::handleImagePageNumber()
 {
@@ -751,33 +695,153 @@ void PropertyWidgetImage_Image::handleImagePageNumber()
 	m_item->update();
 }
 
-void PropertyWidgetImage_Image::handleProfile(const QString& prn)
+/*********************************************************************
+*
+* Features Color Management
+*
+**********************************************************************/
+
+//void PropertyWidgetImage_Image::handleProfile(const QString& prn)
+//{
+//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	m_doc->itemSelection_SetColorProfile(inputProfiles->currentText());
+//}
+
+//void PropertyWidgetImage_Image::handleIntent()
+//{
+//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	m_doc->itemSelection_SetRenderIntent(renderIntent->currentIndex());
+//}
+
+//void PropertyWidgetImage_Image::updateProfileList()
+//{
+//	if (!m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	if (m_haveDoc)
+//	{
+//		if (ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse)
+//			colorMgmtGroup->show();
+//		else
+//		{
+//			colorMgmtGroup->hide();
+//			return;
+//		}
+
+//		inputProfiles->blockSignals(true);
+//		renderIntent->blockSignals(true);
+
+//		inputProfiles->clear();
+//		if (m_haveItem)
+//		{
+//			if (m_item->pixm.imgInfo.colorspace == ColorSpaceCMYK)
+//			{
+//				ProfilesL::Iterator itP;
+//				ProfilesL::Iterator itPend = ScCore->InputProfilesCMYK.end();
+//				for (itP = ScCore->InputProfilesCMYK.begin(); itP != itPend; ++itP)
+//				{
+//					inputProfiles->addItem(itP.key());
+//					if (itP.key() == m_item->IProfile)
+//						inputProfiles->setCurrentIndex(inputProfiles->count()-1);
+//				}
+//				if (!ScCore->InputProfilesCMYK.contains(m_item->IProfile))
+//				{
+//					inputProfiles->addItem(m_item->IProfile);
+//					inputProfiles->setCurrentIndex(inputProfiles->count()-1);
+//				}
+//				else
+//				{
+//					if (!m_item->EmProfile.isEmpty())
+//						inputProfiles->addItem(m_item->EmProfile);
+//				}
+//			}
+//			else
+//			{
+//				ProfilesL::Iterator itP;
+//				ProfilesL::Iterator itPend=ScCore->InputProfiles.end();
+//				for (itP = ScCore->InputProfiles.begin(); itP != itPend; ++itP)
+//				{
+//					inputProfiles->addItem(itP.key());
+//					if (itP.key() == m_item->IProfile)
+//						inputProfiles->setCurrentIndex(inputProfiles->count()-1);
+//				}
+//				if (!ScCore->InputProfiles.contains(m_item->IProfile))
+//				{
+//					inputProfiles->addItem(m_item->IProfile);
+//					inputProfiles->setCurrentIndex(inputProfiles->count()-1);
+//				}
+//				else
+//				{
+//					if (!m_item->EmProfile.isEmpty())
+//						inputProfiles->addItem(m_item->EmProfile);
+//				}
+//			}
+//			renderIntent->setCurrentIndex(m_item->IRender);
+//		}
+
+//		inputProfiles->blockSignals(false);
+//		renderIntent->blockSignals(false);
+//	}
+//}
+
+//void PropertyWidgetImage_Image::showCMSOptions()
+//{
+//	if (!m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	if (m_haveItem)
+//		updateProfileList();
+//	else if (m_doc)
+//		colorMgmtGroup->setVisible(ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse);
+//}
+
+/*********************************************************************
+*
+* Features Image Effects
+*
+**********************************************************************/
+
+void PropertyWidgetImage_Image::handleImageEffects()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	m_doc->itemSelection_SetColorProfile(inputProfiles->currentText());
+	m_ScMW->ImageEffects();
 }
 
-void PropertyWidgetImage_Image::handleIntent()
+void PropertyWidgetImage_Image::handleExtImgProperties()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	m_doc->itemSelection_SetRenderIntent(renderIntent->currentIndex());
+	m_ScMW->view->editExtendedImageProperties();
+	m_doc->changed();
 }
+
  
-void PropertyWidgetImage_Image::handleCompressionMethod()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->itemSelection_SetCompressionMethod(compressionMethod->currentIndex() - 1);
-}
+/*********************************************************************
+*
+* Features Compression
+*
+**********************************************************************/
 
-void PropertyWidgetImage_Image::handleCompressionQuality()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->itemSelection_SetCompressionQuality(compressionQuality->currentIndex() - 1);
-}
+//void PropertyWidgetImage_Image::handleCompressionMethod()
+//{
+//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	m_doc->itemSelection_SetCompressionMethod(compressionMethod->currentIndex() - 1);
+//}
+
+//void PropertyWidgetImage_Image::handleCompressionQuality()
+//{
+//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
+//		return;
+//	m_doc->itemSelection_SetCompressionQuality(compressionQuality->currentIndex() - 1);
+//}
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
 
 void PropertyWidgetImage_Image::languageChange()
 {
@@ -785,35 +849,35 @@ void PropertyWidgetImage_Image::languageChange()
 
 	imagePageNumber->setSpecialValueText( tr( "Auto" ));
 
-	QSignalBlocker renderIntentBlocker(renderIntent);
-	int oldRenderI = renderIntent->currentIndex();
-	renderIntent->clear();
-	renderIntent->addItem( tr("Perceptual"));
-	renderIntent->addItem( tr("Relative Colorimetric"));
-	renderIntent->addItem( tr("Saturation"));
-	renderIntent->addItem( tr("Absolute Colorimetric"));
-	renderIntent->setCurrentIndex(oldRenderI);
+//	QSignalBlocker renderIntentBlocker(renderIntent);
+//	int oldRenderI = renderIntent->currentIndex();
+//	renderIntent->clear();
+//	renderIntent->addItem( tr("Perceptual"));
+//	renderIntent->addItem( tr("Relative Colorimetric"));
+//	renderIntent->addItem( tr("Saturation"));
+//	renderIntent->addItem( tr("Absolute Colorimetric"));
+//	renderIntent->setCurrentIndex(oldRenderI);
 
-	QSignalBlocker compressionMethodBlocker(compressionMethod);
-	int oldCompressionMethod = compressionMethod->currentIndex();
-	compressionMethod->clear();
-	compressionMethod->addItem( tr( "Global" ) );
-	compressionMethod->addItem( tr( "Automatic" ) );
-	compressionMethod->addItem( tr( "Lossy - JPEG" ) );
-	compressionMethod->addItem( tr( "Lossless - Zip" ) );
-	compressionMethod->addItem( tr( "None" ) );
-	compressionMethod->setCurrentIndex(oldCompressionMethod);
+//	QSignalBlocker compressionMethodBlocker(compressionMethod);
+//	int oldCompressionMethod = compressionMethod->currentIndex();
+//	compressionMethod->clear();
+//	compressionMethod->addItem( tr( "Global" ) );
+//	compressionMethod->addItem( tr( "Automatic" ) );
+//	compressionMethod->addItem( tr( "Lossy - JPEG" ) );
+//	compressionMethod->addItem( tr( "Lossless - Zip" ) );
+//	compressionMethod->addItem( tr( "None" ) );
+//	compressionMethod->setCurrentIndex(oldCompressionMethod);
 
-	QSignalBlocker compressionQualityBlocker(compressionQuality);
-	int oldCompressionQuality = compressionQuality->currentIndex();
-	compressionQuality->clear();
-	compressionQuality->addItem( tr( "Global" ) );
-	compressionQuality->addItem( tr( "Maximum" ) );
-	compressionQuality->addItem( tr( "High" ) );
-	compressionQuality->addItem( tr( "Medium" ) );
-	compressionQuality->addItem( tr( "Low" ) );
-	compressionQuality->addItem( tr( "Minimum" ) );
-	compressionQuality->setCurrentIndex(oldCompressionQuality);
+//	QSignalBlocker compressionQualityBlocker(compressionQuality);
+//	int oldCompressionQuality = compressionQuality->currentIndex();
+//	compressionQuality->clear();
+//	compressionQuality->addItem( tr( "Global" ) );
+//	compressionQuality->addItem( tr( "Maximum" ) );
+//	compressionQuality->addItem( tr( "High" ) );
+//	compressionQuality->addItem( tr( "Medium" ) );
+//	compressionQuality->addItem( tr( "Low" ) );
+//	compressionQuality->addItem( tr( "Minimum" ) );
+//	compressionQuality->setCurrentIndex(oldCompressionQuality);
 
 	QString pctSuffix = tr(" %");
 	imageXScaleSpinBox->setSuffix(pctSuffix);
@@ -843,26 +907,40 @@ void PropertyWidgetImage_Image::unitChange()
 	imageYOffsetSpinBox->blockSignals(false);
 }
 
-bool PropertyWidgetImage_Image::userActionOn()
+
+void PropertyWidgetImage_Image::updateSpinBoxConstants()
 {
-	return m_userActionOn;;
+	if (!m_haveDoc)
+		return;
+	if(m_doc->m_Selection->count()==0)
+		return;
+	imageXOffsetSpinBox->setConstants(&m_doc->constants());
+	imageYOffsetSpinBox->setConstants(&m_doc->constants());
 }
 
-void PropertyWidgetImage_Image::spinboxStartUserAction()
+
+
+
+void PropertyWidgetImage_Image::handleUpdateRequest(int updateFlags)
 {
-	m_userActionOn = true;
+//	if (updateFlags & reqCmsOptionsUpdate)
+//		showCMSOptions();
 }
 
-void PropertyWidgetImage_Image::spinboxFinishUserAction()
-{
-	m_userActionOn = false;
 
-	for (int i = 0; i < m_doc->m_Selection->count(); ++i)
-		m_doc->m_Selection->itemAt(i)->checkChanges(true);
-	if (m_ScMW->view->groupTransactionStarted())
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidgetImage_Image::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
 	{
-		m_ScMW->view->endGroupTransaction();
+		languageChange();
+		return;
 	}
+	QWidget::changeEvent(e);
 }
-
-

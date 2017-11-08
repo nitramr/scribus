@@ -37,8 +37,8 @@ public:
 
 	bool userActionOn();
 
-	void updateProfileList();
-	void showCMSOptions();
+//	void updateProfileList();
+//	void showCMSOptions();
 
 protected:
 
@@ -99,10 +99,10 @@ private slots:
 
 	void handleImagePageNumber();
 
-	void handleProfile(const QString& prn);
-	void handleIntent();
-	void handleCompressionMethod();
-	void handleCompressionQuality();
+//	void handleProfile(const QString& prn);
+//	void handleIntent();
+//	void handleCompressionMethod();
+//	void handleCompressionQuality();
 
 	void handleImageEffects();
 	void handleExtImgProperties();

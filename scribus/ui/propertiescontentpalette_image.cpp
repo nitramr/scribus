@@ -20,6 +20,7 @@ for which a new license (GPL+exception) is in place.
 #include "pageitem_textframe.h"
 #include "propertiespalette_utils.h"
 #include "propertywidgetimage_image.h"
+#include "propertywidgetimage_imagesettings.h"
 #include "scpopupmenu.h"
 #include "scraction.h"
 #include "scribuscore.h"
@@ -48,11 +49,16 @@ PropertiesContentPalette_Image::PropertiesContentPalette_Image( QWidget* parent)
 //	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
 
 
-	layoutSectionText = new ScLayoutSection(tr("Image"));
-	layoutSectionText->addWidget(imageWidget);
+	layoutSectionImage = new ScLayoutSection(tr("Image"));
+	layoutSectionImage->addWidget(imageWidget);
+
+	imageSettingsWidget = new PropertyWidgetImage_ImageSettings();
+	layoutSectionImageSettings = new ScLayoutSection(tr("Image Settings"));
+	layoutSectionImageSettings->addWidget(imageSettingsWidget);
 
 	FlowLayout *flowLayout = new FlowLayout(0,0,0);
-	flowLayout->addWidget(layoutSectionText);
+	flowLayout->addWidget(layoutSectionImage);
+	flowLayout->addWidget(layoutSectionImageSettings);
 
 	setLayout(flowLayout);
 
@@ -73,6 +79,7 @@ void PropertiesContentPalette_Image::setMainWindow(ScribusMainWindow* mw)
 
 
 	imageWidget->setMainWindow(mw);
+	imageSettingsWidget->setMainWindow(mw);
 
 
 }
@@ -104,6 +111,7 @@ void PropertiesContentPalette_Image::setDoc(ScribusDoc *d)
 	m_haveItem = false;
 
 	imageWidget->setDoc(m_doc);
+	imageSettingsWidget->setDoc(m_doc);
 
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
@@ -129,6 +137,8 @@ void PropertiesContentPalette_Image::unsetDoc()
 
 	imageWidget->unsetItem();
 	imageWidget->unsetDoc();
+	imageSettingsWidget->unsetItem();
+	imageSettingsWidget->unsetDoc();
 
 	m_haveItem = false;
 
@@ -146,6 +156,7 @@ void PropertiesContentPalette_Image::unsetItem()
 	m_item     = NULL;
 
 	imageWidget->unsetItem();
+	imageSettingsWidget->unsetItem();
 
 	handleSelectionChanged();
 }
@@ -176,8 +187,10 @@ void PropertiesContentPalette_Image::setCurrentItem(PageItem *i)
 
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
-		//TabStack->setItemEnabled(idImageItem, false);
-		imageWidget->setEnabled(false);
+//		imageWidget->setEnabled(false);
+//		imageSettingsWidget->setEnabled(false);
+		layoutSectionImage->setEnabled(false);
+		layoutSectionImageSettings->setEnabled(false);
 	}
 
 	m_haveItem = true;
@@ -187,17 +200,22 @@ void PropertiesContentPalette_Image::setCurrentItem(PageItem *i)
 	if (!sender() || (m_doc->appMode == modeEditTable))
 	{
 		imageWidget->handleSelectionChanged();
+		imageSettingsWidget->handleSelectionChanged();
 	}
 
 	if (m_item->asOSGFrame())
 	{
-		//TabStack->setItemEnabled(idImageItem, false);
-		imageWidget->setEnabled(false);
+//		imageWidget->setEnabled(false);
+//		imageSettingsWidget->setEnabled(false);
+		layoutSectionImage->setEnabled(false);
+		layoutSectionImageSettings->setEnabled(false);
 	}
 	if (m_item->asSymbolFrame())
 	{
-		//TabStack->setItemEnabled(idImageItem, false);
-		imageWidget->setEnabled(false);
+//		imageWidget->setEnabled(false);
+//		imageSettingsWidget->setEnabled(false);
+		layoutSectionImage->setEnabled(false);
+		layoutSectionImageSettings->setEnabled(false);
 	}
 
 }
@@ -260,12 +278,18 @@ void PropertiesContentPalette_Image::handleSelectionChanged()
 			if (currItem->asOSGFrame())
 			{
 				//TabStack->setItemEnabled(idImageItem, false);
-				imageWidget->setEnabled(false);
+//				imageWidget->setEnabled(false);
+//				imageSettingsWidget->setEnabled(false);
+				layoutSectionImage->setEnabled(false);
+				layoutSectionImageSettings->setEnabled(false);
 			}
 			else
 			{
 				//TabStack->setItemEnabled(idImageItem, true);
-				imageWidget->setEnabled(true);
+//				imageWidget->setEnabled(true);
+//				imageSettingsWidget->setEnabled(true);
+				layoutSectionImage->setEnabled(true);
+				layoutSectionImageSettings->setEnabled(true);
 			}
 			break;
 		case -1:
@@ -283,7 +307,10 @@ void PropertiesContentPalette_Image::handleSelectionChanged()
 		case PageItem::Group:
 		case PageItem::Table:
 			//TabStack->setItemEnabled(idImageItem, false);
-			imageWidget->setEnabled(false);
+			layoutSectionImage->setEnabled(false);
+			layoutSectionImageSettings->setEnabled(false);
+//			imageWidget->setEnabled(false);
+//			imageSettingsWidget->setEnabled(false);
 			break;
 		}
 	}
@@ -308,6 +335,7 @@ void PropertiesContentPalette_Image::languageChange()
 {
 
 	imageWidget->languageChange();
+	imageSettingsWidget->languageChange();
 
 }
 
@@ -315,6 +343,7 @@ bool PropertiesContentPalette_Image::userActionOn()
 {
 	bool userActionOn = false;
 	userActionOn = imageWidget->userActionOn();
+//	userActionOn |= imageSettingsWidget->userActionOn();
 	return userActionOn;
 }
 

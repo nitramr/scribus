@@ -1010,7 +1010,8 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertiescontentpalette.h \
     scribus/ui/propertiescontentpalette_text.h \
     scribus/ui/propertiescontentpalette_image.h \
-    scribus/ui/propertywidgetimage_image.h
+    scribus/ui/propertywidgetimage_image.h \
+    scribus/ui/propertywidgetimage_imagesettings.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1170,7 +1171,8 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgettext_glyphspace.ui \
     scribus/ui/propertywidgettext_fontfeaturesbase.ui \
     scribus/ui/propertywidgettext_distancebase.ui \
-    scribus/ui/propertywidgetimage_image.ui
+    scribus/ui/propertywidgetimage_image.ui \
+    scribus/ui/propertywidgetimage_imagesettings.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -2141,7 +2143,8 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertiescontentpalette.cpp \
     scribus/ui/propertiescontentpalette_text.cpp \
     scribus/ui/propertiescontentpalette_image.cpp \
-    scribus/ui/propertywidgetimage_image.cpp
+    scribus/ui/propertywidgetimage_image.cpp \
+    scribus/ui/propertywidgetimage_imagesettings.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

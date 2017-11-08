@@ -21,6 +21,7 @@ for which a new license (GPL+exception) is in place.
 
 class PageItem;
 class PropertyWidgetImage_Image;
+class PropertyWidgetImage_ImageSettings;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
@@ -51,9 +52,11 @@ protected:
 	ScribusMainWindow*       m_ScMW;
 	ScGuardedPtr<ScribusDoc> m_doc;
 
-	ScLayoutSection *layoutSectionText;
+	ScLayoutSection *layoutSectionImage;
+	ScLayoutSection *layoutSectionImageSettings;
 
 	PropertyWidgetImage_Image* imageWidget;
+	PropertyWidgetImage_ImageSettings* imageSettingsWidget;
 
 private:
 	PageItem* currentItemFromSelection();
