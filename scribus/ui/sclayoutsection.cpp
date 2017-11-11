@@ -11,6 +11,8 @@
 
 ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool toggle, QWidget *parent) : QWidget(parent)
 {
+	protect = false;
+
 	QFont m_font(this->font());
 	m_font.setBold(true);
 
@@ -37,7 +39,7 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 	m_btnOnOff = new QPushButton();
 	m_btnOnOff->setFixedSize(24,24);
 	m_btnOnOff->setCheckable(true);
-	m_btnOnOff->setIcon(IconManager::instance()->loadPixmap("configure.png"));
+	m_btnOnOff->setIcon(IconManager::instance()->loadPixmap("exit.png"));
 	m_btnOnOff->setFlat(true);
 
 	if(!toggle){
@@ -57,6 +59,7 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 	this->setAutoFillBackground(true);
 
 	this->connect(m_btnOnOff, SIGNAL(toggled(bool)),this, SLOT(setToggleState()));
+//	this->connect(m_btnOnOff, SIGNAL(clicked(bool)),this, SLOT(protectSwitch()));
 
 }
 
@@ -76,12 +79,19 @@ void ScLayoutSectionHeader::paintEvent(QPaintEvent *)
 
 }
 
-void ScLayoutSectionHeader::setToggleOff(bool isOff){
-	m_btnOnOff->setChecked(isOff);
+void ScLayoutSectionHeader::setToggleOn(bool isOn){
+
+	protect = true;
+
+	m_btnOnOff->setChecked(isOn);
 }
 
 
 void ScLayoutSectionHeader::setToggleState(){
+
+//	if(protect)
+//		return;
+
 	if(m_btnOnOff->isChecked()){
 		emit toggleState(true);
 	}else emit toggleState(false);
@@ -94,6 +104,11 @@ void ScLayoutSectionHeader::setTitle(QString text){
 }
 
 
+void ScLayoutSectionHeader::protectSwitch(){
+	protect = false;
+}
+
+
 
 
 ScLayoutSection::ScLayoutSection(QString text, QWidget *menu, bool toggle, QWidget *parent) : QWidget(parent)
@@ -101,6 +116,7 @@ ScLayoutSection::ScLayoutSection(QString text, QWidget *menu, bool toggle, QWidg
 
 	m_flowLayout = new FlowLayout();
 	m_header = new ScLayoutSectionHeader(text, menu, toggle);
+
 
 
 	QVBoxLayout * m_mainLayout = new QVBoxLayout();
@@ -112,7 +128,7 @@ ScLayoutSection::ScLayoutSection(QString text, QWidget *menu, bool toggle, QWidg
 
 
 	this->setLayout(m_mainLayout);
-	this->connect(m_header, SIGNAL(toggleState(bool)),this, SLOT(setToggleIsOff(bool)));
+	this->connect(m_header, SIGNAL(toggleState(bool)),this, SLOT(setToggleIsOn(bool)));
 
 }
 
@@ -124,14 +140,13 @@ void ScLayoutSection::addWidget(QWidget * item){
 }
 
 
-void ScLayoutSection::setToggleOff(bool isOff){
-	m_header->setToggleOff(isOff);
+void ScLayoutSection::setToggleOn(bool isOn){
+	m_header->setToggleOn(isOn);
 }
 
 
-void ScLayoutSection::setToggleIsOff(bool state){
+void ScLayoutSection::setToggleIsOn(bool state){
 	emit toggleState(state);
-	//qDebug() << "emit: toggle is off " << state;
 }
 
 void ScLayoutSection::setTitle(QString text){

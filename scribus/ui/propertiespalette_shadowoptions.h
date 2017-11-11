@@ -4,27 +4,27 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTIESPALETTE_SHADOW_H
-#define PROPERTIESPALETTE_SHADOW_H
-#include "ui_propertiespalette_shadowbase.h"
+#ifndef PROPERTIESPALETTE_SHADOWOPTIONS_H
+#define PROPERTIESPALETTE_SHADOWOPTIONS_H
+#include "ui_propertiespalette_shadowoptions.h"
 
 #include "scribusapi.h"
 #include "scguardedptr.h"
 
-#include "sccolorfillsbox.h"
+//#include "sccolorfillsbox.h"
 
 class PageItem;
 class ScribusDoc;
 class Selection;
 class ScribusMainWindow;
 
-class SCRIBUS_API PropertiesPalette_Shadow : public QWidget, Ui::PropertiesPalette_ShadowBase
+class SCRIBUS_API PropertiesPalette_ShadowOptions : public QWidget, Ui::PropertiesPalette_ShadowOptions
 {
 	Q_OBJECT
 
 public:
-	PropertiesPalette_Shadow(QWidget* parent);
-	~PropertiesPalette_Shadow() {};
+	PropertiesPalette_ShadowOptions(QWidget* parent);
+	~PropertiesPalette_ShadowOptions() {};
 
 	virtual void changeEvent(QEvent *e);
 	void updateColorList();
@@ -44,24 +44,23 @@ public slots:
 	void unsetItem();
 
 	void languageChange();
-	void unitChange();
+	void unitChange(){};
 	void handleSelectionChanged();
-	void handleUpdateRequest(int);
+	//void handleUpdateRequest(int);
 
-	void setShadowOn(bool isOn);
-	void setShadowOptions(int blendMode, bool erase, bool objTrans);
+//	void setShadowOn(bool isOn);
+//	void setShadowOptions(QString, double, double, double, int, double);
 
+private slots:
 	void handleNewValues();
-
-private slots:	
-	void handleFillColorBox();
-	void showColor(QString b, double sb);
+	//void handleFillColorBox();
+	//void showColor(QString b, double sb);
 
 protected slots:
-	void updateSpinBoxConstants();
+	//void updateSpinBoxConstants();
 
 signals:
-	void shadowOn(bool);
+	void sendShadowOptions(int, bool, bool);
 
 protected:
 
@@ -74,12 +73,16 @@ protected:
 
 	PageItem *m_item;
 	ScGuardedPtr<ScribusDoc> m_doc;
-	ScColorFillsBox * shadowColor;
+//	ScColorFillsBox * shadowColor;
 
-	bool shadow;
-	int shadowB;
-	bool shadowE;
-	bool shadowT;
+
+//	bool shadow;
+//	QString shadowC;
+//	double shadowX;
+//	double shadowY;
+//	double shadowR;
+//	int shadowS;
+//	double shadowO;
 };
 
 #endif

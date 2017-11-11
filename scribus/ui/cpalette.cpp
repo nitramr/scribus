@@ -77,6 +77,9 @@ Cpalette::Cpalette(QWidget* parent) : QWidget(parent)
 	CGradDia->hide();
 
 	setupUi(this);
+
+	setFixedWidth(380);
+
 	fillModeCombo->addItem( tr("Solid") );
 	fillModeCombo->addItem( tr("Gradient") );
 	fillModeCombo->addItem( tr("Hatch") );

@@ -2,13 +2,11 @@
 <ui version="4.0">
  <class>PropertiesPalette_GroupBase</class>
  <widget class="QWidget" name="PropertiesPalette_GroupBase">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>212</width>
-    <height>387</height>
-   </rect>
+  <property name="minimumSize">
+   <size>
+    <width>380</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
@@ -409,7 +407,7 @@
   <customwidget>
    <class>Tpalette</class>
    <extends>QWidget</extends>
-   <header>ui/transparencypalette.h</header>
+   <header>ui/propertywidgetframe_transparency.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -21,7 +21,7 @@ for which a new license (GPL+exception) is in place.
  *                                                                         *
  ***************************************************************************/
 
-#include "transparencypalette.h"
+#include "propertywidgetframe_transparency.h"
 #include "sccolorengine.h"
 #include "scpainter.h"
 #include "scpattern.h"

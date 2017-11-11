@@ -613,7 +613,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/tabpdfoptions.h \
            scribus/ui/tabruler.h \
            scribus/ui/transformdialog.h \
-           scribus/ui/transparencypalette.h \
            scribus/ui/unicodesearch.h \
            scribus/ui/useprintermarginsdialog.h \
            scribus/ui/viewtoolbar.h \
@@ -1011,7 +1010,9 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertiescontentpalette_text.h \
     scribus/ui/propertiescontentpalette_image.h \
     scribus/ui/propertywidgetimage_image.h \
-    scribus/ui/propertywidgetimage_imagesettings.h
+    scribus/ui/propertywidgetimage_imagesettings.h \
+    scribus/ui/propertiespalette_shadowoptions.h \
+    scribus/ui/propertywidgetframe_transparency.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1118,7 +1119,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/tablerowheightsdialog.ui \
          scribus/ui/tabpdfoptions.ui \
          scribus/ui/transformdialogbase.ui \
-         scribus/ui/transparencypalette.ui \
          scribus/ui/unicodesearch.ui \
          scribus/ui/useprintermarginsdialog.ui \
          scribus/ui/weldeditbase.ui \
@@ -1172,7 +1172,9 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgettext_fontfeaturesbase.ui \
     scribus/ui/propertywidgettext_distancebase.ui \
     scribus/ui/propertywidgetimage_image.ui \
-    scribus/ui/propertywidgetimage_imagesettings.ui
+    scribus/ui/propertywidgetimage_imagesettings.ui \
+    scribus/ui/propertiespalette_shadowoptions.ui \
+    scribus/ui/propertywidgetframe_transparency.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1725,7 +1727,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/tabpdfoptions.cpp \
            scribus/ui/tabruler.cpp \
            scribus/ui/transformdialog.cpp \
-           scribus/ui/transparencypalette.cpp \
            scribus/ui/unicodesearch.cpp \
            scribus/ui/useprintermarginsdialog.cpp \
            scribus/ui/viewtoolbar.cpp \
@@ -2144,7 +2145,9 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertiescontentpalette_text.cpp \
     scribus/ui/propertiescontentpalette_image.cpp \
     scribus/ui/propertywidgetimage_image.cpp \
-    scribus/ui/propertywidgetimage_imagesettings.cpp
+    scribus/ui/propertywidgetimage_imagesettings.cpp \
+    scribus/ui/propertiespalette_shadowoptions.cpp \
+    scribus/ui/propertywidgetframe_transparency.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

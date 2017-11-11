@@ -2,13 +2,11 @@
 <ui version="4.0">
  <class>PropertiesPalette_LineBase</class>
  <widget class="QWidget" name="PropertiesPalette_LineBase">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>340</width>
-    <height>421</height>
-   </rect>
+  <property name="minimumSize">
+   <size>
+    <width>380</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>

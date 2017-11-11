@@ -16,7 +16,7 @@ public:
 	ScLayoutSectionHeader(QString text, QWidget *menu = 0, bool toggle = false, QWidget *parent = 0);
 	~ScLayoutSectionHeader() {};
 
-	void setToggleOff(bool isOff);
+	void setToggleOn(bool isOn);
 	void setTitle(QString text);
 
 private:
@@ -24,12 +24,18 @@ private:
 	QLabel *m_caption;
 	QPushButton *m_btnExtended;
 	QPushButton *m_btnOnOff;
+	bool protect;
 
 signals:
 	void toggleState(bool);
 
 public slots:
 	void setToggleState();
+
+private slots:
+	void protectSwitch();
+
+
 };
 
 
@@ -41,18 +47,25 @@ public:
 	~ScLayoutSection() {};
 
 	void addWidget(QWidget * item);
-	void setToggleOff(bool isOff);
+
 	void setTitle(QString text);
 
 private:
 	FlowLayout *m_flowLayout;
 	ScLayoutSectionHeader * m_header;
 
+
 signals:
 	void toggleState(bool);
 
 public slots:
-	void setToggleIsOff(bool);
+
+	void setToggleOn(bool isOn);
+
+private slots:
+	void setToggleIsOn(bool);
+
+
 };
 
 #endif // SCLAYOUTSECTION_H

@@ -38,6 +38,7 @@ class NameWidget;
 class PropertiesPalette_Group;
 class PropertiesPalette_Line;
 class PropertiesPalette_Shadow;
+class PropertiesPalette_ShadowOptions;
 class PropertiesPalette_Shape;
 class PropertiesPalette_Table;
 class PropertiesPalette_XYZ;
@@ -74,6 +75,7 @@ public:
 	PropertiesPalette_Group* groupPal;
 	PropertiesPalette_Line*  linePal;
 	PropertiesPalette_Shadow* shadowPal;
+	PropertiesPalette_ShadowOptions* shadowOptionsPal;
 	PropertiesPalette_Shape* shapePal;
 	PropertiesPalette_Table* tablePal;
 	PropertiesPalette_XYZ*   xyzPal;

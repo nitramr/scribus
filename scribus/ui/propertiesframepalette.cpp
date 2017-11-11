@@ -44,6 +44,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertiespalette_group.h"
 #include "propertiespalette_line.h"
 #include "propertiespalette_shadow.h"
+#include "propertiespalette_shadowoptions.h"
 #include "propertiespalette_shape.h"
 #include "propertiespalette_table.h"
 #include "propertiespalette_utils.h"
@@ -54,6 +55,7 @@ for which a new license (GPL+exception) is in place.
 #include "undomanager.h"
 #include "units.h"
 #include "util_math.h"
+#include "scpopupmenu.h"
 
 
 PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette( parent, "PropertiesFramePalette", 0)
@@ -74,6 +76,7 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 
 	xyzPal = new PropertiesPalette_XYZ(this);
 	shadowPal = new PropertiesPalette_Shadow(this);
+	shadowOptionsPal = new PropertiesPalette_ShadowOptions(this);
 	shapePal = new PropertiesPalette_Shape(this);
 	groupPal = new PropertiesPalette_Group(this);
 	linePal = new PropertiesPalette_Line(this);
@@ -81,9 +84,11 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	transparencyPal = new Tpalette(this);
 	tablePal = new PropertiesPalette_Table(this);
 
+	ScPopupMenu * popupFontFeatures = new ScPopupMenu(shadowOptionsPal);
+
 	layoutSectionXYZ = new ScLayoutSection(tr("XYZ"));
 	layoutSectionXYZ->addWidget(xyzPal);
-	layoutSectionDropShadow = new ScLayoutSection(tr("Drop Shadow"));
+	layoutSectionDropShadow = new ScLayoutSection(tr("Drop Shadow"), popupFontFeatures, true);
 	layoutSectionDropShadow->addWidget(shadowPal);
 	layoutSectionShape = new ScLayoutSection(tr("&Shape"));
 	layoutSectionShape->addWidget(shapePal);
@@ -97,6 +102,8 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	layoutSectionTransparency->addWidget(transparencyPal);
 	layoutSectionTable = new ScLayoutSection(tr("&Table"));
 	layoutSectionTable->addWidget(tablePal);
+
+
 
 	FlowLayout *flowLayout = new FlowLayout(0,0,0);
 	flowLayout->addWidget(layoutSectionXYZ);
@@ -131,17 +138,11 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	connect(transparencyPal, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradientM(double, double, double, double, double, double, double, double )));
 	connect(transparencyPal, SIGNAL(editGradient()), this, SLOT(toggleGradientEditM()));
 
+	connect(shadowOptionsPal, SIGNAL(sendShadowOptions(int,bool,bool)), shadowPal, SLOT(setShadowOptions(int,bool,bool)));
+	connect(layoutSectionDropShadow, SIGNAL(toggleState(bool)), shadowPal, SLOT(setShadowOn(bool)));
+	connect(shadowPal, SIGNAL(shadowOn(bool)), layoutSectionDropShadow, SLOT(setToggleOn(bool)));
+
 	m_haveItem = false;
-
-//	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
-//	popupFontFeatures->addWidget(colorWidgets);
-//	popupFontFeatures->addWidget(fontfeaturesWidget);
-//	ScPopupMenu * popupOrphans = new ScPopupMenu(orphanBox);
-//	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
-
-
-
-
 
 }
 
@@ -176,6 +177,7 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 
 	this->xyzPal->setMainWindow(mw);
 	this->shadowPal->setMainWindow(mw);
+	this->shadowOptionsPal->setMainWindow(mw);
 	this->shapePal->setMainWindow(mw);
 	this->groupPal->setMainWindow(mw);
 	this->linePal->setMainWindow(mw);
@@ -214,6 +216,7 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 
 	xyzPal->setDoc(m_doc);
 	shadowPal->setDoc(m_doc);
+	shadowOptionsPal->setDoc(m_doc);
 	shapePal->setDoc(m_doc);
 	groupPal->setDoc(m_doc);
 	linePal->setDoc(m_doc);
@@ -244,6 +247,8 @@ void PropertiesFramePalette::unsetDoc()
 	xyzPal->unsetDoc();
 	shadowPal->unsetItem();
 	shadowPal->unsetDoc();
+	shadowOptionsPal->unsetItem();
+	shadowOptionsPal->unsetDoc();
 	shapePal->unsetItem();
 	shapePal->unsetDoc();
 	groupPal->unsetItem();
@@ -261,13 +266,13 @@ void PropertiesFramePalette::unsetDoc()
 	m_haveItem = false;
 
 	layoutSectionXYZ->setEnabled(false);
-	layoutSectionDropShadow->setEnabled(false);
-	layoutSectionShape->setEnabled(false);
-	layoutSectionGroup->setEnabled(false);
-	layoutSectionLine->setEnabled(false);
-	layoutSectionColor->setEnabled(false);
-	layoutSectionTransparency->setEnabled(false);
-	layoutSectionTable->setEnabled(false);
+	layoutSectionDropShadow->setVisible(false);
+	layoutSectionShape->setVisible(false);
+	layoutSectionGroup->setVisible(false);
+	layoutSectionLine->setVisible(false);
+	layoutSectionColor->setVisible(false);
+	layoutSectionTransparency->setVisible(false);
+	layoutSectionTable->setVisible(false);
 }
 
 void PropertiesFramePalette::unsetItem()
@@ -280,6 +285,7 @@ void PropertiesFramePalette::unsetItem()
 	shapePal->unsetItem();
 	groupPal->unsetItem();
 	shadowPal->unsetItem();
+	shadowOptionsPal->unsetItem();
 	linePal->unsetItem();
 	handleSelectionChanged();
 }
@@ -371,18 +377,27 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 //CB replaces old emits from PageItem::emitAllToGUI()
 	setLocked(i->locked());
 
+	layoutSectionDropShadow->setEnabled(true);
+	layoutSectionShape->setEnabled(true);
+	layoutSectionGroup->setEnabled(true);
+	layoutSectionLine->setEnabled(true);
+	layoutSectionColor->setEnabled(true);
+	layoutSectionTransparency->setEnabled(true);
+	layoutSectionTable->setEnabled(true);
+
+
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
 		layoutSectionXYZ->setEnabled(true);
-		layoutSectionDropShadow->setEnabled(true);
-		layoutSectionShape->setEnabled(false);
-		layoutSectionGroup->setEnabled(true);
-		layoutSectionLine->setEnabled(false);
-		layoutSectionColor->setEnabled(false);
-		layoutSectionTable->setEnabled(false);
+		layoutSectionDropShadow->setVisible(true);
+		layoutSectionShape->setVisible(false);
+		layoutSectionGroup->setVisible(true);
+		layoutSectionLine->setVisible(false);
+		layoutSectionColor->setVisible(false);
+		layoutSectionTable->setVisible(false);
 	}
 	else
-		layoutSectionGroup->setEnabled(false);
+		layoutSectionGroup->setVisible(false);
 
 	m_haveItem = true;
 
@@ -390,6 +405,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	{
 		xyzPal->handleSelectionChanged();
 		shadowPal->handleSelectionChanged();
+		shadowOptionsPal->handleSelectionChanged();
 		shapePal->handleSelectionChanged();
 		groupPal->handleSelectionChanged();
 		linePal->handleSelectionChanged();
@@ -400,24 +416,24 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	if (m_item->asOSGFrame())
 	{
 		layoutSectionXYZ->setEnabled(true);
-		layoutSectionDropShadow->setEnabled(true);
-		layoutSectionShape->setEnabled(true);
-		layoutSectionGroup->setEnabled(false);
-		layoutSectionLine->setEnabled(false);
-		layoutSectionColor->setEnabled(true);
-		layoutSectionTransparency->setEnabled(false);
-		layoutSectionTable->setEnabled(false);
+		layoutSectionDropShadow->setVisible(true);
+		layoutSectionShape->setVisible(true);
+		layoutSectionGroup->setVisible(false);
+		layoutSectionLine->setVisible(false);
+		layoutSectionColor->setVisible(true);
+		layoutSectionTransparency->setVisible(false);
+		layoutSectionTable->setVisible(false);
 	}
 	if (m_item->asSymbolFrame())
 	{
 		layoutSectionXYZ->setEnabled(true);
-		layoutSectionDropShadow->setEnabled(true);
-		layoutSectionShape->setEnabled(false);
-		layoutSectionGroup->setEnabled(true);
-		layoutSectionLine->setEnabled(false);
-		layoutSectionColor->setEnabled(false);
-		layoutSectionTransparency->setEnabled(false);
-		layoutSectionTable->setEnabled(false);
+		layoutSectionDropShadow->setVisible(true);
+		layoutSectionShape->setVisible(false);
+		layoutSectionGroup->setVisible(true);
+		layoutSectionLine->setVisible(false);
+		layoutSectionColor->setVisible(false);
+		layoutSectionTransparency->setVisible(false);
+		layoutSectionTable->setVisible(false);
 	}
 }
 
@@ -430,16 +446,16 @@ void  PropertiesFramePalette::handleSelectionChanged()
 	if (m_doc->m_Selection->count() > 1)
 	{
 		layoutSectionXYZ->setEnabled(true);
-		layoutSectionDropShadow->setEnabled(true);
-		layoutSectionLine->setEnabled(true);
-		layoutSectionColor->setEnabled(true);
-		layoutSectionTransparency->setEnabled(false);
-		layoutSectionTable->setEnabled(false);
+		layoutSectionDropShadow->setVisible(true);
+		layoutSectionLine->setVisible(true);
+		layoutSectionColor->setVisible(true);
+		layoutSectionTransparency->setVisible(true);
+		layoutSectionTable->setVisible(false);
 
 		if (m_haveItem && m_item)
 		{
 			if ((m_item->isGroup()) && (!m_item->isSingleSel))
-				layoutSectionGroup->setEnabled(true);
+				layoutSectionGroup->setVisible(true);
 			}
 	}
 	else
@@ -448,9 +464,9 @@ void  PropertiesFramePalette::handleSelectionChanged()
 		m_haveItem   = (itemType != -1);
 
 		layoutSectionXYZ->setEnabled(true);
-		layoutSectionColor->setEnabled(true);
-		layoutSectionTransparency->setEnabled(false);
-		layoutSectionTable->setEnabled(false);
+		layoutSectionColor->setVisible(true);
+		layoutSectionTransparency->setVisible(true);
+		layoutSectionTable->setVisible(false);
 
 		switch (itemType)
 		{
@@ -458,13 +474,13 @@ void  PropertiesFramePalette::handleSelectionChanged()
 			m_haveItem = false;
 
 			layoutSectionXYZ->setEnabled(false);
-			layoutSectionDropShadow->setEnabled(false);
-			layoutSectionShape->setEnabled(false);
-			layoutSectionGroup->setEnabled(false);
-			layoutSectionLine->setEnabled(false);
-			layoutSectionColor->setEnabled(false);
-			layoutSectionTransparency->setEnabled(false);
-			layoutSectionTable->setEnabled(false);
+			layoutSectionDropShadow->setVisible(false);
+			layoutSectionShape->setVisible(false);
+			layoutSectionGroup->setVisible(false);
+			layoutSectionLine->setVisible(false);
+			layoutSectionColor->setVisible(false);
+			layoutSectionTransparency->setVisible(false);
+			layoutSectionTable->setVisible(false);
 
 			colorPal->showGradient(0);
 			break;
@@ -474,27 +490,26 @@ void  PropertiesFramePalette::handleSelectionChanged()
 			if (currItem->asOSGFrame())
 			{
 				layoutSectionXYZ->setEnabled(true);
-				layoutSectionDropShadow->setEnabled(true);
-				layoutSectionShape->setEnabled(true);
-				layoutSectionGroup->setEnabled(false);
-				layoutSectionLine->setEnabled(false);
-				layoutSectionColor->setEnabled(true);
-				layoutSectionTransparency->setEnabled(false);
+				layoutSectionDropShadow->setVisible(true);
+				layoutSectionShape->setVisible(true);
+				layoutSectionGroup->setVisible(false);
+				layoutSectionLine->setVisible(false);
+				layoutSectionColor->setVisible(true);
+				layoutSectionTransparency->setVisible(false);
 
 			}
 			else
 			{
 				layoutSectionXYZ->setEnabled(true);
-				layoutSectionDropShadow->setEnabled(true);
-				layoutSectionShape->setEnabled(true);
-				layoutSectionLine->setEnabled(true);
+				layoutSectionDropShadow->setVisible(true);
+				layoutSectionShape->setVisible(true);
+				layoutSectionLine->setVisible(true);
 			}
 			break;
 		case PageItem::Line:
-			layoutSectionDropShadow->setEnabled(true);
-			layoutSectionShape->setEnabled(false);
-			layoutSectionLine->setEnabled(true);
-
+			layoutSectionDropShadow->setVisible(true);
+			layoutSectionShape->setVisible(false);
+			layoutSectionLine->setVisible(true);
 			break;
 		case PageItem::TextFrame:
 		case PageItem::ItemType1:
@@ -505,27 +520,27 @@ void  PropertiesFramePalette::handleSelectionChanged()
 		case PageItem::PolyLine:
 		case PageItem::Spiral:
 		case PageItem::PathText:
-			layoutSectionDropShadow->setEnabled(true);
-			layoutSectionShape->setEnabled(true);
-			layoutSectionLine->setEnabled(true);
+			layoutSectionDropShadow->setVisible(true);
+			layoutSectionShape->setVisible(true);
+			layoutSectionLine->setVisible(true);
 			break;
 		case PageItem::Symbol:
 		case PageItem::Group:
-			layoutSectionDropShadow->setEnabled(true);
-			layoutSectionShape->setEnabled(false);
-			layoutSectionGroup->setEnabled(true);
-			layoutSectionLine->setEnabled(false);
-			layoutSectionColor->setEnabled(false);
-			layoutSectionTransparency->setEnabled(false);
+			layoutSectionDropShadow->setVisible(true);
+			layoutSectionShape->setVisible(false);
+			layoutSectionGroup->setVisible(true);
+			layoutSectionLine->setVisible(false);
+			layoutSectionColor->setVisible(false);
+			layoutSectionTransparency->setVisible(false);
 			break;
 		case PageItem::Table:
-			layoutSectionDropShadow->setEnabled(true);
-			layoutSectionShape->setEnabled(true);
-			layoutSectionGroup->setEnabled(false);
-			layoutSectionLine->setEnabled(false);
-			layoutSectionColor->setEnabled(false);
-			layoutSectionTransparency->setEnabled(false);
-			layoutSectionTable->setEnabled(true);
+			layoutSectionDropShadow->setVisible(true);
+			layoutSectionShape->setVisible(true);
+			layoutSectionGroup->setVisible(false);
+			layoutSectionLine->setVisible(false);
+			layoutSectionColor->setVisible(false);
+			layoutSectionTransparency->setVisible(false);
+			layoutSectionTable->setVisible(true);
 			break;
 		}
 	}
@@ -551,6 +566,7 @@ void PropertiesFramePalette::unitChange()
 
 	xyzPal->unitChange();
 	shadowPal->unitChange();
+	shadowOptionsPal->unitChange();
 	shapePal->unitChange();
 	groupPal->unitChange();
 	linePal->unitChange();
@@ -839,6 +855,7 @@ void PropertiesFramePalette::languageChange()
 
 	xyzPal->languageChange();
 	shadowPal->languageChange();
+	shadowOptionsPal->languageChange();
 	shapePal->languageChange();
 	groupPal->languageChange();
 	colorPal->languageChange();

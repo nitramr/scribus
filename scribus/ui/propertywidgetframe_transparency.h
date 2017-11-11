@@ -33,7 +33,7 @@ for which a new license (GPL+exception) is in place.
 #include "gradienteditor.h"
 #include "scribusdoc.h"
 #include "ui/scrpalettebase.h"
-#include "ui_transparencypalette.h"
+#include "ui_propertywidgetframe_transparency.h"
 #include "ui/gradientvectordialog.h"
 #include "ui/patternpropsdialog.h"
 
@@ -48,7 +48,7 @@ class LinkButton;
   *@author Franz Schmid
   */
 
-class SCRIBUS_API Tpalette : public QWidget, Ui::transparencyPalette
+class SCRIBUS_API Tpalette : public QWidget, Ui::PropertyWidgetFrame_Transparency
 {
 	Q_OBJECT
 

@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>405</width>
-    <height>169</height>
+    <width>353</width>
+    <height>83</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
-    <width>405</width>
+    <width>380</width>
     <height>16777215</height>
    </size>
   </property>
@@ -36,13 +36,6 @@
     <number>4</number>
    </property>
    <item>
-    <widget class="QCheckBox" name="hasSoftShadow">
-     <property name="text">
-      <string>Object has a drop shadow</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
       <number>4</number>
@@ -52,9 +45,6 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <item>
-        <widget class="ColorCombo" name="softShadowColor"/>
-       </item>
        <item>
         <widget class="QLabel" name="labelShadowColor">
          <property name="font">
@@ -214,111 +204,7 @@
      <property name="spacing">
       <number>4</number>
      </property>
-     <item row="3" column="0">
-      <widget class="QLabel" name="labelShadowShade">
-       <property name="text">
-        <string>Shade:</string>
-       </property>
-       <property name="buddy">
-        <cstring>softShadowShade</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelShadowBlendMode">
-       <property name="text">
-        <string>Blendmode:</string>
-       </property>
-       <property name="buddy">
-        <cstring>softShadowBlendMode</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="ScComboBox" name="softShadowBlendMode">
-       <item>
-        <property name="text">
-         <string>Normal</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Darken</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Lighten</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Multiply</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Screen</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Overlay</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Hard Light</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Soft Light</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Difference</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Exclusion</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Color Dodge</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Color Burn</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Hue</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Saturation</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Color</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Luminosity</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="ScrSpinBox" name="softShadowShade">
        <property name="suffix">
         <string> %</string>
@@ -332,18 +218,17 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QCheckBox" name="softShadowObjTrans">
+      <widget class="QLabel" name="labelShadowShade">
        <property name="text">
-        <string>Object Trans</string>
+        <string>Shade:</string>
+       </property>
+       <property name="buddy">
+        <cstring>softShadowShade</cstring>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="softShadowErase">
-       <property name="text">
-        <string>Shadow Erase</string>
-       </property>
-      </widget>
+     <item row="2" column="2">
+      <widget class="ColorCombo" name="softShadowColor"/>
      </item>
     </layout>
    </item>
@@ -354,11 +239,6 @@
    <class>ScrSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>ui/scrspinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ScComboBox</class>
-   <extends>QComboBox</extends>
-   <header>ui/sccombobox.h</header>
   </customwidget>
   <customwidget>
    <class>ColorCombo</class>

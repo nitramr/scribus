@@ -164,11 +164,13 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_groupbase.ui
 	ui/propertiespalette_linebase.ui
 	ui/propertiespalette_shadowbase.ui
+	ui/propertiespalette_shadowoptions.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
+	ui/propertywidgetframe_transparency.ui
 	ui/propertywidgetimage_image.ui
-    ui/propertywidgetimage_imagesettings.ui
+	ui/propertywidgetimage_imagesettings.ui
 	ui/propertywidgettext_distancebase.ui
 	ui/propertywidgettext_pareffectbase.ui
 	ui/propertywidgettext_fontfeaturesbase.ui
@@ -207,7 +209,6 @@ set(SCRIBUS_UI_SRC
 	ui/tablerowheightsdialog.ui
 	ui/tabpdfoptions.ui
 	ui/transformdialogbase.ui
-	ui/transparencypalette.ui
 	ui/copypagetomasterpage.ui
 	ui/createrange.ui
 	ui/helpbrowser.ui
@@ -468,10 +469,12 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiespalette_group.h
 	ui/propertiespalette_line.h
 	ui/propertiespalette_shadow.h
+	ui/propertiespalette_shadowoptions.h
 	ui/propertiespalette_shape.h
 	ui/propertiespalette_table.h
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
+	ui/propertywidgetframe_transparency.h
 	ui/propertywidgetimage_image.h
 	ui/propertywidgetimage_imagesettings.h
 	ui/propertywidgettext_distance.h
@@ -564,7 +567,6 @@ set(SCRIBUS_MOC_CLASSES
 	ui/tabpdfoptions.h
 	ui/tabruler.h
 	ui/transformdialog.h
-	ui/transparencypalette.h
 	tt/simpletreemodel/treemodel.h
 	ui/copypagetomasterpagedialog.h
 	ui/createrange.h
@@ -958,10 +960,12 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_group.cpp
 	ui/propertiespalette_line.cpp
 	ui/propertiespalette_shadow.cpp
+	ui/propertiespalette_shadowoptions.cpp
 	ui/propertiespalette_shape.cpp
 	ui/propertiespalette_table.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
+	ui/propertywidgetframe_transparency.cpp
 	ui/propertywidgetimage_image.cpp
 	ui/propertywidgetimage_imagesettings.cpp
 	ui/propertywidgettext_distance.cpp
@@ -1054,7 +1058,6 @@ set(SCRIBUS_SOURCES
 	ui/tabpdfoptions.cpp
 	ui/tabruler.cpp
 	ui/transformdialog.cpp
-	ui/transparencypalette.cpp
 	tt/simpletreemodel/treeitem.cpp
 	tt/simpletreemodel/treemodel.cpp
 	ui/copypagetomasterpagedialog.cpp

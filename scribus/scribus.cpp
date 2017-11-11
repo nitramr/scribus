@@ -250,7 +250,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/tabmanager.h"
 #include "ui/propertiescontentpalette.h"
 #include "ui/transformdialog.h"
-#include "ui/transparencypalette.h"
+#include "ui/propertywidgetframe_transparency.h"
 #include "ui/viewtoolbar.h"
 #include "ui/vruler.h"
 #include "ui_nftdialog.h"
