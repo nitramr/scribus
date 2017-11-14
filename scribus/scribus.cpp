@@ -226,7 +226,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/propertiespalette_shape.h"
 #include "ui/propertiescontentpalette_text.h"
 #include "ui/propertiescontentpalette_image.h"
-#include "ui/propertiespalette_xyz.h"
+#include "ui/propertywidgetframe_xyz.h"
 #include "ui/query.h"
 #include "ui/recoverdialog.h"
 #include "ui/replacecolors.h"

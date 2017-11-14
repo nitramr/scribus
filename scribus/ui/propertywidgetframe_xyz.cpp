@@ -5,7 +5,7 @@ a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
 
-#include "propertiespalette_xyz.h"
+#include "propertywidgetframe_xyz.h"
 
 #include <QMessageBox>
 
@@ -43,7 +43,7 @@ for which a new license (GPL+exception) is in place.
 
 //using namespace std;
 
-PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
+PropertyWidgetFrame_XYZ::PropertyWidgetFrame_XYZ( QWidget* parent) : QWidget(parent)
 {
 	m_ScMW=0;
 	m_doc=0;
@@ -60,8 +60,6 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	userActionSniffer = new UserActionSniffer(this);
 	connect(userActionSniffer, SIGNAL(actionStart()), this, SLOT(spinboxStartUserAction()));
 	connect(userActionSniffer, SIGNAL(actionEnd()), this, SLOT(spinboxFinishUserAction()));
-
-	nameEdit->setFocusPolicy(Qt::ClickFocus); //
 
 	installSniffer(xposSpin);
 	installSniffer(yposSpin);
@@ -98,12 +96,6 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	a.addPixmap(im->loadPixmap("16/lock-unlocked.png"), QIcon::Normal, QIcon::Off);
 	doLock->setIcon(a);
 
-	noPrint->setCheckable( true );
-	QIcon a2 = QIcon();
-	a2.addPixmap(im->loadPixmap("NoPrint.png"), QIcon::Normal, QIcon::On);
-	a2.addPixmap(im->loadPixmap("16/document-print.png"), QIcon::Normal, QIcon::Off);
-	noPrint->setIcon(a2);
-
 	noResize->setCheckable( true );
 	QIcon a3 = QIcon();
 	a3.addPixmap(im->loadPixmap("framenoresize.png"), QIcon::Normal, QIcon::On);
@@ -127,9 +119,7 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	connect(levelBottom, SIGNAL(clicked()), this, SLOT(handleBack()));
 	connect(basePointWidget, SIGNAL(buttonClicked(int)), this, SLOT(handleBasePoint(int)));
 
-	connect(nameEdit , SIGNAL(Leaved()) , this, SLOT(handleNewName())); //
 	connect(doLock   , SIGNAL(clicked()), this, SLOT(handleLock()));
-	connect(noPrint  , SIGNAL(clicked()), this, SLOT(handlePrint()));
 	connect(noResize , SIGNAL(clicked()), this, SLOT(handleLockSize()));
 	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) );
 	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) );
@@ -142,14 +132,14 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	rotationSpin->showValue(0);
 }
 
-void PropertiesPalette_XYZ::setMainWindow(ScribusMainWindow* mw)
+void PropertyWidgetFrame_XYZ::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(mw->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 }
 
-void PropertiesPalette_XYZ::setDoc(ScribusDoc *d)
+void PropertyWidgetFrame_XYZ::setDoc(ScribusDoc *d)
 {
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
@@ -190,7 +180,7 @@ void PropertiesPalette_XYZ::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
-void PropertiesPalette_XYZ::unsetDoc()
+void PropertyWidgetFrame_XYZ::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -202,7 +192,6 @@ void PropertiesPalette_XYZ::unsetDoc()
 	m_haveItem = false;
 	m_doc   = NULL;
 	m_item  = NULL;
-	nameEdit->clear(); //
 	xposSpin->setConstants(NULL);
 	yposSpin->setConstants(NULL);
 	widthSpin->setConstants(NULL);
@@ -223,14 +212,14 @@ void PropertiesPalette_XYZ::unsetDoc()
 	setEnabled(false);
 }
 
-void PropertiesPalette_XYZ::unsetItem()
+void PropertyWidgetFrame_XYZ::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
 }
 
-void PropertiesPalette_XYZ::setLineMode(int lineMode)
+void PropertyWidgetFrame_XYZ::setLineMode(int lineMode)
 {
 	if (lineMode == 0)
 	{
@@ -254,7 +243,7 @@ void PropertiesPalette_XYZ::setLineMode(int lineMode)
 	}
 }
 
-PageItem* PropertiesPalette_XYZ::currentItemFromSelection()
+PageItem* PropertyWidgetFrame_XYZ::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 
@@ -273,7 +262,7 @@ PageItem* PropertiesPalette_XYZ::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
+void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -287,15 +276,10 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	if (!m_doc)
 		setDoc(i->doc());
 
-	disconnect(nameEdit, SIGNAL(Leaved()), this, SLOT(handleNewName()));
-
 	m_haveItem = false;
 	m_item = i;
 
-	nameEdit->setText(m_item->itemName()); //
 	levelLabel->setText( QString::number(m_item->level()) );
-
-	connect(nameEdit, SIGNAL(Leaved()), this, SLOT(handleNewName())); //
 
 //CB replaces old emits from PageItem::emitAllToGUI()
 	disconnect(xposSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewX()));
@@ -303,7 +287,6 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	disconnect(widthSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewW()));
 	disconnect(heightSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewH()));
 	disconnect(doLock, SIGNAL(clicked()), this, SLOT(handleLock()));
-	disconnect(noPrint, SIGNAL(clicked()), this, SLOT(handlePrint()));
 	disconnect(noResize, SIGNAL(clicked()), this, SLOT(handleLockSize()));
 	disconnect(flipH, SIGNAL(clicked()), this, SLOT(handleFlipH()));
 	disconnect(flipV, SIGNAL(clicked()), this, SLOT(handleFlipV()));
@@ -322,7 +305,6 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	flipH->setCheckable(checkableFlip);
 	flipV->setCheckable(checkableFlip);
 
-	noPrint->setChecked(!i->printEnabled());
 	showFlippedH(i->imageFlippedH());
 	showFlippedV(i->imageFlippedV());
 	double rr = i->rotation();
@@ -337,7 +319,6 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	connect(widthSpin   , SIGNAL(valueChanged(double)), this, SLOT(handleNewW()));
 	connect(heightSpin  , SIGNAL(valueChanged(double)), this, SLOT(handleNewH()));
 	connect(doLock  , SIGNAL(clicked()), this, SLOT(handleLock()));
-	connect(noPrint , SIGNAL(clicked()), this, SLOT(handlePrint()));
 	connect(noResize, SIGNAL(clicked()), this, SLOT(handleLockSize()));
 	connect(flipH   , SIGNAL(clicked()), this, SLOT(handleFlipH()));
 	connect(flipV   , SIGNAL(clicked()), this, SLOT(handleFlipV()));
@@ -409,7 +390,7 @@ void PropertiesPalette_XYZ::setCurrentItem(PageItem *i)
 	updateSpinBoxConstants();
 }
 
-void PropertiesPalette_XYZ::handleAppModeChanged(int oldMode, int mode)
+void PropertyWidgetFrame_XYZ::handleAppModeChanged(int oldMode, int mode)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -417,12 +398,10 @@ void PropertiesPalette_XYZ::handleAppModeChanged(int oldMode, int mode)
 	doLock->setEnabled(mode != modeEditClip);
 }
 
-void PropertiesPalette_XYZ::handleSelectionChanged()
+void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-
-	nameEdit->setEnabled(m_doc->m_Selection->count() == 1); //
 
 	PageItem* currItem = currentItemFromSelection();
 	if (m_doc->m_Selection->count() > 1)
@@ -458,7 +437,6 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 		heightSpin->setEnabled(true);
 		rotationSpin->setEnabled(true);
 
-		nameEdit->setEnabled(false); //
 		flipH->setCheckable( false );
 		flipV->setCheckable( false );
 		flipH->setChecked(false);
@@ -479,7 +457,7 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 			doGroup->setEnabled(false);
 			doUnGroup->setEnabled(false);
 		}
-		nameEdit->setEnabled(true); //
+
 		basePointWidget->setEnabled(true);
 
 		setEnabled(true);
@@ -546,7 +524,7 @@ void PropertiesPalette_XYZ::handleSelectionChanged()
 	//repaint();
 }
 
-void PropertiesPalette_XYZ::unitChange()
+void PropertyWidgetFrame_XYZ::unitChange()
 {
 	if (!m_haveDoc)
 		return;
@@ -561,7 +539,7 @@ void PropertiesPalette_XYZ::unitChange()
 	m_haveItem = tmp;
 }
 
-void PropertiesPalette_XYZ::showXY(double x, double y)
+void PropertyWidgetFrame_XYZ::showXY(double x, double y)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -631,7 +609,7 @@ void PropertiesPalette_XYZ::showXY(double x, double y)
 	connect(yposSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewY()));
 }
 
-void PropertiesPalette_XYZ::showWH(double x, double y)
+void PropertyWidgetFrame_XYZ::showWH(double x, double y)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -656,7 +634,7 @@ void PropertiesPalette_XYZ::showWH(double x, double y)
 	heightSpin->blockSignals(sigBlocked2);
 }
 
-void PropertiesPalette_XYZ::showRotation(double r)
+void PropertyWidgetFrame_XYZ::showRotation(double r)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -668,7 +646,7 @@ void PropertiesPalette_XYZ::showRotation(double r)
 	rotationSpin->blockSignals(sigBlocked);
 }
 
-void PropertiesPalette_XYZ::handleNewX()
+void PropertyWidgetFrame_XYZ::handleNewX()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -748,7 +726,7 @@ void PropertiesPalette_XYZ::handleNewX()
 	}
 }
 
-void PropertiesPalette_XYZ::handleNewY()
+void PropertyWidgetFrame_XYZ::handleNewY()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -828,7 +806,7 @@ void PropertiesPalette_XYZ::handleNewY()
 	m_doc->changed();
 }
 
-void PropertiesPalette_XYZ::handleNewW()
+void PropertyWidgetFrame_XYZ::handleNewW()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -910,7 +888,7 @@ void PropertiesPalette_XYZ::handleNewW()
 	m_ScMW->setStatusBarTextSelectedItemInfo();
 }
 
-void PropertiesPalette_XYZ::handleNewH()
+void PropertyWidgetFrame_XYZ::handleNewH()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -992,7 +970,7 @@ void PropertiesPalette_XYZ::handleNewH()
 	m_ScMW->setStatusBarTextSelectedItemInfo();
 }
 
-void PropertiesPalette_XYZ::handleRotation()
+void PropertyWidgetFrame_XYZ::handleRotation()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1021,7 +999,7 @@ void PropertiesPalette_XYZ::handleRotation()
 	}
 }
 
-void PropertiesPalette_XYZ::handleLower()
+void PropertyWidgetFrame_XYZ::handleLower()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1029,7 +1007,7 @@ void PropertiesPalette_XYZ::handleLower()
 	levelLabel->setText( QString::number(m_item->level()) );
 }
 
-void PropertiesPalette_XYZ::handleRaise()
+void PropertyWidgetFrame_XYZ::handleRaise()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1037,7 +1015,7 @@ void PropertiesPalette_XYZ::handleRaise()
 	levelLabel->setText( QString::number(m_item->level()) );
 }
 
-void PropertiesPalette_XYZ::handleFront()
+void PropertyWidgetFrame_XYZ::handleFront()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1045,7 +1023,7 @@ void PropertiesPalette_XYZ::handleFront()
 	levelLabel->setText( QString::number(m_item->level()) );
 }
 
-void PropertiesPalette_XYZ::handleBack()
+void PropertyWidgetFrame_XYZ::handleBack()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1053,7 +1031,7 @@ void PropertiesPalette_XYZ::handleBack()
 	levelLabel->setText( QString::number(m_item->level()) );
 }
 
-void PropertiesPalette_XYZ::handleBasePoint(int m)
+void PropertyWidgetFrame_XYZ::handleBasePoint(int m)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -1154,89 +1132,36 @@ void PropertiesPalette_XYZ::handleBasePoint(int m)
 	}
 }
 
-void PropertiesPalette_XYZ::handleLock()
+void PropertyWidgetFrame_XYZ::handleLock()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_ScMW->scrActions["itemLock"]->toggle();
 }
 
-void PropertiesPalette_XYZ::handleLockSize()
+void PropertyWidgetFrame_XYZ::handleLockSize()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_ScMW->scrActions["itemLockSize"]->toggle();
 }
 
-void PropertiesPalette_XYZ::handlePrint()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->scrActions["itemPrintingEnabled"]->toggle();
-}
-
-void PropertiesPalette_XYZ::handleFlipH()
+void PropertyWidgetFrame_XYZ::handleFlipH()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_ScMW->scrActions["itemFlipH"]->toggle();
 }
 
-void PropertiesPalette_XYZ::handleFlipV()
+void PropertyWidgetFrame_XYZ::handleFlipV()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_ScMW->scrActions["itemFlipV"]->toggle();
 }
 
-void PropertiesPalette_XYZ::handleNewName()
-{
-	if (m_ScMW->scriptIsRunning() || !m_haveDoc || !m_haveItem)
-		return;
-	QString NameOld = m_item->itemName();
-	QString NameNew = nameEdit->text();
-	if (NameNew.isEmpty())
-	{
-		nameEdit->setText(NameOld);
-		return;
-	}
-	bool found = false;
-	QList<PageItem*> allItems;
-	for (int a = 0; a < m_doc->Items->count(); ++a)
-	{
-		PageItem *currItem = m_doc->Items->at(a);
-		if (currItem->isGroup())
-			allItems = currItem->getItemList();
-		else
-			allItems.append(currItem);
-		for (int ii = 0; ii < allItems.count(); ii++)
-		{
-			PageItem* item = allItems.at(ii);
-			if ((NameNew == item->itemName()) && (item != m_item))
-			{
-				found = true;
-				break;
-			}
-		}
-		allItems.clear();
-	}
-	if (found)
-	{
-		ScMessageBox::warning(this, CommonStrings::trWarning, "<qt>"+ tr("Name \"%1\" isn't unique.<br/>Please choose another.").arg(NameNew)+"</qt>");
-		nameEdit->setText(NameOld);
-		nameEdit->setFocus();
-	}
-	else
-	{
-		if (m_item->itemName() != nameEdit->text())
-		{
-			m_item->setItemName(nameEdit->text());
-			m_doc->changed();
-		}
-	}
-}
 
-void PropertiesPalette_XYZ::installSniffer(ScrSpinBox *spinBox)
+void PropertyWidgetFrame_XYZ::installSniffer(ScrSpinBox *spinBox)
 {
 	const QList<QObject*> list = spinBox->children();
 	if (!list.isEmpty())
@@ -1251,17 +1176,17 @@ void PropertiesPalette_XYZ::installSniffer(ScrSpinBox *spinBox)
 	}
 }
 
-bool PropertiesPalette_XYZ::userActionOn()
+bool PropertyWidgetFrame_XYZ::userActionOn()
 {
 	return _userActionOn;
 }
 
-void PropertiesPalette_XYZ::spinboxStartUserAction()
+void PropertyWidgetFrame_XYZ::spinboxStartUserAction()
 {
 	_userActionOn = true;
 }
 
-void PropertiesPalette_XYZ::spinboxFinishUserAction()
+void PropertyWidgetFrame_XYZ::spinboxFinishUserAction()
 {
 	_userActionOn = false;
 
@@ -1273,7 +1198,7 @@ void PropertiesPalette_XYZ::spinboxFinishUserAction()
 	}
 }
 
-void PropertiesPalette_XYZ::changeEvent(QEvent *e)
+void PropertyWidgetFrame_XYZ::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
 	{
@@ -1283,7 +1208,7 @@ void PropertiesPalette_XYZ::changeEvent(QEvent *e)
 		QWidget::changeEvent(e);
 }
 
-void PropertiesPalette_XYZ::languageChange()
+void PropertyWidgetFrame_XYZ::languageChange()
 {
 	setWindowTitle( tr("Properties"));
 	retranslateUi(this);
@@ -1298,7 +1223,7 @@ void PropertiesPalette_XYZ::languageChange()
 	heightSpin->setSuffix(ein);
 }
 
-void PropertiesPalette_XYZ::updateSpinBoxConstants()
+void PropertyWidgetFrame_XYZ::updateSpinBoxConstants()
 {
 	if (!m_haveDoc)
 		return;
@@ -1311,7 +1236,7 @@ void PropertiesPalette_XYZ::updateSpinBoxConstants()
 
 }
 
-void PropertiesPalette_XYZ::showLocked(bool isLocked)
+void PropertyWidgetFrame_XYZ::showLocked(bool isLocked)
 {
 	xposSpin->setReadOnly(isLocked);
 	yposSpin->setReadOnly(isLocked);
@@ -1331,7 +1256,7 @@ void PropertiesPalette_XYZ::showLocked(bool isLocked)
 	doLock->setChecked(isLocked);
 }
 
-void PropertiesPalette_XYZ::showSizeLocked(bool isSizeLocked)
+void PropertyWidgetFrame_XYZ::showSizeLocked(bool isSizeLocked)
 {
 	bool b=isSizeLocked;
 	if (m_haveItem && m_item->locked())
@@ -1348,22 +1273,18 @@ void PropertiesPalette_XYZ::showSizeLocked(bool isSizeLocked)
 	noResize->setChecked(isSizeLocked);
 }
 
-void PropertiesPalette_XYZ::showPrintingEnabled(bool isPrintingEnabled)
-{
-	noPrint->setChecked(!isPrintingEnabled);
-}
 
-void PropertiesPalette_XYZ::showFlippedH(bool isFlippedH)
+void PropertyWidgetFrame_XYZ::showFlippedH(bool isFlippedH)
 {
 	flipH->setChecked(isFlippedH);
 }
 
-void PropertiesPalette_XYZ::showFlippedV(bool isFlippedV)
+void PropertyWidgetFrame_XYZ::showFlippedV(bool isFlippedV)
 {
 	flipV->setChecked(isFlippedV);
 }
 
-void PropertiesPalette_XYZ::handleGrouping()
+void PropertyWidgetFrame_XYZ::handleGrouping()
 {
 	m_ScMW->GroupObj();
 	doGroup->setEnabled(false);//
@@ -1373,7 +1294,7 @@ void PropertiesPalette_XYZ::handleGrouping()
 	//TabStack->setItemEnabled(idShapeItem, false);
 }
 
-void PropertiesPalette_XYZ::handleUngrouping()
+void PropertyWidgetFrame_XYZ::handleUngrouping()
 {
 	m_ScMW->UnGroupObj();
 	m_doc->invalidateAll();

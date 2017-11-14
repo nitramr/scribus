@@ -46,9 +46,9 @@ for which a new license (GPL+exception) is in place.
 #include "propertiespalette_shadow.h"
 #include "propertiespalette_shadowoptions.h"
 #include "propertiespalette_shape.h"
-//#include "propertywidgettable_table.h"
 #include "propertiespalette_utils.h"
-#include "propertiespalette_xyz.h"
+#include "propertywidgetframe_xyz.h"
+#include "propertywidgetframe_xyzext.h"
 #include "scribus.h"
 #include "scribusview.h"
 #include "selection.h"
@@ -74,7 +74,8 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	f.setPointSize(f.pointSize()-1);
 	setFont(f);
 
-	xyzPal = new PropertiesPalette_XYZ(this);
+	xyzPal = new PropertyWidgetFrame_XYZ(this);
+	xyzExtPal = new PropertyWidgetFrame_XYZExt(this);
 	shadowPal = new PropertiesPalette_Shadow(this);
 	shadowOptionsPal = new PropertiesPalette_ShadowOptions(this);
 	shapePal = new PropertiesPalette_Shape(this);
@@ -82,11 +83,11 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	linePal = new PropertiesPalette_Line(this);
 	colorPal = new Cpalette(this);
 	transparencyPal = new PropertyWidgetFrame_Transparency(this);
-//	tablePal = new PropertyWidgetTable_Table(this);
 
 	ScPopupMenu * popupFontFeatures = new ScPopupMenu(shadowOptionsPal);
+	ScPopupMenu * popupXYZ = new ScPopupMenu(xyzExtPal);
 
-	layoutSectionXYZ = new ScLayoutSection(tr("XYZ"));
+	layoutSectionXYZ = new ScLayoutSection(tr("XYZ"), popupXYZ);
 	layoutSectionXYZ->addWidget(xyzPal);
 
 	layoutSectionDropShadow = new ScLayoutSection(tr("Drop Shadow"), popupFontFeatures, true);
@@ -122,7 +123,6 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	flowLayout->addWidget(layoutSectionLine);
 	flowLayout->addWidget(layoutSectionColor);
 	flowLayout->addWidget(layoutSectionTransparency);
-//	flowLayout->addWidget(layoutSectionTable);
 
 	QWidget * paletteHolder = new QWidget();
 	paletteHolder->setLayout(flowLayout);
@@ -185,12 +185,12 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	move(p2);*/
 
 	this->xyzPal->setMainWindow(mw);
+	this->xyzExtPal->setMainWindow(mw);
 	this->shadowPal->setMainWindow(mw);
 	this->shadowOptionsPal->setMainWindow(mw);
 	this->shapePal->setMainWindow(mw);
 	this->groupPal->setMainWindow(mw);
 	this->linePal->setMainWindow(mw);
-//	this->tablePal->setMainWindow(mw);
 
 	//connect(this->Cpal, SIGNAL(gradientChanged()), m_ScMW, SLOT(updtGradFill()));
 	//connect(this->Cpal, SIGNAL(strokeGradientChanged()), m_ScMW, SLOT(updtGradStroke()));
@@ -224,12 +224,12 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	m_haveItem = false;
 
 	xyzPal->setDoc(m_doc);
+	xyzExtPal->setDoc(m_doc);
 	shadowPal->setDoc(m_doc);
 	shadowOptionsPal->setDoc(m_doc);
 	shapePal->setDoc(m_doc);
 	groupPal->setDoc(m_doc);
 	linePal->setDoc(m_doc);
-//	tablePal->setDocument(m_doc);
 
 	updateColorList();
 
@@ -254,6 +254,7 @@ void PropertiesFramePalette::unsetDoc()
 	m_item = NULL;
 
 	xyzPal->unsetDoc();
+	xyzExtPal->unsetDoc();
 	shadowPal->unsetItem();
 	shadowPal->unsetDoc();
 	shadowOptionsPal->unsetItem();
@@ -264,8 +265,6 @@ void PropertiesFramePalette::unsetDoc()
 	groupPal->unsetDoc();
 	linePal->unsetItem();
 	linePal->unsetDoc();
-//	tablePal->unsetItem();
-//	tablePal->unsetDocument();
 
 	colorPal->setCurrentItem(NULL);
 	colorPal->setDocument(NULL);
@@ -281,7 +280,6 @@ void PropertiesFramePalette::unsetDoc()
 	layoutSectionLine->setVisible(false);
 	layoutSectionColor->setVisible(false);
 	layoutSectionTransparency->setVisible(false);
-//	layoutSectionTable->setVisible(false);
 }
 
 void PropertiesFramePalette::unsetItem()
@@ -290,7 +288,6 @@ void PropertiesFramePalette::unsetItem()
 	m_item     = NULL;
 	colorPal->setCurrentItem(NULL);
 	transparencyPal->setCurrentItem(NULL);
-//	tablePal->unsetItem();
 	shapePal->unsetItem();
 	groupPal->unsetItem();
 	shadowPal->unsetItem();
@@ -375,8 +372,6 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	m_haveItem = false;
 	m_item = i;
 
-//	tablePal->setItem(m_item);
-
 	transparencyPal->setCurrentItem(m_item);
 
 	setTextFlowMode(m_item->textFlowMode());
@@ -392,8 +387,6 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	layoutSectionLine->setEnabled(true);
 	layoutSectionColor->setEnabled(true);
 	layoutSectionTransparency->setEnabled(true);
-//	layoutSectionTable->setEnabled(true);
-
 
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
@@ -403,7 +396,6 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		layoutSectionGroup->setVisible(true);
 		layoutSectionLine->setVisible(false);
 		layoutSectionColor->setVisible(false);
-//		layoutSectionTable->setVisible(false);
 	}
 	else
 		layoutSectionGroup->setVisible(false);
@@ -413,12 +405,12 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	if (!sender() || (m_doc->appMode == modeEditTable))
 	{
 		xyzPal->handleSelectionChanged();
+		xyzExtPal->handleSelectionChanged();
 		shadowPal->handleSelectionChanged();
 		shadowOptionsPal->handleSelectionChanged();
 		shapePal->handleSelectionChanged();
 		groupPal->handleSelectionChanged();
 		linePal->handleSelectionChanged();
-//		tablePal->handleSelectionChanged();
 		colorPal->handleSelectionChanged();
 	}
 
@@ -431,7 +423,6 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		layoutSectionLine->setVisible(false);
 		layoutSectionColor->setVisible(true);
 		layoutSectionTransparency->setVisible(false);
-//		layoutSectionTable->setVisible(false);
 	}
 	if (m_item->asSymbolFrame())
 	{
@@ -442,7 +433,6 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		layoutSectionLine->setVisible(false);
 		layoutSectionColor->setVisible(false);
 		layoutSectionTransparency->setVisible(false);
-//		layoutSectionTable->setVisible(false);
 	}
 }
 
@@ -459,7 +449,6 @@ void  PropertiesFramePalette::handleSelectionChanged()
 		layoutSectionLine->setVisible(true);
 		layoutSectionColor->setVisible(true);
 		layoutSectionTransparency->setVisible(true);
-//		layoutSectionTable->setVisible(false);
 
 		if (m_haveItem && m_item)
 		{
@@ -475,7 +464,6 @@ void  PropertiesFramePalette::handleSelectionChanged()
 		layoutSectionXYZ->setEnabled(true);
 		layoutSectionColor->setVisible(true);
 		layoutSectionTransparency->setVisible(true);
-//		layoutSectionTable->setVisible(false);
 
 		switch (itemType)
 		{
@@ -489,7 +477,6 @@ void  PropertiesFramePalette::handleSelectionChanged()
 			layoutSectionLine->setVisible(false);
 			layoutSectionColor->setVisible(false);
 			layoutSectionTransparency->setVisible(false);
-//			layoutSectionTable->setVisible(false);
 
 			colorPal->showGradient(0);
 			break;
@@ -549,7 +536,6 @@ void  PropertiesFramePalette::handleSelectionChanged()
 			layoutSectionLine->setVisible(false);
 			layoutSectionColor->setVisible(false);
 			layoutSectionTransparency->setVisible(false);
-//			layoutSectionTable->setVisible(true);
 			break;
 		}
 	}
@@ -574,6 +560,7 @@ void PropertiesFramePalette::unitChange()
 	m_unitIndex = m_doc->unitIndex();
 
 	xyzPal->unitChange();
+	xyzExtPal->unitChange();
 	shadowPal->unitChange();
 	shadowOptionsPal->unitChange();
 	shapePal->unitChange();
@@ -819,7 +806,6 @@ void PropertiesFramePalette::updateColorList()
 		return;
 
 	groupPal->updateColorList();
-//	tablePal->updateColorList();
 	colorPal->updateColorList();
 	transparencyPal->updateColorList();
 	shadowPal->updateColorList();
@@ -860,16 +846,15 @@ void PropertiesFramePalette::languageChange()
 	layoutSectionLine->setTitle(tr("&Line"));
 	layoutSectionColor->setTitle(tr("&Colors"));
 	layoutSectionTransparency->setTitle(tr("&Transparency"));
-//	layoutSectionTable->setTitle(tr("T&able"));
 
 	xyzPal->languageChange();
+	xyzExtPal->languageChange();
 	shadowPal->languageChange();
 	shadowOptionsPal->languageChange();
 	shapePal->languageChange();
 	groupPal->languageChange();
 	colorPal->languageChange();
 	linePal->languageChange();
-//	tablePal->languageChange();
 }
 
 void PropertiesFramePalette::setGradientEditMode(bool on)

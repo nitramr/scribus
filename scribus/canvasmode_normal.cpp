@@ -67,7 +67,7 @@
 #include "ui/propertiesframepalette.h"
 #include "ui/propertiespalette_line.h"
 #include "ui/propertiescontentpalette_text.h"
-#include "ui/propertiespalette_xyz.h"
+#include "ui/propertywidgetframe_xyz.h"
 #include "undomanager.h"
 #include "util.h"
 #include "util_math.h"

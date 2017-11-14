@@ -40,8 +40,8 @@ class PropertiesPalette_Line;
 class PropertiesPalette_Shadow;
 class PropertiesPalette_ShadowOptions;
 class PropertiesPalette_Shape;
-//class PropertyWidgetTable_Table;
-class PropertiesPalette_XYZ;
+class PropertyWidgetFrame_XYZ;
+class PropertyWidgetFrame_XYZExt;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
@@ -77,8 +77,8 @@ public:
 	PropertiesPalette_Shadow* shadowPal;
 	PropertiesPalette_ShadowOptions* shadowOptionsPal;
 	PropertiesPalette_Shape* shapePal;
-//	PropertyWidgetTable_Table* tablePal;
-	PropertiesPalette_XYZ*   xyzPal;
+	PropertyWidgetFrame_XYZ*   xyzPal;
+	PropertyWidgetFrame_XYZExt*   xyzExtPal;
 	Cpalette *colorPal;
 	PropertyWidgetFrame_Transparency *transparencyPal;
 
@@ -135,7 +135,6 @@ protected:
 	ScLayoutSection *layoutSectionLine;
 	ScLayoutSection *layoutSectionColor;
 	ScLayoutSection *layoutSectionTransparency;
-//	ScLayoutSection *layoutSectionTable;
 
 };
 

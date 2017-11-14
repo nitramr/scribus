@@ -531,7 +531,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/propertiespalette_shadow.h \
            scribus/ui/propertiespalette_shape.h \
            scribus/ui/propertiespalette_utils.h \
-           scribus/ui/propertiespalette_xyz.h \
            scribus/ui/propertywidgetbase.h \
            scribus/ui/proptree.h \
            scribus/ui/query.h \
@@ -1013,7 +1012,9 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertiespalette_shadowoptions.h \
     scribus/ui/propertywidgetframe_transparency.h \
     scribus/ui/propertiescontentpalette_table.h \
-    scribus/ui/propertywidgettable_table.h
+    scribus/ui/propertywidgettable_table.h \
+    scribus/ui/propertywidgetframe_xyzext.h \
+    scribus/ui/propertywidgetframe_xyz.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1094,7 +1095,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/propertiespalette_linebase.ui \
          scribus/ui/propertiespalette_shadowbase.ui \
          scribus/ui/propertiespalette_shapebase.ui \
-         scribus/ui/propertiespalette_xyzbase.ui \
          scribus/ui/recoverdialog.ui \
          scribus/ui/replacecolors.ui \
          scribus/ui/replaceonecolor.ui \
@@ -1175,7 +1175,9 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgetimage_imagesettings.ui \
     scribus/ui/propertiespalette_shadowoptions.ui \
     scribus/ui/propertywidgetframe_transparency.ui \
-    scribus/ui/propertywidgettable_table.ui
+    scribus/ui/propertywidgettable_table.ui \
+    scribus/ui/propertywidgetframe_xyzext.ui \
+    scribus/ui/propertywidgetframe_xyz.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1646,7 +1648,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/propertiespalette_shadow.cpp \
            scribus/ui/propertiespalette_shape.cpp \
            scribus/ui/propertiespalette_utils.cpp \
-           scribus/ui/propertiespalette_xyz.cpp \
            scribus/ui/propertywidgetbase.cpp \
            scribus/ui/proptree.cpp \
            scribus/ui/query.cpp \
@@ -2149,7 +2150,9 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertiespalette_shadowoptions.cpp \
     scribus/ui/propertywidgetframe_transparency.cpp \
     scribus/ui/propertiescontentpalette_table.cpp \
-    scribus/ui/propertywidgettable_table.cpp
+    scribus/ui/propertywidgettable_table.cpp \
+    scribus/ui/propertywidgetframe_xyzext.cpp \
+    scribus/ui/propertywidgetframe_xyz.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

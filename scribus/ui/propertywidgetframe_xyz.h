@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTIESPALETTE_XYZ_H
-#define PROPERTIESPALETTE_XYZ_H
+#ifndef PROPERTYWIDGETFRAME_XYZ_H
+#define PROPERTYWIDGETFRAME_XYZ_H
 
-#include "ui_propertiespalette_xyzbase.h"
+#include "ui_propertywidgetframe_xyz.h"
 
 #include "scribusapi.h"
 #include "scrspinbox.h"
@@ -16,20 +16,19 @@ for which a new license (GPL+exception) is in place.
 #include "scguardedptr.h"
 
 class BasePointWidget;
-class NameWidget;
 class PageItem;
 class ScribusDoc;
 class Selection;
 class ScribusMainWindow;
 class UserActionSniffer;
 
-class SCRIBUS_API PropertiesPalette_XYZ : public QWidget, public Ui::PropertiesPalette_XYZBase
+class SCRIBUS_API PropertyWidgetFrame_XYZ : public QWidget, public Ui::PropertiesPalette_XYZ
 {
 	Q_OBJECT
 
 public:
-	PropertiesPalette_XYZ(QWidget* parent);
-	~PropertiesPalette_XYZ() {};
+	PropertyWidgetFrame_XYZ(QWidget* parent);
+	~PropertyWidgetFrame_XYZ() {};
 
 	virtual void changeEvent(QEvent *e);
 	
@@ -61,7 +60,6 @@ public slots:
 	void showRotation(double r);
 	void showLocked(bool);
 	void showSizeLocked(bool);
-	void showPrintingEnabled(bool);
 	void showFlippedH(bool);
 	void showFlippedV(bool);
 
@@ -83,8 +81,6 @@ private slots:
 	void handleBasePoint(int m);
 	void handleLock();
 	void handleLockSize();
-	void handlePrint();
-	void handleNewName();
 	void handleGrouping();
 	void handleUngrouping();
 

@@ -60,7 +60,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/nodeeditpalette.h"
 #include "ui/propertiesframepalette.h"
 #include "ui/propertiespalette_utils.h"
-#include "ui/propertiespalette_xyz.h"
+#include "ui/propertywidgetframe_xyz.h"
 #include "ui/propertywidgetframe_transparency.h"
 #include "undomanager.h"
 #include "units.h"
