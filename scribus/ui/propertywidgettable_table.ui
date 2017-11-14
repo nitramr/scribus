@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PropertiesPalette_TableBase</class>
- <widget class="QWidget" name="PropertiesPalette_TableBase">
+ <class>PropertyWidgetTable_Table</class>
+ <widget class="QWidget" name="PropertyWidgetTable_Table">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>380</width>
+    <height>501</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>380</width>

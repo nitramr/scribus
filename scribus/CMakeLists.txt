@@ -166,11 +166,11 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_shadowbase.ui
 	ui/propertiespalette_shadowoptions.ui
 	ui/propertiespalette_shapebase.ui
-	ui/propertiespalette_tablebase.ui
 	ui/propertiespalette_xyzbase.ui
 	ui/propertywidgetframe_transparency.ui
 	ui/propertywidgetimage_image.ui
 	ui/propertywidgetimage_imagesettings.ui
+	ui/propertywidgettable_table.ui
 	ui/propertywidgettext_distancebase.ui
 	ui/propertywidgettext_pareffectbase.ui
 	ui/propertywidgettext_fontfeaturesbase.ui
@@ -464,6 +464,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/printdialog.h
 	ui/propertiescontentpalette.h
 	ui/propertiescontentpalette_image.h
+	ui/propertiescontentpalette_table.h
 	ui/propertiescontentpalette_text.h
 	ui/propertiesframepalette.h
 	ui/propertiespalette_group.h
@@ -471,12 +472,12 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiespalette_shadow.h
 	ui/propertiespalette_shadowoptions.h
 	ui/propertiespalette_shape.h
-	ui/propertiespalette_table.h
 	ui/propertiespalette_utils.h
 	ui/propertiespalette_xyz.h
 	ui/propertywidgetframe_transparency.h
 	ui/propertywidgetimage_image.h
 	ui/propertywidgetimage_imagesettings.h
+	ui/propertywidgettable_table.h
 	ui/propertywidgettext_distance.h
 	ui/propertywidgettext_pareffect.h
 	ui/propertywidgettext_glyphspace.h
@@ -955,6 +956,7 @@ set(SCRIBUS_SOURCES
 	ui/printdialog.cpp
 	ui/propertiescontentpalette.cpp
 	ui/propertiescontentpalette_image.cpp
+	ui/propertiescontentpalette_table.cpp
 	ui/propertiescontentpalette_text.cpp
 	ui/propertiesframepalette.cpp
 	ui/propertiespalette_group.cpp
@@ -962,12 +964,12 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_shadow.cpp
 	ui/propertiespalette_shadowoptions.cpp
 	ui/propertiespalette_shape.cpp
-	ui/propertiespalette_table.cpp
 	ui/propertiespalette_utils.cpp
 	ui/propertiespalette_xyz.cpp
 	ui/propertywidgetframe_transparency.cpp
 	ui/propertywidgetimage_image.cpp
 	ui/propertywidgetimage_imagesettings.cpp
+	ui/propertywidgettable_table.cpp
 	ui/propertywidgettext_distance.cpp
 	ui/propertywidgettext_pareffect.cpp
 	ui/propertywidgettext_glyphspace.cpp

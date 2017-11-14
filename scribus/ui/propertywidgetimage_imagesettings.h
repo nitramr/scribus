@@ -21,7 +21,6 @@ class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
-//class UserActionSniffer;
 
 class SCRIBUS_API PropertyWidgetImage_ImageSettings : public QWidget, Ui::PropertyWidgetImage_ImageSettings,
 		public PropertyWidgetBase
@@ -34,8 +33,6 @@ public:
 
 	virtual void changeEvent(QEvent *e);
 
-	//bool userActionOn();
-
 	void updateProfileList();
 	void showCMSOptions();
 
@@ -43,17 +40,11 @@ protected:
 
 	bool      m_haveDoc;
 	bool      m_haveItem;
-//	bool      m_userActionOn;
-//	double    m_unitRatio;
-//	int       m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
 //	ScGuardedPtr<ScribusDoc> m_doc;
 
-//	UserActionSniffer *userActionSniffer;
-//	void installSniffer(ScrSpinBox *spinBox);
-//	void installSniffer(QSpinBox *spinBox);
 
 private:
 
@@ -70,44 +61,17 @@ public slots:
 	void handleSelectionChanged();
 	void handleUpdateRequest(int updateFlags);
 
-//	void showImageRotation(double rot);
-//	void showScaleAndOffset(double scx, double scy, double x, double y);
-
 	void languageChange();
-//	void unitChange();
 
-//protected slots:
-//	void spinboxStartUserAction();
-//	void spinboxFinishUserAction();
-//	void updateSpinBoxConstants();
 
 private slots:
 
-//	void handleLocalXY();
-//	void handleLocalScale();
-//	void handleLocalDpi();
-//	void handleLocalRotation();
-//	void handleScaling();
-
-//	void handleXScale();
-//	void handleYScale();
-//	void handleDpiX();
-//	void handleDpiY();
-//	void handleImageDPIRatio();
-//	void handleImageWHRatio();
-
-//	void handleImagePageNumber();
 
 	void handleProfile(const QString& prn);
 	void handleIntent();
 	void handleCompressionMethod();
 	void handleCompressionQuality();
 
-//	void handleImageEffects();
-//	void handleExtImgProperties();
-
-//signals:
-//	void UpdtGui(int);
 };
 
 #endif

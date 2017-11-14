@@ -22,18 +22,19 @@ PropertyWidgetText_TextColor::PropertyWidgetText_TextColor(QWidget* parent) : QW
 	setupUi(this);
 
 	strokeColor->setPixmapType(ColorCombo::fancyPixmaps);
-	ScPopupMenu * strokeColorMenu = new ScPopupMenu(strokeColor);
 	strokeColorBox = new ScColorFillsBox();
-	strokeColorBox->setMenu(strokeColorMenu);
+//	strokeColorBox->setMenu(strokeColorMenu);
 	strokeLayout->insertWidget(0,strokeColorBox);
+	ScPopupMenu * strokeColorMenu = new ScPopupMenu(strokeColor);
+	strokeColorMenu->setBuddy(strokeColorBox);
 
 
 	backColor->setPixmapType(ColorCombo::fancyPixmaps);
-	ScPopupMenu * backColorMenu = new ScPopupMenu(backColor);
 	backColorBox = new ScColorFillsBox();
-	backColorBox->setMenu(backColorMenu);
+//	backColorBox->setMenu(backColorMenu);
 	backLayout->insertWidget(0,backColorBox);
-
+	ScPopupMenu * backColorMenu = new ScPopupMenu(backColor);
+	backColorMenu->setBuddy(backColorBox);
 
 	languageChange();
 

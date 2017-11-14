@@ -35,17 +35,8 @@ PropertyWidgetImage_ImageSettings::PropertyWidgetImage_ImageSettings( QWidget* p
 	m_haveDoc    = false;
 	m_haveItem   = false;
 	m_item       = 0;
-//	m_unitRatio  = 1.0;
-//	m_unitIndex  = 0;
-
-//	m_userActionOn    = false;
-//	userActionSniffer = new UserActionSniffer(this);
-//	connect(userActionSniffer, SIGNAL(actionStart()), this, SLOT(spinboxStartUserAction()));
-//	connect(userActionSniffer, SIGNAL(actionEnd()), this, SLOT(spinboxFinishUserAction()));
 
 	setupUi(this);
-//	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
-
 
 	languageChange();
 
@@ -94,24 +85,8 @@ void PropertyWidgetImage_ImageSettings::setDoc(ScribusDoc *d)
 
 	m_doc  = d;
 	m_item = NULL;
-//	m_unitRatio   = m_doc->unitRatio();
-//	m_unitIndex   = m_doc->unitIndex();
-//	int precision = unitGetPrecisionFromIndex(m_unitIndex);
-//	double maxXYWHVal =  16777215 * m_unitRatio;
-
 	m_haveDoc  = true;
 	m_haveItem = false;
-
-//	imageXOffsetSpinBox->setValues( -16777215, maxXYWHVal, precision, 0);
-//	imageYOffsetSpinBox->setValues( -16777215, maxXYWHVal, precision, 0);
-
-//	imageRotation->setValues( 0, 359.99, 1, 0);
-
-//	imageXScaleSpinBox->setValues( 1, 30000, 2, 1);
-//	imageYScaleSpinBox->setValues( 1, 30000, 2, 1);
-//	imgDpiX->setValues( 1, 30000, 2, 1);
-//	imgDpiY->setValues( 1, 30000, 2, 1);
-//	updateSpinBoxConstants();
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
@@ -159,77 +134,13 @@ void PropertyWidgetImage_ImageSettings::setCurrentItem(PageItem *item)
 
 	if (m_item->asImageFrame())
 	{
-//		imagePageNumber->blockSignals(true);
-//		if(m_item->imageIsAvailable)
-//		{
-//			imagePageNumber->setMaximum(m_item->pixm.imgInfo.numberOfPages);
-//			imagePageNumber->setEnabled(true);
-//		}
-//		else
-//			imagePageNumber->setEnabled(false);
-//		imagePageNumber->setValue(m_item->pixm.imgInfo.actualPageNumber);
 
 		compressionMethod->setCurrentIndex(m_item->OverrideCompressionMethod ? m_item->CompressionMethodIndex + 1 : 0);
 		compressionQuality->setCurrentIndex(m_item->OverrideCompressionQuality ? m_item->CompressionQualityIndex + 1 : 0);
-//		imagePageNumber->blockSignals(false);
 
-//		imageXScaleSpinBox->blockSignals(true);
-//		imageYScaleSpinBox->blockSignals(true);
-//		imageXOffsetSpinBox->blockSignals(true);
-//		imageYOffsetSpinBox->blockSignals(true);
-//		imageRotation->blockSignals(true);
-
-//		imgEffectsButton->setVisible(m_item->imageIsAvailable && m_item->isRaster);
-//		imgExtProperties->setVisible(m_item->imageIsAvailable && m_item->pixm.imgInfo.valid);
-//		bool setter = m_item->ScaleType;
-//		cbAutoFit->setChecked(!setter);
-//		if ((m_item->asLatexFrame()) || (m_item->asOSGFrame()))
-//		{
-//			cbAutoFit->setEnabled(false);
-//			cbProportional->setEnabled(false);
-//			imageXScaleSpinBox->setEnabled(false);
-//			imageYScaleSpinBox->setEnabled(false);
-//			imgDpiX->setEnabled(false);
-//			imgDpiY->setEnabled(false);
-//		}
-//		else
-//		{
-//			imageXScaleSpinBox->setEnabled(setter);
-//			imageYScaleSpinBox->setEnabled(setter);
-//			imgDpiX->setEnabled(setter);
-//			imgDpiY->setEnabled(setter);
-//			cbProportional->setEnabled(!setter);
-//			cbProportional->setChecked(m_item->AspectRatio);
-//			cbAutoFit->setEnabled(true);
-//			//Necessary for undo action
-//			keepImageWHRatioButton->setEnabled(setter);
-//			keepImageDPIRatioButton->setEnabled(setter);
-//			keepImageWHRatioButton->setChecked(m_item->AspectRatio);
-//			keepImageDPIRatioButton->setChecked(m_item->AspectRatio);
-//		}
-//CB Why do we need this? Setting it too much here
-// 		if (setter == true)
-// 		{
-// 			keepImageWHRatioButton->setChecked(setter);
-// 			keepImageDPIRatioButton->setChecked(setter);
-// 		}
-		//imageXOffsetSpinBox->setEnabled(setter);
-		//imageYOffsetSpinBox->setEnabled(setter);
-		//imageRotation->setEnabled(setter);
-
-//		imageXScaleSpinBox->blockSignals(false);
-//		imageYScaleSpinBox->blockSignals(false);
-//		imageXOffsetSpinBox->blockSignals(false);
-//		imageYOffsetSpinBox->blockSignals(false);
-//		imageRotation->blockSignals(false);
 	}
 	m_haveItem = true;
 
-//	showScaleAndOffset(m_item->imageXScale(), m_item->imageYScale(), m_item->imageXOffset(), m_item->imageYOffset());
-//	double rrR = m_item->imageRotation();
-//	if (m_item->imageRotation() > 0)
-//		rrR = 360 - rrR;
-//	imageRotation->showValue(fabs(rrR));
 
 	if (m_item->asImageFrame())
 	{
@@ -243,7 +154,6 @@ void PropertyWidgetImage_ImageSettings::setCurrentItem(PageItem *item)
 	{
 		setEnabled(false);
 	}
-	//updateSpinBoxConstants();
 }
 
 void PropertyWidgetImage_ImageSettings::unsetItem()
@@ -272,66 +182,6 @@ PageItem* PropertyWidgetImage_ImageSettings::currentItemFromSelection()
 	return currentItem;
 }
 
-/*********************************************************************
-*
-* Action Sniffer
-*
-**********************************************************************/
-
-//void PropertyWidgetImage_ImageSettings::installSniffer(ScrSpinBox *spinBox)
-//{
-//	const QList<QObject*> list = spinBox->children();
-//	if (!list.isEmpty())
-//	{
-//		QListIterator<QObject*> it(list);
-//		QObject *obj;
-//		while (it.hasNext())
-//		{
-//			obj = it.next();
-//			obj->installEventFilter(userActionSniffer);
-//		}
-//	}
-//}
-
-//void PropertyWidgetImage_ImageSettings::installSniffer(QSpinBox *spinBox)
-//{
-//	const QList<QObject*> list = spinBox->children();
-//	if (!list.isEmpty())
-//	{
-//		QListIterator<QObject*> it(list);
-//		QObject *obj;
-//		while (it.hasNext())
-//		{
-//			obj = it.next();
-//			obj->installEventFilter(userActionSniffer);
-//		}
-//	}
-//}
-
-//bool PropertyWidgetImage_ImageSettings::userActionOn()
-//{
-//	return m_userActionOn;;
-//}
-
-//void PropertyWidgetImage_ImageSettings::spinboxStartUserAction()
-//{
-//	m_userActionOn = true;
-//}
-
-//void PropertyWidgetImage_ImageSettings::spinboxFinishUserAction()
-//{
-//	m_userActionOn = false;
-
-//	for (int i = 0; i < m_doc->m_Selection->count(); ++i)
-//		m_doc->m_Selection->itemAt(i)->checkChanges(true);
-//	if (m_ScMW->view->groupTransactionStarted())
-//	{
-//		m_ScMW->view->endGroupTransaction();
-//	}
-//}
-
-
-
 
 void PropertyWidgetImage_ImageSettings::showCMSOptions()
 {
@@ -343,256 +193,6 @@ void PropertyWidgetImage_ImageSettings::showCMSOptions()
 		colorMgmtGroup->setVisible(ScCore->haveCMS() && m_doc->cmsSettings().CMSinUse);
 }
 
-//void PropertyWidgetImage_ImageSettings::showImageRotation(double rot)
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	double rrR = rot;
-//	if (rot > 0)
-//		rrR = 360 - rrR;
-//	imageRotation->showValue(fabs(rrR));
-//}
-
-//void PropertyWidgetImage_ImageSettings::showScaleAndOffset(double scx, double scy, double x, double y)
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	bool whRatioBlocked = keepImageWHRatioButton->blockSignals(true);
-//	bool dpiRatioBlocked = keepImageDPIRatioButton->blockSignals(true);
-//	if (fabs(scx - scy) > 0.0002)
-//	{
-//		keepImageWHRatioButton->setChecked(false);
-//		keepImageDPIRatioButton->setChecked(false);
-//	}
-//	if (m_haveItem)
-//	{
-//		imageXOffsetSpinBox->showValue(x * m_unitRatio * m_item->imageXScale());
-//		imageYOffsetSpinBox->showValue(y * m_unitRatio * m_item->imageYScale());
-//		imageXScaleSpinBox->showValue(scx * 100 / 72.0 * m_item->pixm.imgInfo.xres);
-//		imageYScaleSpinBox->showValue(scy * 100 / 72.0 * m_item->pixm.imgInfo.yres);
-//		imgDpiX->showValue(qRound(720.0 / m_item->imageXScale()) / 10.0);
-//		imgDpiY->showValue(qRound(720.0 / m_item->imageYScale()) / 10.0);
-//	}
-//	else
-//	{
-//		imageXOffsetSpinBox->showValue(x * m_unitRatio);
-//		imageYOffsetSpinBox->showValue(y * m_unitRatio);
-//		imageXScaleSpinBox->showValue(scx * 100);
-//		imageYScaleSpinBox->showValue(scy * 100);
-//		imgDpiX->showValue(72);
-//		imgDpiY->showValue(72);
-//	}
-//	keepImageWHRatioButton->blockSignals(whRatioBlocked);
-//	keepImageDPIRatioButton->blockSignals(dpiRatioBlocked);
-//}
-
-
-
-
-/*********************************************************************
-*
-* Features Scale, Transform
-*
-**********************************************************************/
-
-//void PropertyWidgetImage_ImageSettings::handleLocalXY()
-//{
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	m_doc->itemSelection_SetImageOffset(imageXOffsetSpinBox->value() / m_unitRatio / m_item->imageXScale(), imageYOffsetSpinBox->value() / m_unitRatio / m_item->imageYScale());
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleLocalScale()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	if ((m_haveDoc) && (m_haveItem))
-//	{
-//		//CB Don't pass in the scale to the offset change as its taken from the new scale
-//		m_doc->itemSelection_SetImageScaleAndOffset(imageXScaleSpinBox->value() / 100.0 / m_item->pixm.imgInfo.xres * 72.0, imageYScaleSpinBox->value() / 100.0 / m_item->pixm.imgInfo.yres * 72.0, imageXOffsetSpinBox->value() / m_unitRatio, imageYOffsetSpinBox->value() / m_unitRatio);
-//		imgDpiX->showValue(qRound(720.0 / m_item->imageXScale()) / 10.0);
-//		imgDpiY->showValue(qRound(720.0 / m_item->imageYScale()) / 10.0);
-//	}
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleLocalDpi()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	if ((m_haveDoc) && (m_haveItem))
-//	{
-//		//CB Don't pass in the scale to the offset change as its taken from the new scale
-//		m_doc->itemSelection_SetImageScaleAndOffset(72.0 / imgDpiX->value(), 72.0 / imgDpiY->value(), imageXOffsetSpinBox->value() / m_unitRatio, imageYOffsetSpinBox->value() / m_unitRatio);
-		
-//		imageXScaleSpinBox->showValue(m_item->imageXScale() * 100 / 72.0 * m_item->pixm.imgInfo.xres);
-//		imageYScaleSpinBox->showValue(m_item->imageYScale() * 100 / 72.0 * m_item->pixm.imgInfo.yres);
-//	}
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleLocalRotation()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	if ((m_haveDoc) && (m_haveItem))
-//	{
-//		m_doc->itemSelection_SetImageRotation(360 - imageRotation->value());
-//		if (cbAutoFit->isChecked())
-//			m_item->AdjustPictScale();
-//	}
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleScaling()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-
-//	if(cbAutoFit == sender() && cbAutoFit->isChecked() == false)
-//	{
-//		cbProportional->setEnabled(false);
-////		imageXOffsetSpinBox->setEnabled(true);
-////		imageYOffsetSpinBox->setEnabled(true);
-//		imageXScaleSpinBox->setEnabled(true);
-//		imageYScaleSpinBox->setEnabled(true);
-//		imgDpiX->setEnabled(true);
-//		imgDpiY->setEnabled(true);
-////		imageRotation->setEnabled(true);
-//		keepImageWHRatioButton->setEnabled(true);
-//		keepImageDPIRatioButton->setEnabled(true);
-//	}
-//	if(cbAutoFit == sender() && cbAutoFit->isChecked() == true)
-//	{
-//		cbProportional->setEnabled(true);
-////		imageXOffsetSpinBox->setEnabled(false);
-////		imageYOffsetSpinBox->setEnabled(false);
-//		imageXScaleSpinBox->setEnabled(false);
-//		imageYScaleSpinBox->setEnabled(false);
-//		imgDpiX->setEnabled(false);
-//		imgDpiY->setEnabled(false);
-////		imageRotation->setEnabled(false);
-//		keepImageWHRatioButton->setEnabled(false);
-//		keepImageDPIRatioButton->setEnabled(false);
-//	}
-
-//	if ((m_haveDoc) && (m_haveItem))
-//	{
-//		m_item->setImageScalingMode(!cbAutoFit->isChecked(), cbProportional->isChecked());
-//		m_doc->changed();
-//		emit UpdtGui(PageItem::ImageFrame);
-//	}
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleXScale()
-//{
-//	bool xscaleBlocked = imageXScaleSpinBox->blockSignals(true);
-//	bool yscaleBlocked = imageYScaleSpinBox->blockSignals(true);
-//	if (keepImageWHRatioButton->isChecked())
-//		imageYScaleSpinBox->setValue(imageXScaleSpinBox->value());
-//	handleLocalScale();
-//	imageXScaleSpinBox->blockSignals(xscaleBlocked);
-//	imageYScaleSpinBox->blockSignals(yscaleBlocked);
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleYScale()
-//{
-//	bool xscaleBlocked = imageXScaleSpinBox->blockSignals(true);
-//	bool yscaleBlocked = imageYScaleSpinBox->blockSignals(true);
-//	if (keepImageWHRatioButton->isChecked())
-//		imageXScaleSpinBox->setValue(imageYScaleSpinBox->value());
-//	handleLocalScale();
-//	imageXScaleSpinBox->blockSignals(xscaleBlocked);
-//	imageYScaleSpinBox->blockSignals(yscaleBlocked);
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleDpiX()
-//{
-//	bool dpiXBlocked = imgDpiX->blockSignals(true);
-//	bool dpiYBlocked = imgDpiY->blockSignals(true);
-//	if (keepImageDPIRatioButton->isChecked())
-//		imgDpiY->setValue(imgDpiX->value());
-//	handleLocalDpi();
-//	imgDpiX->blockSignals(dpiXBlocked);
-//	imgDpiY->blockSignals(dpiYBlocked);
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleDpiY()
-//{
-//	bool dpiXBlocked = imgDpiX->blockSignals(true);
-//	bool dpiYBlocked = imgDpiY->blockSignals(true);
-//	if (keepImageDPIRatioButton->isChecked())
-//		imgDpiX->setValue(imgDpiY->value());
-//	handleLocalDpi();
-//	imgDpiX->blockSignals(dpiXBlocked);
-//	imgDpiY->blockSignals(dpiYBlocked);
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleImageDPIRatio()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	bool dpiXBlocked = imgDpiX->blockSignals(true);
-//	bool dpiYBlocked = imgDpiY->blockSignals(true);
-//	if (keepImageDPIRatioButton->isChecked())
-//	{
-//		double minXY = qMin(imgDpiX->value(), imgDpiY->value());
-//		imgDpiX->setValue(minXY);
-//		imgDpiY->setValue(minXY);
-//		handleLocalDpi();
-//		keepImageWHRatioButton->setChecked(true);
-//		cbProportional->setChecked(true);
-//	}
-//	else
-//	{
-//		keepImageWHRatioButton->setChecked(false);
-//		cbProportional->setChecked(false);
-//	}
-//	imgDpiX->blockSignals(dpiXBlocked);
-//	imgDpiY->blockSignals(dpiYBlocked);
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleImageWHRatio()
-//{
-//	if (!m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	bool xscaleBlocked = imageXScaleSpinBox->blockSignals(true);
-//	bool yscaleBlocked = imageYScaleSpinBox->blockSignals(true);
-//	if (keepImageWHRatioButton->isChecked())
-//	{
-//		double maxXY = qMax(imageXScaleSpinBox->value(), imageYScaleSpinBox->value());
-//		imageXScaleSpinBox->setValue(maxXY);
-//		imageYScaleSpinBox->setValue(maxXY);
-//		handleLocalScale();
-//		keepImageDPIRatioButton->setChecked(true);
-//		cbProportional->setChecked(true);
-//	}
-//	else
-//	{
-//		keepImageDPIRatioButton->setChecked(false);
-//		cbProportional->setChecked(false);
-//	}
-//	imageXScaleSpinBox->blockSignals(xscaleBlocked);
-//	imageYScaleSpinBox->blockSignals(yscaleBlocked);
-//}
-
-
-
-//void PropertyWidgetImage_ImageSettings::handleImagePageNumber()
-//{
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	bool reallynew = (m_item->pixm.imgInfo.actualPageNumber != imagePageNumber->value());
-//	if(UndoManager::undoEnabled())
-//	{
-//		SimpleState *ss = new SimpleState(Um::PageNmbr.arg(static_cast<int>(imagePageNumber->value())),"",Um::IImageFrame);
-//		ss->set("IMAGE_NBR");
-//		ss->set("OLD", m_item->pixm.imgInfo.actualPageNumber);
-//		ss->set("NEW", imagePageNumber->value());
-//		UndoManager::instance()->action(m_item,ss);
-//	}
-//	m_item->pixm.imgInfo.actualPageNumber = static_cast<int>(imagePageNumber->value());
-//	if (reallynew)
-//		m_item->loadImage(m_item->externalFile(), true);
-//	m_item->update();
-//}
 
 /*********************************************************************
 *
@@ -685,27 +285,6 @@ void PropertyWidgetImage_ImageSettings::updateProfileList()
 }
 
 
-/*********************************************************************
-*
-* Features Image Effects
-*
-**********************************************************************/
-
-//void PropertyWidgetImage_ImageSettings::handleImageEffects()
-//{
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	m_ScMW->ImageEffects();
-//}
-
-//void PropertyWidgetImage_ImageSettings::handleExtImgProperties()
-//{
-//	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-//		return;
-//	m_ScMW->view->editExtendedImageProperties();
-//	m_doc->changed();
-//}
-
  
 /*********************************************************************
 *
@@ -737,7 +316,6 @@ void PropertyWidgetImage_ImageSettings::languageChange()
 {
 	retranslateUi(this);
 
-//	imagePageNumber->setSpecialValueText( tr( "Auto" ));
 
 	QSignalBlocker renderIntentBlocker(renderIntent);
 	int oldRenderI = renderIntent->currentIndex();
@@ -769,46 +347,7 @@ void PropertyWidgetImage_ImageSettings::languageChange()
 	compressionQuality->addItem( tr( "Minimum" ) );
 	compressionQuality->setCurrentIndex(oldCompressionQuality);
 
-//	QString pctSuffix = tr(" %");
-//	imageXScaleSpinBox->setSuffix(pctSuffix);
-//	imageYScaleSpinBox->setSuffix(pctSuffix);
-
-//	QString ptSuffix = tr(" pt");
-//	QString suffix   = (m_haveDoc) ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
-
-//	imageXOffsetSpinBox->setSuffix(suffix);
-//	imageYOffsetSpinBox->setSuffix(suffix);
 }
-
-//void PropertyWidgetImage_ImageSettings::unitChange()
-//{
-//	if (!m_doc)
-//		return;
-
-//	m_unitRatio = m_doc->unitRatio();
-//	m_unitIndex = m_doc->unitIndex();
-
-//	imageXOffsetSpinBox->blockSignals(true);
-//	imageXOffsetSpinBox->setNewUnit( m_unitIndex );
-//	imageXOffsetSpinBox->blockSignals(false);
-
-//	imageYOffsetSpinBox->blockSignals(true);
-//	imageYOffsetSpinBox->setNewUnit( m_unitIndex );
-//	imageYOffsetSpinBox->blockSignals(false);
-//}
-
-
-//void PropertyWidgetImage_ImageSettings::updateSpinBoxConstants()
-//{
-//	if (!m_haveDoc)
-//		return;
-//	if(m_doc->m_Selection->count()==0)
-//		return;
-//	imageXOffsetSpinBox->setConstants(&m_doc->constants());
-//	imageYOffsetSpinBox->setConstants(&m_doc->constants());
-//}
-
-
 
 
 void PropertyWidgetImage_ImageSettings::handleUpdateRequest(int updateFlags)
@@ -844,24 +383,14 @@ void PropertyWidgetImage_ImageSettings::handleSelectionChanged()
 			setEnabled(currItem->asOSGFrame() == NULL);
 			break;
 		case PageItem::TextFrame:
-			setEnabled(false);
-			break;
 		case PageItem::Line:
-			setEnabled(false);
-			break;
 		case PageItem::Arc:
 		case PageItem::ItemType1:
 		case PageItem::ItemType3:
 		case PageItem::Polygon:
 		case PageItem::RegularPolygon:
-			setEnabled(false);
-			break;
 		case PageItem::PolyLine:
-			setEnabled(false);
-			break;
 		case PageItem::PathText:
-			setEnabled(false);
-			break;
 		case PageItem::Symbol:
 			setEnabled(false);
 			break;
@@ -871,8 +400,6 @@ void PropertyWidgetImage_ImageSettings::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
 }
 
 

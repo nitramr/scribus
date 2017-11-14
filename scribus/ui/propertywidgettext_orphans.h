@@ -37,6 +37,8 @@ public slots:
 	void handleKeepTogether();
 	void handleKeepWithNext();
 
+	void handleSelectionChanged(){}; // currently unused
+
 private:
 	void connectSignals();
 	void disconnectSignals();

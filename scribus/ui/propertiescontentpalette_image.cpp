@@ -36,9 +36,6 @@ PropertiesContentPalette_Image::PropertiesContentPalette_Image( QWidget* parent)
 {
 	m_ScMW=0;
 	m_doc=0;
-	m_haveDoc = false;
-	m_haveItem = false;
-	m_unitRatio = 1.0;
 
 	imageWidget = new PropertyWidgetImage_Image();
 
@@ -64,7 +61,6 @@ PropertiesContentPalette_Image::PropertiesContentPalette_Image( QWidget* parent)
 
 	languageChange();
 
-	m_haveItem = false;
 }
 
 /*********************************************************************
@@ -95,52 +91,19 @@ void PropertiesContentPalette_Image::setDoc(ScribusDoc *d)
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
 
-	if (m_doc)
-	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-	}
-
 	m_doc = d;
-	m_item = NULL;
-	setEnabled(!m_doc->drawAsPreview);
-
-	m_unitRatio = m_doc->unitRatio();
-	m_unitIndex = m_doc->unitIndex();
-	m_haveDoc = true;
-	m_haveItem = false;
 
 	imageWidget->setDoc(m_doc);
 	imageSettingsWidget->setDoc(m_doc);
-
-
-	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-
-	// Handle properties update when switching document
-	handleSelectionChanged();
 }
 
 void PropertiesContentPalette_Image::unsetDoc()
 {
-	if (m_doc)
-	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-	}
-
-	setEnabled(true);
-	m_haveDoc = false;
-	m_haveItem = false;
-	m_doc=NULL;
-	m_item = NULL;
 
 	imageWidget->unsetItem();
 	imageWidget->unsetDoc();
 	imageSettingsWidget->unsetItem();
 	imageSettingsWidget->unsetDoc();
-
-	m_haveItem = false;
 
 }
 
@@ -152,8 +115,6 @@ void PropertiesContentPalette_Image::unsetDoc()
 
 void PropertiesContentPalette_Image::unsetItem()
 {
-	m_haveItem = false;
-	m_item     = NULL;
 
 	imageWidget->unsetItem();
 	imageSettingsWidget->unsetItem();
@@ -163,76 +124,10 @@ void PropertiesContentPalette_Image::unsetItem()
 
 void PropertiesContentPalette_Image::setCurrentItem(PageItem *i)
 {
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	//CB We shouldn't really need to process this if our item is the same one
-	//maybe we do if the item has been changed by scripter.. but that should probably
-	//set some status if so.
-	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
-	//if (m_item == i)
-	//	return;
 
-	if (!i)
-	{
-		unsetItem();
-		return;
-	}
+	imageWidget->setCurrentItem(i);
+	imageSettingsWidget->setCurrentItem(i);
 
-
-	if (!m_doc)
-		setDoc(i->doc());
-
-	m_haveItem = false;
-	m_item = i;
-
-	if ((m_item->isGroup()) && (!m_item->isSingleSel))
-	{
-//		imageWidget->setEnabled(false);
-//		imageSettingsWidget->setEnabled(false);
-		layoutSectionImage->setEnabled(false);
-		layoutSectionImageSettings->setEnabled(false);
-	}
-
-	m_haveItem = true;
-
-
-
-	if (!sender() || (m_doc->appMode == modeEditTable))
-	{
-		imageWidget->handleSelectionChanged();
-		imageSettingsWidget->handleSelectionChanged();
-	}
-
-	if (m_item->asOSGFrame())
-	{
-//		imageWidget->setEnabled(false);
-//		imageSettingsWidget->setEnabled(false);
-		layoutSectionImage->setEnabled(false);
-		layoutSectionImageSettings->setEnabled(false);
-	}
-	if (m_item->asSymbolFrame())
-	{
-//		imageWidget->setEnabled(false);
-//		imageSettingsWidget->setEnabled(false);
-		layoutSectionImage->setEnabled(false);
-		layoutSectionImageSettings->setEnabled(false);
-	}
-
-}
-
-
-PageItem* PropertiesContentPalette_Image::currentItemFromSelection()
-{
-	PageItem *currentItem = NULL;
-
-	if (m_doc)
-	{
-		if (m_doc->m_Selection->count() > 0)
-			currentItem = m_doc->m_Selection->itemAt(0);
-
-	}
-
-	return currentItem;
 }
 
 
@@ -257,78 +152,17 @@ void PropertiesContentPalette_Image::showScaleAndOffset(double scx, double scy, 
 
 void PropertiesContentPalette_Image::handleSelectionChanged()
 {
-	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
 
-	PageItem* currItem = currentItemFromSelection();
-	if (m_doc->m_Selection->count() > 1)
-	{
-
-	}
-	else
-	{
-		int itemType = currItem ? (int) currItem->itemType() : -1;
-		m_haveItem   = (itemType != -1);
-
-		switch (itemType)
-		{
-		case PageItem::ImageFrame:
-		case PageItem::LatexFrame:
-		case PageItem::OSGFrame:
-			if (currItem->asOSGFrame())
-			{
-				//TabStack->setItemEnabled(idImageItem, false);
-//				imageWidget->setEnabled(false);
-//				imageSettingsWidget->setEnabled(false);
-				layoutSectionImage->setEnabled(false);
-				layoutSectionImageSettings->setEnabled(false);
-			}
-			else
-			{
-				//TabStack->setItemEnabled(idImageItem, true);
-//				imageWidget->setEnabled(true);
-//				imageSettingsWidget->setEnabled(true);
-				layoutSectionImage->setEnabled(true);
-				layoutSectionImageSettings->setEnabled(true);
-			}
-			break;
-		case -1:
-		case PageItem::TextFrame:
-		case PageItem::Line:
-		case PageItem::ItemType1:
-		case PageItem::ItemType3:
-		case PageItem::Polygon:
-		case PageItem::RegularPolygon:
-		case PageItem::Arc:
-		case PageItem::PolyLine:
-		case PageItem::Spiral:
-		case PageItem::PathText:
-		case PageItem::Symbol:
-		case PageItem::Group:
-		case PageItem::Table:
-			//TabStack->setItemEnabled(idImageItem, false);
-			layoutSectionImage->setEnabled(false);
-			layoutSectionImageSettings->setEnabled(false);
-//			imageWidget->setEnabled(false);
-//			imageSettingsWidget->setEnabled(false);
-			break;
-		}
-	}
-	updateGeometry();
-	update();
+	imageWidget->handleSelectionChanged();
+	imageSettingsWidget->handleSelectionChanged();
 }
 
 
 void PropertiesContentPalette_Image::unitChange()
 {
-	if (!m_haveDoc)
-		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
 
 	imageWidget->unitChange();
 
-	m_haveItem = tmp;
 }
 
 void PropertiesContentPalette_Image::languageChange()

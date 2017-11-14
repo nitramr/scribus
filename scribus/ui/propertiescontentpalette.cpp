@@ -36,6 +36,7 @@ for which a new license (GPL+exception) is in place.
 #include "pageitem_table.h"
 #include "pageitem_textframe.h"
 #include "propertiescontentpalette_image.h"
+#include "propertiescontentpalette_table.h"
 #include "propertiescontentpalette_text.h"
 #include "scribus.h"
 #include "scribusdoc.h"
@@ -61,6 +62,8 @@ PropertiesContentPalette::PropertiesContentPalette( QWidget* parent) : ScDockPal
 
 	imagePal = new PropertiesContentPalette_Image( this );
 	imagePal->setVisible(false);
+	tablePal = new PropertiesContentPalette_Table( this );
+	tablePal->setVisible(false);
 	textPal = new PropertiesContentPalette_Text( this );
 	textPal->setVisible(false);
 
@@ -71,8 +74,9 @@ PropertiesContentPalette::PropertiesContentPalette( QWidget* parent) : ScDockPal
 	paletteHolderLayout->setMargin(0);
 	paletteHolderLayout->setSpacing(0);
 	paletteHolderLayout->setContentsMargins(0,0,0,0);
-	paletteHolderLayout->addWidget(textPal);
 	paletteHolderLayout->addWidget(imagePal);
+	paletteHolderLayout->addWidget(tablePal);
+	paletteHolderLayout->addWidget(textPal);
 	paletteHolderLayout->addWidget(emptyPaletteLabel);
 
 	QWidget * paletteHolder = new QWidget();
@@ -108,6 +112,7 @@ void PropertiesContentPalette::setMainWindow(ScribusMainWindow* mw)
 	setParent(m_ScMW);
 	move(p2);*/
 
+	this->tablePal->setMainWindow(mw);
 	this->textPal->setMainWindow(mw);
 	this->imagePal->setMainWindow(mw);
 
@@ -136,6 +141,7 @@ void PropertiesContentPalette::setDoc(ScribusDoc *d)
 	m_haveDoc = true;
 	m_haveItem = false;
 
+	tablePal->setDoc(m_doc);
 	textPal->setDoc(m_doc);
 	imagePal->setDoc(m_doc);
 
@@ -161,8 +167,10 @@ void PropertiesContentPalette::unsetDoc()
 	m_doc=NULL;
 	m_item = NULL;
 
-	textPal->unsetItem();
-	textPal->unsetDoc();	
+	tablePal->unsetItem();
+	tablePal->unsetDoc();
+//	textPal->unsetItem();
+	textPal->unsetDoc();
 	imagePal->unsetItem();
 	imagePal->unsetDoc();
 
@@ -173,8 +181,11 @@ void PropertiesContentPalette::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	textPal->unsetItem();
+
+	tablePal->unsetItem();
+//	textPal->unsetItem();
 	imagePal->unsetItem();
+
 	handleSelectionChanged();
 }
 
@@ -220,7 +231,8 @@ void PropertiesContentPalette::AppModeChanged()
 				disconnect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		}
 
-		textPal->handleSelectionChanged();
+//		tablePal->handleSelectionChanged();
+//		textPal->handleSelectionChanged();
 		imagePal->handleSelectionChanged();
 	}
 }
@@ -248,7 +260,13 @@ void PropertiesContentPalette::setCurrentItem(PageItem *i)
 	m_haveItem = false;
 	m_item = i;
 
+	tablePal->setCurrentItem(m_item);
+	imagePal->setCurrentItem(m_item);
+
+
 	if ((m_item->isGroup()) && (!m_item->isSingleSel)){
+		tablePal->setEnabled(false);
+		tablePal->setVisible(false);
 		textPal->setEnabled(false);
 		textPal->setVisible(false);
 		imagePal->setEnabled(false);
@@ -260,12 +278,15 @@ void PropertiesContentPalette::setCurrentItem(PageItem *i)
 
 	if (!sender() || (m_doc->appMode == modeEditTable))
 	{
+	//	tablePal->handleSelectionChanged();
 		textPal->handleSelectionChanged();
 		imagePal->handleSelectionChanged();
 	}
 
 	if (m_item->asOSGFrame())
 	{
+		tablePal->setEnabled(false);
+		tablePal->setVisible(false);
 		textPal->setEnabled(false);
 		textPal->setVisible(false);
 		imagePal->setEnabled(false);
@@ -274,6 +295,8 @@ void PropertiesContentPalette::setCurrentItem(PageItem *i)
 	}
 	if (m_item->asSymbolFrame())
 	{
+		tablePal->setEnabled(false);
+		tablePal->setVisible(false);
 		textPal->setEnabled(false);
 		textPal->setVisible(false);
 		imagePal->setEnabled(false);
@@ -290,6 +313,8 @@ void  PropertiesContentPalette::handleSelectionChanged()
 	PageItem* currItem = currentItemFromSelection();
 	if (m_doc->m_Selection->count() > 1)
 	{
+		tablePal->setEnabled(false);
+		tablePal->setVisible(false);
 		textPal->setEnabled(false);
 		textPal->setVisible(false);
 		imagePal->setEnabled(false);
@@ -319,6 +344,8 @@ void  PropertiesContentPalette::handleSelectionChanged()
 			m_haveItem = false;
 			textPal->setEnabled(false);
 			textPal->setVisible(false);
+			tablePal->setEnabled(false);
+			tablePal->setVisible(false);
 			imagePal->setEnabled(false);
 			imagePal->setVisible(false);
 			emptyPaletteLabel->setVisible(true);
@@ -326,6 +353,8 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		case PageItem::ImageFrame:
 			textPal->setEnabled(false);
 			textPal->setVisible(false);
+			tablePal->setEnabled(false);
+			tablePal->setVisible(false);
 			imagePal->setEnabled(true);
 			imagePal->setVisible(true);
 			emptyPaletteLabel->setVisible(false);
@@ -334,6 +363,8 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		case PageItem::PathText:
 			textPal->setEnabled(true);
 			textPal->setVisible(true);
+			tablePal->setEnabled(false);
+			tablePal->setVisible(false);
 			imagePal->setEnabled(false);
 			imagePal->setVisible(false);
 			emptyPaletteLabel->setVisible(false);
@@ -341,6 +372,8 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		case PageItem::Table:
 			textPal->setEnabled(m_doc->appMode == modeEditTable);
 			textPal->setVisible(m_doc->appMode == modeEditTable);
+			tablePal->setEnabled(true);
+			tablePal->setVisible(true);
 			imagePal->setEnabled(false);
 			imagePal->setVisible(false);
 			emptyPaletteLabel->setVisible(false);
@@ -348,7 +381,6 @@ void  PropertiesContentPalette::handleSelectionChanged()
 		}
 	}
 
-	updateGeometry();
 	update();
 
 	if (currItem)
@@ -357,41 +389,31 @@ void  PropertiesContentPalette::handleSelectionChanged()
 
 void PropertiesContentPalette::unitChange()
 {
-	if (!m_haveDoc)
-		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
-	m_unitRatio = m_doc->unitRatio();
-	m_unitIndex = m_doc->unitIndex();
+//	if (!m_haveDoc)
+//		return;
+//	bool tmp = m_haveItem;
+//	m_haveItem = false;
+//	m_unitRatio = m_doc->unitRatio();
+//	m_unitIndex = m_doc->unitIndex();
 
+	tablePal->unitChange();
 	textPal->unitChange();
 	imagePal->unitChange();
-	m_haveItem = tmp;
+//	m_haveItem = tmp;
 }
 
-void PropertiesContentPalette::NewLineMode(int mode)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	updateGeometry();
-	repaint();
-}
 
 void PropertiesContentPalette::updateColorList()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
+	tablePal->updateColorList();
 	textPal->updateColorList();
 
 	assert (m_doc->PageColors.document());
 }
 
-bool PropertiesContentPalette::userActionOn()
-{
-	bool userActionOn = false;
-	return userActionOn;
-}
 
 void PropertiesContentPalette::changeEvent(QEvent *e)
 {
@@ -410,6 +432,7 @@ void PropertiesContentPalette::changeEvent(QEvent *e)
 void PropertiesContentPalette::languageChange()
 {
 	setWindowTitle( tr("Content Properties"));
+	tablePal->languageChange();
 	textPal->languageChange();
 	imagePal->languageChange();
 }

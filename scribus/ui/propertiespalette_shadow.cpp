@@ -80,10 +80,12 @@ PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : QWidget(p
 	softShadowOpacity->setMaximum(100);
 	softShadowOpacity->setValue(100.0);
 
-	ScPopupMenu * shadowColorMenu = new ScPopupMenu(softShadowColor);
 
 	shadowColor = new ScColorFillsBox();
-	shadowColor->setMenu(shadowColorMenu);
+	ScPopupMenu * shadowColorMenu = new ScPopupMenu(softShadowColor);
+	shadowColorMenu->setBuddy(shadowColor);
+
+	//shadowColor->setMenu(shadowColorMenu);
 	verticalLayoutColor->insertWidget(0,shadowColor);
 
 

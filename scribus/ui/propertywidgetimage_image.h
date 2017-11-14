@@ -13,8 +13,6 @@ for which a new license (GPL+exception) is in place.
 #include "scrpalettebase.h"
 #include "scrspinbox.h"
 #include "sclistboxpixmap.h"
-//#include "scguardedptr.h"
-
 #include "propertywidgetbase.h"
 
 class PageItem;
@@ -37,9 +35,6 @@ public:
 
 	bool userActionOn();
 
-//	void updateProfileList();
-//	void showCMSOptions();
-
 protected:
 
 	bool      m_haveDoc;
@@ -50,7 +45,6 @@ protected:
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-//	ScGuardedPtr<ScribusDoc> m_doc;
 
 	UserActionSniffer *userActionSniffer;
 	void installSniffer(ScrSpinBox *spinBox);
@@ -98,11 +92,6 @@ private slots:
 	void handleImageWHRatio();
 
 	void handleImagePageNumber();
-
-//	void handleProfile(const QString& prn);
-//	void handleIntent();
-//	void handleCompressionMethod();
-//	void handleCompressionQuality();
 
 	void handleImageEffects();
 	void handleExtImgProperties();

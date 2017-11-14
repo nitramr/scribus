@@ -40,14 +40,14 @@ class PropertiesPalette_Line;
 class PropertiesPalette_Shadow;
 class PropertiesPalette_ShadowOptions;
 class PropertiesPalette_Shape;
-class PropertiesPalette_Table;
+//class PropertyWidgetTable_Table;
 class PropertiesPalette_XYZ;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
 class Selection;
 class UndoManager;
-class Tpalette;
+class PropertyWidgetFrame_Transparency;
 
 class SCRIBUS_API PropertiesFramePalette : public ScDockPalette
 {
@@ -77,10 +77,10 @@ public:
 	PropertiesPalette_Shadow* shadowPal;
 	PropertiesPalette_ShadowOptions* shadowOptionsPal;
 	PropertiesPalette_Shape* shapePal;
-	PropertiesPalette_Table* tablePal;
+//	PropertyWidgetTable_Table* tablePal;
 	PropertiesPalette_XYZ*   xyzPal;
 	Cpalette *colorPal;
-	Tpalette *transparencyPal;
+	PropertyWidgetFrame_Transparency *transparencyPal;
 
 
 
@@ -135,7 +135,7 @@ protected:
 	ScLayoutSection *layoutSectionLine;
 	ScLayoutSection *layoutSectionColor;
 	ScLayoutSection *layoutSectionTransparency;
-	ScLayoutSection *layoutSectionTable;
+//	ScLayoutSection *layoutSectionTable;
 
 };
 

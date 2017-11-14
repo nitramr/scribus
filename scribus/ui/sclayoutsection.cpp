@@ -30,9 +30,10 @@ ScLayoutSectionHeader::ScLayoutSectionHeader(QString text, QWidget *menu, bool t
 	}else{
 
 		ScPopupMenu * menuExtended = new ScPopupMenu(menu);
+		menuExtended->setBuddy(m_btnExtended);
 
-		m_btnExtended->setMenu(menuExtended);
-		m_btnExtended->setStyleSheet("QPushButton::menu-indicator { image: none; }");
+		//m_btnExtended->setMenu(menuExtended);
+		//m_btnExtended->setStyleSheet("QPushButton::menu-indicator { image: none; }");
 	}
 
 

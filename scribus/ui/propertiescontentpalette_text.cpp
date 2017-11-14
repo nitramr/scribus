@@ -50,9 +50,7 @@ PropertiesContentPalette_Text::PropertiesContentPalette_Text( QWidget* parent) :
 {
 	m_ScMW=0;
 	m_doc=0;
-	m_item=0;
 	m_haveDoc = false;
-	m_haveItem = false;
 
 	textWidgets = new PropertyWidgetText_TextFont();
 	textAdvancedWidgets = new PropertyWidgetText_TextAdvanced();
@@ -70,19 +68,18 @@ PropertiesContentPalette_Text::PropertiesContentPalette_Text( QWidget* parent) :
 	pathTextWidgets = new PropertyWidgetText_PathText();
 	textStylesWidgets = new PropertyWidgetText_TextStyles();
 
-
 	ScPopupMenu * popupFontFeatures = new ScPopupMenu(textAdvancedWidgets);
 	popupFontFeatures->addWidget(colorWidgets);
 	popupFontFeatures->addWidget(fontfeaturesWidget);
 	ScPopupMenu * popupOrphans = new ScPopupMenu(orphanBox);
 	ScPopupMenu * popupHyphenation = new ScPopupMenu(hyphenationWidget);
 
-
 	layoutSectionText = new ScLayoutSection(tr("Text"),popupFontFeatures);
 	layoutSectionParagraph = new ScLayoutSection(tr("Paragraph"), popupOrphans);
 	layoutSectionCharacter = new ScLayoutSection(tr("Character"), popupHyphenation);
 	layoutSectionLists = new ScLayoutSection(tr("Lists"));
 	layoutSectionTextPath = new ScLayoutSection(tr("Text Path"));
+
 
 	layoutSectionText->addWidget(textWidgets);
 	layoutSectionText->addWidget(textAlignmentWidgets);	
@@ -110,10 +107,8 @@ PropertiesContentPalette_Text::PropertiesContentPalette_Text( QWidget* parent) :
 
 	languageChange();
 
-	connect(textAlignmentWidgets, SIGNAL(handleAlignment()), this, SLOT(handleAlignment(int)));
 	connect(fontfeaturesWidget, SIGNAL(needsRelayout()), popupFontFeatures, SLOT(updateSize()));
 
-	m_haveItem = false;
 }
 
 /*********************************************************************
@@ -155,17 +150,7 @@ void PropertiesContentPalette_Text::setDoc(ScribusDoc *d)
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
 
-	if (m_doc)
-	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-	}
-
 	m_doc  = d;
-	m_item = NULL;
-
-	m_haveDoc  = true;
-	m_haveItem = false;
 
 	charSpaceWidgets->setDoc(m_doc);
 	charStretchWidgets->setDoc(m_doc);
@@ -183,22 +168,12 @@ void PropertiesContentPalette_Text::setDoc(ScribusDoc *d)
 	textAdvancedWidgets->setDoc(m_doc);
 	textStylesWidgets->setDoc(m_doc);
 
-	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
 void PropertiesContentPalette_Text::unsetDoc()
 {
-	if (m_doc)
-	{
-		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-	}
 
-	m_haveDoc  = false;
-	m_haveItem = false;
 	m_doc      = NULL;
-	m_item     = NULL;
 
 	charSpaceWidgets->setDoc(0);
 	charStretchWidgets->setDoc(0);
@@ -216,41 +191,8 @@ void PropertiesContentPalette_Text::unsetDoc()
 	textStylesWidgets->setDoc(0);
 	textAdvancedWidgets->setDoc(0);
 
-	m_haveItem = false;
-
 }
 
-/*********************************************************************
-*
-* Item
-*
-**********************************************************************/
-
-void PropertiesContentPalette_Text::unsetItem()
-{
-	m_haveItem = false;
-	m_item     = NULL;
-//	colorWidgets->setCurrentItem(m_item); // trigger disconnect
-//	textAlignmentWidgets->setCurrentItem(m_item); // trigger disconnect
-	handleSelectionChanged();
-}
-
-PageItem* PropertiesContentPalette_Text::currentItemFromSelection()
-{
-	PageItem *currentItem = NULL;
-
-	if (m_doc)
-	{
-		if (m_doc->m_Selection->count() > 1)
-			currentItem = m_doc->m_Selection->itemAt(0);
-		else if (m_doc->m_Selection->count() == 1)
-			currentItem = m_doc->m_Selection->itemAt(0);
-		if (currentItem  && currentItem->isTable() && m_doc->appMode == modeEditTable)
-			currentItem = currentItem->asTable()->activeCell().textFrame();
-	}
-
-	return currentItem;
-}
 
 /*********************************************************************
 *
@@ -292,16 +234,6 @@ void PropertiesContentPalette_Text::showParStyle(const QString& name)
 }
 
 
-void PropertiesContentPalette_Text::handleAlignment()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	if (m_item->isPathText())
-		pathTextWidgets->handleSelectionChanged();
-}
-
-
 /*********************************************************************
 *
 * Update Helper
@@ -310,33 +242,21 @@ void PropertiesContentPalette_Text::handleAlignment()
 
 void PropertiesContentPalette_Text::handleSelectionChanged()
 {
-	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	PageItem* currItem = currentItemFromSelection();
-
-	if (currItem)
-	{
-
-		//CB We shouldn't really need to process this if our item is the same one
-		//maybe we do if the item has been changed by scripter.. but that should probably
-		//set some status if so.
-
-		if (!m_doc)
-			setDoc(currItem->doc());
-
-		m_item = currItem;
-		m_haveItem = true;
-
-		if (m_item->asTextFrame() || m_item->asPathText() || m_item->asTable())
-		{
-			ParagraphStyle parStyle =  m_item->itemText.defaultStyle();
-			if (m_doc->appMode == modeEdit || m_doc->appMode == modeEditTable)
-				m_item->currentTextProps(parStyle);
-			updateStyle(parStyle);
-		}
-	}
-
+	charSpaceWidgets->handleSelectionChanged();
+	charStretchWidgets->handleSelectionChanged();
+	fontfeaturesWidget->handleSelectionChanged();
+	colorWidgets->handleSelectionChanged();
+	textAlignmentWidgets->handleSelectionChanged();
+	optMargins->handleSelectionChanged();
+	orphanBox->handleSelectionChanged();
+	parEffectWidgets->handleSelectionChanged();
+	hyphenationWidget->handleSelectionChanged();
+	textWidgets->handleSelectionChanged();
+	textStylesWidgets->handleSelectionChanged();
+	textAdvancedWidgets->handleSelectionChanged();
 }
 
 
@@ -344,8 +264,6 @@ void PropertiesContentPalette_Text::unitChange()
 {
 	if (!m_haveDoc)
 		return;
-	bool tmp = m_haveItem;
-	m_haveItem = false;
 
 	charSpaceWidgets->unitChange();
 	charStretchWidgets->unitChange();
@@ -358,7 +276,6 @@ void PropertiesContentPalette_Text::unitChange()
 	pathTextWidgets->unitChange();
 	parEffectWidgets->unitChange();
 
-	m_haveItem = tmp;
 }
 
 void PropertiesContentPalette_Text::languageChange()

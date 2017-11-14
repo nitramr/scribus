@@ -59,9 +59,7 @@ public:
 protected:
 
 	bool   m_haveDoc;
-	bool   m_haveItem;
 
-	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
 	ScGuardedPtr<ScribusDoc> m_doc;
 
@@ -87,8 +85,6 @@ protected:
 	PropertyWidgetText_TextColor* colorWidgets;
 	PropertyWidgetText_TextStyles* textStylesWidgets;
 
-private:
-	PageItem* currentItemFromSelection();
 
 	
 public slots:
@@ -96,12 +92,11 @@ public slots:
 	
 	void setDoc(ScribusDoc *d);
 	void unsetDoc();
-	void unsetItem();
-
-	void handleSelectionChanged();
 
 	void languageChange();
 	void unitChange();
+
+	void handleSelectionChanged();
 
 	void showAlignment(int e);
 	void showDirection(int e);
@@ -114,10 +109,6 @@ public slots:
 	void updateCharStyle(const CharStyle& charStyle);
 	void updateStyle(const ParagraphStyle& newCurrent);	
 	void updateParagraphStyles();
-
-	
-private slots:
-	void handleAlignment();
 
 };
 

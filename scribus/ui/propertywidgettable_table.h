@@ -17,7 +17,8 @@ for which a new license (GPL+exception) is in place.
 #include "scguardedptr.h"
 #include "tableborder.h"
 
-#include "ui_propertiespalette_tablebase.h"
+#include "ui_propertywidgettable_table.h"
+#include "propertywidgetbase.h"
 
 class PageItem;
 class ScribusMainWindow;
@@ -26,22 +27,33 @@ class ScribusDoc;
 /**
  * Widget for table properties in the Properties Palette.
  */
-class SCRIBUS_API PropertiesPalette_Table : public QWidget, Ui::PropertiesPalette_TableBase
+class SCRIBUS_API PropertyWidgetTable_Table : public QWidget, Ui::PropertyWidgetTable_Table,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	explicit PropertiesPalette_Table(QWidget *parent = 0);
-	~PropertiesPalette_Table() {}
+	explicit PropertyWidgetTable_Table(QWidget *parent = 0);
+	~PropertyWidgetTable_Table() {}
 
 	/// Update the list of colors.
 	void updateColorList();
+
+protected:
+	/// The current main window.
+	ScribusMainWindow* m_ScMW;
+	/// The current document.
+//	ScGuardedPtr<ScribusDoc> m_doc;
+	/// The currently edited item.
+	PageItem* m_item;
+	/// The previous edited selected items.
+	PageItem* m_previousItem;
 
 public slots:
 	/// Set the main window to @a mainWindow.
 	void setMainWindow(ScribusMainWindow* mainWindow);
 	/// Set the current document to @a doc.
-	void setDocument(ScribusDoc* doc);
+	void setDoc(ScribusDoc* d);
 	/// Unset the current document.
 	void unsetDocument();
 	/// Set the current item to @a item.
@@ -99,7 +111,6 @@ private:
 		TriState
 	};
 
-private:
 	void showTableStyle(const QString& name);
 	void showCellStyle(const QString& name);
 	/// Updates the list of border lines from the current border.
@@ -112,16 +123,6 @@ private:
 	void updateBorders();
 	/// Returns the color with name @a colorName and shade @a shade as a QColor.
 	QColor getColor(const QString& colorName, int shade) const;
-
-private:
-	/// The current main window.
-	ScribusMainWindow* m_mainWindow;
-	/// The current document.
-	ScGuardedPtr<ScribusDoc> m_doc;
-	/// The currently edited item.
-	PageItem* m_item;
-	/// The previous edited selected items.
-	PageItem* m_previousItem;
 
 	/// The currently edited border.
 	TableBorder m_currentBorder;

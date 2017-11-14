@@ -378,7 +378,7 @@
        <number>2</number>
       </property>
       <item>
-       <widget class="Tpalette" name="transPalWidget" native="true"/>
+       <widget class="PropertyWidgetFrame_Transparency" name="transPalWidget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -405,7 +405,7 @@
    <header>ui/autoform.h</header>
   </customwidget>
   <customwidget>
-   <class>Tpalette</class>
+   <class>PropertyWidgetFrame_Transparency</class>
    <extends>QWidget</extends>
    <header>ui/propertywidgetframe_transparency.h</header>
    <container>1</container>

@@ -4,10 +4,11 @@
 #include "scribusapi.h"
 #include "scribusstructs.h"
 
-#include <QMenu>
-#include <QWidgetAction>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QMenu>
+#include <QWidgetAction>
 
 class SCRIBUS_API ScPopupMenu : public QMenu
 {
@@ -15,20 +16,28 @@ class SCRIBUS_API ScPopupMenu : public QMenu
 
 public:
 	ScPopupMenu(QWidget*widget);
-	~ScPopupMenu();
+
+	~ScPopupMenu(){};
 
 	void addWidget(QWidget *widget);
+	void setBuddy(QPushButton *button);
 
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 private:
 	QVBoxLayout *m_layout;
 	QWidget *panel;
+	QPushButton *m_buddy;
+	QLabel * label;
 	QWidgetAction * action;
 
+private slots:
+	void updateContent();
 
-public slots:
-	void updateSize();
+	void showPopup(bool state);
+	void movePopup(QPoint pos);
+	void hidePopup();
+
 };
 
 #endif // SCPOPUPMENU_H

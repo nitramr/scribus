@@ -48,7 +48,7 @@ class LinkButton;
   *@author Franz Schmid
   */
 
-class SCRIBUS_API Tpalette : public QWidget, Ui::PropertyWidgetFrame_Transparency
+class SCRIBUS_API PropertyWidgetFrame_Transparency : public QWidget, Ui::PropertyWidgetFrame_Transparency
 {
 	Q_OBJECT
 
@@ -56,8 +56,8 @@ class SCRIBUS_API Tpalette : public QWidget, Ui::PropertyWidgetFrame_Transparenc
 	friend class PropertiesPalette_Group;
 
 public:
-	Tpalette(QWidget* parent);
-	~Tpalette() {};
+	PropertyWidgetFrame_Transparency(QWidget* parent);
+	~PropertyWidgetFrame_Transparency() {};
 
 	void setDocument(ScribusDoc* doc);
 	void setCurrentItem(PageItem* item);

@@ -17,7 +17,7 @@ for which a new license (GPL+exception) is in place.
 #include "commonstrings.h"
 #include "iconmanager.h"
 #include "pageitem_table.h"
-#include "propertiespalette_table.h"
+#include "propertywidgettable_table.h"
 #include "sccolorengine.h"
 #include "scribus.h"
 #include "selection.h"
@@ -28,11 +28,14 @@ for which a new license (GPL+exception) is in place.
 
 
 
-PropertiesPalette_Table::PropertiesPalette_Table(QWidget* parent) : QWidget(parent),
-	m_mainWindow(0), m_doc(0), m_item(0), m_previousItem(0)
+PropertyWidgetTable_Table::PropertyWidgetTable_Table(QWidget* parent) : QWidget(parent)
 {
+	m_item = 0;
+	m_doc  = 0;
+	m_previousItem = 0;
+
 	setupUi(this);
-	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
+//	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
 
 	addBorderLineButton->setIcon(IconManager::instance()->loadIcon("penciladd.png"));
 	removeBorderLineButton->setIcon(IconManager::instance()->loadIcon("pencilsub.png"));
@@ -44,7 +47,7 @@ PropertiesPalette_Table::PropertiesPalette_Table(QWidget* parent) : QWidget(pare
 	connect(cellStyleCombo, SIGNAL(newStyle(const QString&)), this, SLOT(setCellStyle(const QString&)));
 }
 
-void PropertiesPalette_Table::handleUpdateRequest(int updateFlags)
+void PropertyWidgetTable_Table::handleUpdateRequest(int updateFlags)
 {
 	if (updateFlags & reqColorsUpdate)
 		updateColorList();
@@ -52,7 +55,7 @@ void PropertiesPalette_Table::handleUpdateRequest(int updateFlags)
 	cellStyleCombo->updateFormatList();
 }
 
-void PropertiesPalette_Table::updateColorList()
+void PropertyWidgetTable_Table::updateColorList()
 {
 	if (!m_doc)
 		return;
@@ -61,16 +64,16 @@ void PropertiesPalette_Table::updateColorList()
 	fillColor->setColors(m_doc->PageColors, true);
 }
 
-void PropertiesPalette_Table::setMainWindow(ScribusMainWindow* mainWindow)
+void PropertyWidgetTable_Table::setMainWindow(ScribusMainWindow* mainWindow)
 {
-	m_mainWindow = mainWindow;
+	m_ScMW = mainWindow;
 
-	connect(m_mainWindow, SIGNAL(UpdateRequest(int)), SLOT(handleUpdateRequest(int)));
-	connect(m_mainWindow->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(updateFillControls()));
-	connect(m_mainWindow->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(updateStyleControls()));
+	connect(m_ScMW, SIGNAL(UpdateRequest(int)), SLOT(handleUpdateRequest(int)));
+	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(updateFillControls()));
+	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(updateStyleControls()));
 }
 
-void PropertiesPalette_Table::setDocument(ScribusDoc *doc)
+void PropertyWidgetTable_Table::setDoc(ScribusDoc *d)
 {
 	if (m_doc)
 	{
@@ -78,7 +81,7 @@ void PropertiesPalette_Table::setDocument(ScribusDoc *doc)
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 
-	m_doc = doc;
+	m_doc = d;
 
 	tableStyleCombo->setDoc(m_doc);
 	cellStyleCombo->setDoc(m_doc);
@@ -87,7 +90,7 @@ void PropertiesPalette_Table::setDocument(ScribusDoc *doc)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
-void PropertiesPalette_Table::unsetDocument()
+void PropertyWidgetTable_Table::unsetDocument()
 {
 	if (m_doc)
 	{
@@ -101,14 +104,14 @@ void PropertiesPalette_Table::unsetDocument()
 	cellStyleCombo->setDoc(m_doc);
 }
 
-void PropertiesPalette_Table::setItem(PageItem* item)
+void PropertyWidgetTable_Table::setItem(PageItem* item)
 {
 	m_item = item;
 	if (item->isTable())
 		connect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleCellSelectionChanged()), Qt::UniqueConnection);
 }
 
-void PropertiesPalette_Table::unsetItem()
+void PropertyWidgetTable_Table::unsetItem()
 {
 	disconnect(this, SLOT(handleCellSelectionChanged()));
 
@@ -117,7 +120,7 @@ void PropertiesPalette_Table::unsetItem()
 	m_item = 0;
 }
 
-void PropertiesPalette_Table::handleSelectionChanged()
+void PropertyWidgetTable_Table::handleSelectionChanged()
 {
 	if (!m_doc)
 		return;
@@ -139,7 +142,7 @@ void PropertiesPalette_Table::handleSelectionChanged()
 	updateStyleControls();
 }
 
-void PropertiesPalette_Table::handleCellSelectionChanged()
+void PropertyWidgetTable_Table::handleCellSelectionChanged()
 {
 	if (!m_doc)
 		return;
@@ -150,21 +153,21 @@ void PropertiesPalette_Table::handleCellSelectionChanged()
 	on_sideSelector_selectionChanged();
 }
 
-void PropertiesPalette_Table::showTableStyle(const QString& name)
+void PropertyWidgetTable_Table::showTableStyle(const QString& name)
 {
 	bool blocked = tableStyleCombo->blockSignals(true);
 	tableStyleCombo->setFormat(name);
 	tableStyleCombo->blockSignals(blocked);
 }
 
-void PropertiesPalette_Table::showCellStyle(const QString& name)
+void PropertyWidgetTable_Table::showCellStyle(const QString& name)
 {
 	bool blocked = cellStyleCombo->blockSignals(true);
 	cellStyleCombo->setFormat(name);
 	cellStyleCombo->blockSignals(blocked);
 }
 
-void PropertiesPalette_Table::updateStyleControls()
+void PropertyWidgetTable_Table::updateStyleControls()
 {
 	if (m_item && m_item->isTable())
 	{
@@ -195,7 +198,7 @@ void PropertiesPalette_Table::updateStyleControls()
 	}
 }
 
-void PropertiesPalette_Table::setTableStyle(const QString &name)
+void PropertyWidgetTable_Table::setTableStyle(const QString &name)
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -204,7 +207,7 @@ void PropertiesPalette_Table::setTableStyle(const QString &name)
 	showTableStyle(name);
 }
 
-void PropertiesPalette_Table::setCellStyle(const QString &name)
+void PropertyWidgetTable_Table::setCellStyle(const QString &name)
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -215,7 +218,7 @@ void PropertiesPalette_Table::setCellStyle(const QString &name)
 	showCellStyle(name);
 }
 
-void PropertiesPalette_Table::on_sideSelector_selectionChanged()
+void PropertyWidgetTable_Table::on_sideSelector_selectionChanged()
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -308,7 +311,7 @@ void PropertiesPalette_Table::on_sideSelector_selectionChanged()
 	updateBorderLineList();
 }
 
-void PropertiesPalette_Table::updateBorderLineList()
+void PropertyWidgetTable_Table::updateBorderLineList()
 {
 	borderLineList->clear();
 	foreach (const TableBorderLine& borderLine, m_currentBorder.borderLines())
@@ -325,7 +328,7 @@ void PropertiesPalette_Table::updateBorderLineList()
 	removeBorderLineButton->setEnabled(borderLineList->count() > 1);
 }
 
-void PropertiesPalette_Table::updateBorderLineList(const TableBorderLine& current)
+void PropertyWidgetTable_Table::updateBorderLineList(const TableBorderLine& current)
 {
 	updateBorderLineList();
 
@@ -341,7 +344,7 @@ void PropertiesPalette_Table::updateBorderLineList(const TableBorderLine& curren
 	}
 }
 
-void PropertiesPalette_Table::updateBorderLineListItem()
+void PropertyWidgetTable_Table::updateBorderLineListItem()
 {
 	QListWidgetItem* item = borderLineList->currentItem();
 	QString text = QString(" %1%2 %3").arg(borderLineWidth->getValue()).arg(borderLineWidth->suffix()).arg(CommonStrings::translatePenStyleName(static_cast<Qt::PenStyle>(borderLineStyle->currentIndex() + 1)));
@@ -353,7 +356,7 @@ void PropertiesPalette_Table::updateBorderLineListItem()
 	item->setText(text);
 }
 
-void PropertiesPalette_Table::updateFillControls()
+void PropertyWidgetTable_Table::updateFillControls()
 {
 	if (m_item && m_item->isTable())
 	{
@@ -396,7 +399,7 @@ void PropertiesPalette_Table::updateFillControls()
 	}
 }
 
-QColor PropertiesPalette_Table::getColor(const QString& colorName, int shade) const
+QColor PropertyWidgetTable_Table::getColor(const QString& colorName, int shade) const
 {
 	if (!m_doc)
 		return QColor();
@@ -404,7 +407,7 @@ QColor PropertiesPalette_Table::getColor(const QString& colorName, int shade) co
 	return ScColorEngine::getDisplayColor(m_doc->PageColors[colorName], m_doc, shade);
 }
 
-void PropertiesPalette_Table::on_borderLineList_currentRowChanged(int row)
+void PropertyWidgetTable_Table::on_borderLineList_currentRowChanged(int row)
 {
 	if (row == -1)
 	{
@@ -443,7 +446,7 @@ void PropertiesPalette_Table::on_borderLineList_currentRowChanged(int row)
 }
 
 /// Handles adding of a new border line.
-void PropertiesPalette_Table::on_addBorderLineButton_clicked()
+void PropertyWidgetTable_Table::on_addBorderLineButton_clicked()
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -453,7 +456,7 @@ void PropertiesPalette_Table::on_addBorderLineButton_clicked()
 }
 
 /// Handles removing of a border line.
-void PropertiesPalette_Table::on_removeBorderLineButton_clicked()
+void PropertyWidgetTable_Table::on_removeBorderLineButton_clicked()
 {
 	int index = borderLineList->currentRow();
 	borderLineList->removeItemWidget(borderLineList->currentItem());
@@ -463,7 +466,7 @@ void PropertiesPalette_Table::on_removeBorderLineButton_clicked()
 	updateBorderLineList();
 }
 
-void PropertiesPalette_Table::on_borderLineWidth_valueChanged(double width)
+void PropertyWidgetTable_Table::on_borderLineWidth_valueChanged(double width)
 {
 	int index = borderLineList->currentRow();
 	TableBorderLine borderLine = m_currentBorder.borderLines().at(index);
@@ -474,7 +477,7 @@ void PropertiesPalette_Table::on_borderLineWidth_valueChanged(double width)
 	updateBorderLineList(borderLine);
 }
 
-void PropertiesPalette_Table::on_borderLineShade_valueChanged(double shade)
+void PropertyWidgetTable_Table::on_borderLineShade_valueChanged(double shade)
 {
 	int index = borderLineList->currentRow();
 	TableBorderLine borderLine = m_currentBorder.borderLines().at(index);
@@ -485,7 +488,7 @@ void PropertiesPalette_Table::on_borderLineShade_valueChanged(double shade)
 	updateBorderLineListItem();
 }
 
-void PropertiesPalette_Table::on_borderLineColor_activated(const QString& colorName)
+void PropertyWidgetTable_Table::on_borderLineColor_activated(const QString& colorName)
 {
 	int index = borderLineList->currentRow();
 	TableBorderLine borderLine = m_currentBorder.borderLines().at(index);
@@ -499,7 +502,7 @@ void PropertiesPalette_Table::on_borderLineColor_activated(const QString& colorN
 	updateBorderLineListItem();
 }
 
-void PropertiesPalette_Table::on_borderLineStyle_activated(int style)
+void PropertyWidgetTable_Table::on_borderLineStyle_activated(int style)
 {
 	int index = borderLineList->currentRow();
 	TableBorderLine borderLine = m_currentBorder.borderLines().at(index);
@@ -510,7 +513,7 @@ void PropertiesPalette_Table::on_borderLineStyle_activated(int style)
 	updateBorderLineListItem();
 }
 
-void PropertiesPalette_Table::on_fillColor_activated(const QString& colorName)
+void PropertyWidgetTable_Table::on_fillColor_activated(const QString& colorName)
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -540,7 +543,7 @@ void PropertiesPalette_Table::on_fillColor_activated(const QString& colorName)
 	table->update();
 }
 
-void PropertiesPalette_Table::on_fillShade_valueChanged(double shade)
+void PropertyWidgetTable_Table::on_fillShade_valueChanged(double shade)
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -570,7 +573,7 @@ void PropertiesPalette_Table::on_fillShade_valueChanged(double shade)
 	table->update();
 }
 
-void PropertiesPalette_Table::on_buttonClearTableStyle_clicked()
+void PropertyWidgetTable_Table::on_buttonClearTableStyle_clicked()
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -579,7 +582,7 @@ void PropertiesPalette_Table::on_buttonClearTableStyle_clicked()
 	table->update();
 }
 
-void PropertiesPalette_Table::on_buttonClearCellStyle_clicked()
+void PropertyWidgetTable_Table::on_buttonClearCellStyle_clicked()
 {
 	if (!m_item || !m_item->isTable())
 		return;
@@ -590,7 +593,7 @@ void PropertiesPalette_Table::on_buttonClearCellStyle_clicked()
 	table->update();
 }
 
-void PropertiesPalette_Table::updateBorders()
+void PropertyWidgetTable_Table::updateBorders()
 {
 	if (!m_doc || !m_item || !m_item->isTable())
 		return;
@@ -626,12 +629,12 @@ void PropertiesPalette_Table::updateBorders()
 	table->update();
 }
 
-void PropertiesPalette_Table::languageChange()
+void PropertyWidgetTable_Table::languageChange()
 {
 	retranslateUi(this);
 }
 
-void PropertiesPalette_Table::unitChange()
+void PropertyWidgetTable_Table::unitChange()
 {
 	// Not implemented.
 }

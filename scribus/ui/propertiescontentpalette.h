@@ -25,6 +25,7 @@ class QWidget;
 #include "scribusapi.h"
 
 class PropertiesContentPalette_Image;
+class PropertiesContentPalette_Table;
 class PropertiesContentPalette_Text;
 class ScribusDoc;
 class ScribusMainWindow;
@@ -52,6 +53,7 @@ public:
                          // commmited
 
 	PropertiesContentPalette_Text*  textPal;
+	PropertiesContentPalette_Table*  tablePal;
 	PropertiesContentPalette_Image*  imagePal;
 
 protected:
@@ -67,8 +69,6 @@ protected:
 	ScGuardedPtr<ScribusDoc> m_doc;
 
 	QLabel *emptyPaletteLabel;
-
-//	int idTextItem;
 
 private:
 
@@ -88,11 +88,6 @@ public slots:
 	
 	void unitChange();
 	void languageChange();
-
-private slots:
-	void NewLineMode(int mode);
-
-
 
 };
 

@@ -36,10 +36,11 @@ PropertyWidgetText_TextFont::PropertyWidgetText_TextFont(QWidget* parent) : QWid
 
 	fillColor = new ColorCombo();
 	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
-	ScPopupMenu * fillsColorMenu = new ScPopupMenu(fillColor);
 	fillsColorBox = new ScColorFillsBox();
-	fillsColorBox->setMenu(fillsColorMenu);
+//	fillsColorBox->setMenu(fillsColorMenu);
 	verticalLayout_fontColor->insertWidget(0,fillsColorBox);
+	ScPopupMenu * fillsColorMenu = new ScPopupMenu(fillColor);
+	fillsColorMenu->setBuddy(fillsColorBox);
 
 	fillShade = new ShadeButton(this);
 	verticalLayout_fillShade->insertWidget(0,fillShade);
@@ -524,8 +525,6 @@ void PropertyWidgetText_TextFont::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
 
 }
 

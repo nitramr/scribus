@@ -18,7 +18,6 @@ for which a new license (GPL+exception) is in place.
 #include "pageitem.h"
 #include "propertiespalette_utils.h"
 #include "sccolorengine.h"
-#include "sccombobox.h"
 #include "scribuscore.h"
 #include "scraction.h"
 #include "scribusview.h"
@@ -44,7 +43,7 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	connect(userActionSniffer, SIGNAL(actionEnd()), this, SLOT(spinboxFinishUserAction()));
 
 	setupUi(this);
-	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
+//	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
 
 	imagePageNumber->setMinimum(0);
 	imagePageNumber->setSpecialValueText( tr( "Auto" ));
@@ -52,10 +51,6 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	imagePageNumber->setSuffix("");
 	imagePageNumberLabel->setBuddy(imagePageNumber);
 	installSniffer(imagePageNumber);
-	
-//	freeScale = new QRadioButton( "&Free Scaling", this );
-//	freeScale->setChecked( true );
-//	pageLayout_4->addWidget( freeScale );
 
 	xposImgLabel->setBuddy(imageXOffsetSpinBox);
 	yposImgLabel->setBuddy(imageYOffsetSpinBox);
@@ -107,13 +102,6 @@ PropertyWidgetImage_Image::PropertyWidgetImage_Image( QWidget* parent) : QWidget
 	connect(imgEffectsButton   , SIGNAL(clicked())           , this, SLOT(handleImageEffects()));
 	connect(imgExtProperties   , SIGNAL(clicked())           , this, SLOT(handleExtImgProperties()));
 
-//	// Colo Management
-//	connect(inputProfiles      , SIGNAL(activated(const QString&)), this, SLOT(handleProfile(const QString&)));
-//	connect(renderIntent       , SIGNAL(activated(int))      , this, SLOT(handleIntent()));
-
-//	// Compression
-//	connect(compressionMethod  , SIGNAL(activated(int))      , this, SLOT(handleCompressionMethod()));
-//	connect(compressionQuality , SIGNAL(activated(int))      , this, SLOT(handleCompressionQuality()));
 }
 
 
@@ -458,24 +446,14 @@ void PropertyWidgetImage_Image::handleSelectionChanged()
 			setEnabled(currItem->asOSGFrame() == NULL);
 			break;
 		case PageItem::TextFrame:
-			setEnabled(false);
-			break;
 		case PageItem::Line:
-			setEnabled(false);
-			break;
 		case PageItem::Arc:
 		case PageItem::ItemType1:
 		case PageItem::ItemType3:
 		case PageItem::Polygon:
 		case PageItem::RegularPolygon:
-			setEnabled(false);
-			break;
 		case PageItem::PolyLine:
-			setEnabled(false);
-			break;
 		case PageItem::PathText:
-			setEnabled(false);
-			break;
 		case PageItem::Symbol:
 			setEnabled(false);
 			break;
@@ -485,8 +463,7 @@ void PropertyWidgetImage_Image::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
+
 }
 
 

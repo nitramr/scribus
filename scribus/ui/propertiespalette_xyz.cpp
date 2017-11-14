@@ -131,8 +131,8 @@ PropertiesPalette_XYZ::PropertiesPalette_XYZ( QWidget* parent) : QWidget(parent)
 	connect(doLock   , SIGNAL(clicked()), this, SLOT(handleLock()));
 	connect(noPrint  , SIGNAL(clicked()), this, SLOT(handlePrint()));
 	connect(noResize , SIGNAL(clicked()), this, SLOT(handleLockSize()));
-	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) ); //
-	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) ); //
+	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) );
+	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) );
 
 	m_haveItem = false;
 	xposSpin->showValue(0);
