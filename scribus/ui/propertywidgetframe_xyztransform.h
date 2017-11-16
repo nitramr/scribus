@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGETFRAME_XYZ_H
-#define PROPERTYWIDGETFRAME_XYZ_H
+#ifndef PROPERTYWIDGETFRAME_XYZTRANSFORM_H
+#define PROPERTYWIDGETFRAME_XYZTRANSFORM_H
 
-#include "ui_propertywidgetframe_xyz.h"
+#include "ui_propertywidgetframe_xyztransform.h"
 
 #include "scribusapi.h"
 #include "scrspinbox.h"
@@ -22,14 +22,14 @@ class Selection;
 class ScribusMainWindow;
 class UserActionSniffer;
 
-class SCRIBUS_API PropertyWidgetFrame_XYZ : public QWidget, public Ui::PropertiesPalette_XYZ,
+class SCRIBUS_API PropertyWidgetFrame_XYZTransform : public QWidget, public Ui::PropertiesPalette_XYZTransform,
 		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertyWidgetFrame_XYZ(QWidget* parent);
-	~PropertyWidgetFrame_XYZ() {};
+	PropertyWidgetFrame_XYZTransform(QWidget* parent);
+	~PropertyWidgetFrame_XYZTransform() {};
 
 	virtual void changeEvent(QEvent *e);
 	
@@ -40,6 +40,7 @@ public:
                          // commmited
 
 	void setLineMode(int lineMode);
+	void sendRotation();
 
 private:
 
@@ -56,30 +57,32 @@ public slots:
 	void languageChange();
 	void unitChange();
 
-	void showXY(double x, double y);
-	void showWH(double x, double y);
+	void showRotation(double r);
 	void showLocked(bool);
-	void showSizeLocked(bool);
+	void showFlippedH(bool);
+	void showFlippedV(bool);
 
 	void handleAppModeChanged(int oldMode, int mode);
 	void handleSelectionChanged();
 
-	void setRotation(double rotation);
-
 private slots:
-	void handleNewX();
-	void handleNewY();
-	void handleNewW();
-	void handleNewH();
-	void handleBasePoint(int m);
-	void handleLock();
-	void handleLockSize();
+	void handleRotation();
+	void handleFlipH();
+	void handleFlipV();
+	void handleLower();
+	void handleRaise();
+	void handleFront();
+	void handleBack();
+	void handleGrouping();
+	void handleUngrouping();
 
 protected slots:
-	//virtual void reject();
 	void spinboxStartUserAction();
 	void spinboxFinishUserAction();
-	void updateSpinBoxConstants();
+
+signals:
+	void updateXY(double,double);
+	void setRotation(double);
 
 protected:
 	ScribusMainWindow *m_ScMW;
@@ -90,8 +93,8 @@ protected:
 	double    m_unitRatio;
 	int       m_unitIndex;
 	PageItem *m_item;
-
-	double	m_rotation;
+	
+	double    m_oldRotation;
 
 	bool _userActionOn;
 	UserActionSniffer *userActionSniffer;

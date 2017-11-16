@@ -50,7 +50,7 @@ PropertyWidgetFrame_XYZ::PropertyWidgetFrame_XYZ( QWidget* parent) : QWidget(par
 	m_haveDoc  = false;
 	m_haveItem = false;
 	m_lineMode = false;
-	m_oldRotation = 0;
+	m_rotation = 0;
 	m_unitRatio = 1.0;
 
 	setupUi(this);
@@ -70,25 +70,8 @@ PropertyWidgetFrame_XYZ::PropertyWidgetFrame_XYZ( QWidget* parent) : QWidget(par
 	keepFrameWHRatioButton->setAutoRaise( true );
 	keepFrameWHRatioButton->setMaximumSize( QSize( 15, 32767 ) );
 	keepFrameWHRatioButton->setChecked(false);
-	rotationSpin->setWrapping( true );
-	installSniffer(rotationSpin);
 
-	rotationSpin->setNewUnit(6);
-	rotationLabel->setBuddy(rotationSpin);
 	IconManager* im=IconManager::instance();
-	levelUp->setIcon(im->loadIcon("16/go-up.png"));
-	levelDown->setIcon(im->loadIcon("16/go-down.png"));
-	levelTop->setIcon(im->loadIcon("16/go-top.png"));
-	levelBottom->setIcon(im->loadIcon("16/go-bottom.png"));
-	levelLabel->setAlignment( Qt::AlignCenter );
-
-	doGroup->setIcon(im->loadIcon("group.png"));
-	doUnGroup->setIcon(im->loadIcon("ungroup.png"));
-
-	flipH->setIcon(im->loadIcon("16/flip-object-horizontal.png"));
-	flipH->setCheckable( true );
-	flipV->setIcon(im->loadIcon("16/flip-object-vertical.png"));
-	flipV->setCheckable( true );
 	
 	doLock->setCheckable( true );
 	QIcon a = QIcon();
@@ -110,26 +93,16 @@ PropertyWidgetFrame_XYZ::PropertyWidgetFrame_XYZ( QWidget* parent) : QWidget(par
 	connect(yposSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewY()));
 	connect(widthSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewW()));
 	connect(heightSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewH()));
-	connect(rotationSpin, SIGNAL(valueChanged(double)), this, SLOT(handleRotation()));
-	connect(flipH, SIGNAL(clicked()), this, SLOT(handleFlipH()));
-	connect(flipV, SIGNAL(clicked()), this, SLOT(handleFlipV()));
-	connect(levelUp, SIGNAL(clicked()), this, SLOT(handleRaise()));
-	connect(levelDown, SIGNAL(clicked()), this, SLOT(handleLower()));
-	connect(levelTop, SIGNAL(clicked()), this, SLOT(handleFront()));
-	connect(levelBottom, SIGNAL(clicked()), this, SLOT(handleBack()));
 	connect(basePointWidget, SIGNAL(buttonClicked(int)), this, SLOT(handleBasePoint(int)));
 
 	connect(doLock   , SIGNAL(clicked()), this, SLOT(handleLock()));
 	connect(noResize , SIGNAL(clicked()), this, SLOT(handleLockSize()));
-	connect(doGroup  , SIGNAL(clicked()), this, SLOT(handleGrouping()) );
-	connect(doUnGroup, SIGNAL(clicked()), this, SLOT(handleUngrouping()) );
 
 	m_haveItem = false;
 	xposSpin->showValue(0);
 	yposSpin->showValue(0);
 	widthSpin->showValue(0);
 	heightSpin->showValue(0);
-	rotationSpin->showValue(0);
 }
 
 void PropertyWidgetFrame_XYZ::setMainWindow(ScribusMainWindow* mw)
@@ -172,8 +145,6 @@ void PropertyWidgetFrame_XYZ::setDoc(ScribusDoc *d)
 	heightSpin->setValues( m_unitRatio, maxXYWHVal, precision, m_unitRatio);
 	heightSpin->setConstants(docConstants);
 
-	rotationSpin->setValues( 0, 359.99, 1, 0);
-
 	updateSpinBoxConstants();
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
@@ -196,10 +167,6 @@ void PropertyWidgetFrame_XYZ::unsetDoc()
 	yposSpin->setConstants(NULL);
 	widthSpin->setConstants(NULL);
 	heightSpin->setConstants(NULL);
-	doGroup->setEnabled(false); //
-	doUnGroup->setEnabled(false); //
-	flipH->setEnabled(false);
-	flipV->setEnabled(false);
 	xposLabel->setText( tr( "&X-Pos" ) );
 	yposLabel->setText( tr( "&Y-Pos" ) );
 	widthLabel->setText( tr( "&Width" ) );
@@ -208,7 +175,7 @@ void PropertyWidgetFrame_XYZ::unsetDoc()
 	yposSpin->showValue(0);
 	widthSpin->showValue(0);
 	heightSpin->showValue(0);
-	rotationSpin->showValue(0);
+
 	setEnabled(false);
 }
 
@@ -227,7 +194,6 @@ void PropertyWidgetFrame_XYZ::setLineMode(int lineMode)
 		yposLabel->setText( tr( "&Y-Pos:" ) );
 		widthLabel->setText( tr( "&Width:" ) );
 		heightLabel->setText( tr( "&Height:" ) );
-		rotationSpin->setEnabled(true);
 		heightSpin->setEnabled(false);
 		m_lineMode = false;
 	}
@@ -237,7 +203,6 @@ void PropertyWidgetFrame_XYZ::setLineMode(int lineMode)
 		yposLabel->setText( tr( "Y&1:" ) );
 		widthLabel->setText( tr( "X&2:" ) );
 		heightLabel->setText( tr( "&Y2:" ) );
-		rotationSpin->setEnabled(false);
 		heightSpin->setEnabled(true);
 		m_lineMode = true;
 	}
@@ -279,7 +244,6 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	m_haveItem = false;
 	m_item = i;
 
-	levelLabel->setText( QString::number(m_item->level()) );
 
 //CB replaces old emits from PageItem::emitAllToGUI()
 	disconnect(xposSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewX()));
@@ -288,9 +252,6 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	disconnect(heightSpin, SIGNAL(valueChanged(double)), this, SLOT(handleNewH()));
 	disconnect(doLock, SIGNAL(clicked()), this, SLOT(handleLock()));
 	disconnect(noResize, SIGNAL(clicked()), this, SLOT(handleLockSize()));
-	disconnect(flipH, SIGNAL(clicked()), this, SLOT(handleFlipH()));
-	disconnect(flipV, SIGNAL(clicked()), this, SLOT(handleFlipV()));
-	disconnect(rotationSpin, SIGNAL(valueChanged(double)), this, SLOT(handleRotation()));
 
 	double selX = m_item->xPos();
 	double selY = m_item->yPos();
@@ -298,20 +259,6 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	double selH = m_item->height();
 	if (m_doc->m_Selection->count() > 1)
 		m_doc->m_Selection->getGroupRect(&selX, &selY, &selW, &selH);
-//	showXY(selX, selY);
-//	showWH(selW, selH);
-	
-	bool checkableFlip = (i->isImageFrame() || i->isTextFrame() || i->isLatexFrame() || i->isOSGFrame() || i->isSymbol() || i->isGroup() || i->isSpiral());
-	flipH->setCheckable(checkableFlip);
-	flipV->setCheckable(checkableFlip);
-
-	showFlippedH(i->imageFlippedH());
-	showFlippedV(i->imageFlippedV());
-	double rr = i->rotation();
-	if (i->rotation() > 0)
-		rr = 360 - rr;
-	m_oldRotation = fabs(rr);
-	rotationSpin->setValue(fabs(rr));
 
 //CB TODO reconnect PP signals from here
 	connect(xposSpin    , SIGNAL(valueChanged(double)), this, SLOT(handleNewX()));
@@ -320,15 +267,11 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	connect(heightSpin  , SIGNAL(valueChanged(double)), this, SLOT(handleNewH()));
 	connect(doLock  , SIGNAL(clicked()), this, SLOT(handleLock()));
 	connect(noResize, SIGNAL(clicked()), this, SLOT(handleLockSize()));
-	connect(flipH   , SIGNAL(clicked()), this, SLOT(handleFlipH()));
-	connect(flipV   , SIGNAL(clicked()), this, SLOT(handleFlipV()));
-	connect(rotationSpin, SIGNAL(valueChanged(double)), this, SLOT(handleRotation()));
 
 	bool setter = false;
 	xposSpin->setEnabled(!setter);
 	yposSpin->setEnabled(!setter);
-	bool haveSameParent = m_doc->m_Selection->objectsHaveSameParent();
-	levelGroup->setEnabled(haveSameParent && !i->locked());
+
 	if ((m_item->isGroup()) && (!m_item->isSingleSel))
 	{
 		setEnabled(true);
@@ -339,7 +282,6 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 		yposLabel->setText( tr( "Y&1:" ) );
 		widthLabel->setText( tr( "X&2:" ) );
 		heightLabel->setText( tr( "&Y2:" ) );
-		rotationSpin->setEnabled(false);
 	}
 	else
 	{
@@ -347,7 +289,6 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 		yposLabel->setText( tr( "&Y-Pos:" ) );
 		widthLabel->setText( tr( "&Width:" ) );
 		heightLabel->setText( tr( "&Height:" ) );
-		rotationSpin->setEnabled(true);
 	}
 	m_haveItem = true;
 	if (m_item->asLine())
@@ -364,24 +305,12 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	showWH(selW, selH);
 	showLocked(i->locked());
 	showSizeLocked(i->sizeLocked());
-	double rrR = i->imageRotation();
-	if (i->imageRotation() > 0)
-		rrR = 360 - rrR;
+
 	noResize->setEnabled(!m_item->isArc());
 	
-	doGroup->setEnabled(false); //
-	doUnGroup->setEnabled(false);
-	if ((m_doc->m_Selection->count() > 1) && (haveSameParent))
-		doGroup->setEnabled(true);
-	if (m_doc->m_Selection->count() == 1)
-		doUnGroup->setEnabled(m_item->isGroup());
-	if ((m_doc->appMode == modeEditClip) && (m_item->isGroup()))
-		doUnGroup->setEnabled(false);//
-
 	if (m_item->asOSGFrame())
 	{
 		setEnabled(true);
-		rotationSpin->setEnabled(false);
 	}
 	if (m_item->asSymbolFrame())
 	{
@@ -394,7 +323,6 @@ void PropertyWidgetFrame_XYZ::handleAppModeChanged(int oldMode, int mode)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	doUnGroup->setEnabled(mode != modeEdit && mode != modeEditClip && m_item->isGroup()); //
 	doLock->setEnabled(mode != modeEditClip);
 }
 
@@ -406,7 +334,6 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 	PageItem* currItem = currentItemFromSelection();
 	if (m_doc->m_Selection->count() > 1)
 	{
-		m_oldRotation = 0;
 		double gx, gy, gh, gw;
 		m_doc->m_Selection->getGroupRect(&gx, &gy, &gw, &gh);
 		int bp = basePointWidget->checkedId();
@@ -429,21 +356,11 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 		yposSpin->showValue(gy);
 		widthSpin->showValue(gw);
 		heightSpin->showValue(gh);
-		rotationSpin->showValue(0);
 
 		xposSpin->setEnabled(true);
 		yposSpin->setEnabled(true);
 		widthSpin->setEnabled(true);
 		heightSpin->setEnabled(true);
-		rotationSpin->setEnabled(true);
-
-		flipH->setCheckable( false );
-		flipV->setCheckable( false );
-		flipH->setChecked(false);
-		flipV->setChecked(false);
-
-		flipH->setEnabled(true);
-		flipV->setEnabled(true);
 
 		setEnabled(true);
 	}
@@ -452,38 +369,11 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 		int itemType = currItem ? (int) currItem->itemType() : -1;
 		
 		m_haveItem = (itemType!=-1);
-		if (itemType == -1) //
-		{
-			doGroup->setEnabled(false);
-			doUnGroup->setEnabled(false);
-		}
 
 		basePointWidget->setEnabled(true);
 
 		setEnabled(true);
 
-		//CB If Toggle is not possible, then we need to enable it so we can turn it off
-		//It then gets reset below for items where its valid
-		flipH->setCheckable(true);
-		flipV->setCheckable(true);
-		if ((itemType == 2) || (itemType == 4) || ((itemType >= 9) && (itemType <= 12)) || (itemType == 15))
-		{
-			flipH->setCheckable(true);
-			flipV->setCheckable(true);
-		}
-		else
-		{
-			flipH->setCheckable(false);
-			flipV->setCheckable(false);
-			flipH->setChecked(false);
-			flipV->setChecked(false);
-		}
-		
-		//CB Why can't we do this for lines?
-//		flipH->setEnabled((itemType !=-1) && (itemType !=5));
-//		flipV->setEnabled((itemType !=-1) && (itemType !=5));
-		flipH->setEnabled(itemType !=-1);
-		flipV->setEnabled(itemType !=-1);
 		switch (itemType)
 		{
 		case -1:
@@ -496,8 +386,6 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 			yposSpin->showValue(0);
 			widthSpin->showValue(0);
 			heightSpin->showValue(0);
-			rotationSpin->showValue(0);
-			levelLabel->setText("  ");
 			setEnabled(false);
 			break;
 		case PageItem::ImageFrame:
@@ -507,7 +395,7 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 			if (currItem->asOSGFrame())
 			{
 				setEnabled(true);
-				rotationSpin->setEnabled(false);
+//				rotationSpin->setEnabled(false);
 			}
 #endif
 			break;
@@ -520,8 +408,7 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
+//	updateGeometry();
 }
 
 void PropertyWidgetFrame_XYZ::unitChange()
@@ -537,6 +424,10 @@ void PropertyWidgetFrame_XYZ::unitChange()
 	widthSpin->setNewUnit( m_unitIndex );
 	heightSpin->setNewUnit( m_unitIndex );
 	m_haveItem = tmp;
+}
+
+void PropertyWidgetFrame_XYZ::setRotation(double rotation){
+	m_rotation = rotation;
 }
 
 void PropertyWidgetFrame_XYZ::showXY(double x, double y)
@@ -620,7 +511,7 @@ void PropertyWidgetFrame_XYZ::showWH(double x, double y)
 	if ((m_lineMode) && (m_item->asLine()))
 	{
 		ma.translate(static_cast<double>(xposSpin->value()) / m_unitRatio, static_cast<double>(yposSpin->value()) / m_unitRatio);
-		ma.rotate(static_cast<double>(rotationSpin->value())*(-1));
+		ma.rotate(m_rotation); //static_cast<double>(rotationSpin->value())*(-1));
 		dp = QPoint(static_cast<int>(x), static_cast<int>(y)) * ma;
 		widthSpin->setValue(dp.x()*m_unitRatio);
 		heightSpin->setValue(dp.y()*m_unitRatio);
@@ -634,17 +525,6 @@ void PropertyWidgetFrame_XYZ::showWH(double x, double y)
 	heightSpin->blockSignals(sigBlocked2);
 }
 
-void PropertyWidgetFrame_XYZ::showRotation(double r)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	double rr = r;
-	if (r > 0)
-		rr = 360 - rr;
-	bool sigBlocked = rotationSpin->blockSignals(true);
-	rotationSpin->setValue(fabs(rr));
-	rotationSpin->blockSignals(sigBlocked);
-}
 
 void PropertyWidgetFrame_XYZ::handleNewX()
 {
@@ -970,66 +850,6 @@ void PropertyWidgetFrame_XYZ::handleNewH()
 	m_ScMW->setStatusBarTextSelectedItemInfo();
 }
 
-void PropertyWidgetFrame_XYZ::handleRotation()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	double gx, gy, gh, gw;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		if (!_userActionOn)
-			m_ScMW->view->startGroupTransaction(Um::Rotate, "", Um::IRotate);
-		if (m_doc->m_Selection->isMultipleSelection())
-		{
-			m_doc->rotateGroup((rotationSpin->value() - m_oldRotation)*(-1), m_ScMW->view->RCenter);
-			m_doc->m_Selection->getGroupRect(&gx, &gy, &gw, &gh);
-			showXY(gx, gy);
-		}
-		else
-			m_doc->rotateItem(rotationSpin->value()*(-1), m_item);
-		if (!_userActionOn)
-		{
-			for (int i = 0; i < m_doc->m_Selection->count(); ++i)
-				m_doc->m_Selection->itemAt(i)->checkChanges(true);
-			m_ScMW->view->endGroupTransaction();
-		}
-		m_doc->changed();
-		m_doc->regionsChanged()->update(QRect());
-		m_oldRotation = rotationSpin->value();
-	}
-}
-
-void PropertyWidgetFrame_XYZ::handleLower()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->itemSelection_LowerItem();
-	levelLabel->setText( QString::number(m_item->level()) );
-}
-
-void PropertyWidgetFrame_XYZ::handleRaise()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->itemSelection_RaiseItem();
-	levelLabel->setText( QString::number(m_item->level()) );
-}
-
-void PropertyWidgetFrame_XYZ::handleFront()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->bringItemSelectionToFront();
-	levelLabel->setText( QString::number(m_item->level()) );
-}
-
-void PropertyWidgetFrame_XYZ::handleBack()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_doc->sendItemSelectionToBack();
-	levelLabel->setText( QString::number(m_item->level()) );
-}
 
 void PropertyWidgetFrame_XYZ::handleBasePoint(int m)
 {
@@ -1146,20 +966,6 @@ void PropertyWidgetFrame_XYZ::handleLockSize()
 	m_ScMW->scrActions["itemLockSize"]->toggle();
 }
 
-void PropertyWidgetFrame_XYZ::handleFlipH()
-{
-	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->scrActions["itemFlipH"]->toggle();
-}
-
-void PropertyWidgetFrame_XYZ::handleFlipV()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	m_ScMW->scrActions["itemFlipV"]->toggle();
-}
-
 
 void PropertyWidgetFrame_XYZ::installSniffer(ScrSpinBox *spinBox)
 {
@@ -1242,7 +1048,6 @@ void PropertyWidgetFrame_XYZ::showLocked(bool isLocked)
 	yposSpin->setReadOnly(isLocked);
 	widthSpin->setReadOnly(isLocked);
 	heightSpin->setReadOnly(isLocked);
-	rotationSpin->setReadOnly(isLocked);
 	QPalette pal(qApp->palette());
 	if (isLocked)
 		pal.setCurrentColorGroup(QPalette::Disabled);
@@ -1251,7 +1056,6 @@ void PropertyWidgetFrame_XYZ::showLocked(bool isLocked)
 	yposSpin->setPalette(pal);
 	widthSpin->setPalette(pal);
 	heightSpin->setPalette(pal);
-	rotationSpin->setPalette(pal);
 
 	doLock->setChecked(isLocked);
 }
@@ -1271,32 +1075,4 @@ void PropertyWidgetFrame_XYZ::showSizeLocked(bool isSizeLocked)
 	widthSpin->setPalette(pal);
 	heightSpin->setPalette(pal);
 	noResize->setChecked(isSizeLocked);
-}
-
-
-void PropertyWidgetFrame_XYZ::showFlippedH(bool isFlippedH)
-{
-	flipH->setChecked(isFlippedH);
-}
-
-void PropertyWidgetFrame_XYZ::showFlippedV(bool isFlippedV)
-{
-	flipV->setChecked(isFlippedV);
-}
-
-void PropertyWidgetFrame_XYZ::handleGrouping()
-{
-	m_ScMW->GroupObj();
-	doGroup->setEnabled(false);//
-	doUnGroup->setEnabled(true);//
-	handleSelectionChanged();
-	//FIXME
-	//TabStack->setItemEnabled(idShapeItem, false);
-}
-
-void PropertyWidgetFrame_XYZ::handleUngrouping()
-{
-	m_ScMW->UnGroupObj();
-	m_doc->invalidateAll();
-	m_doc->regionsChanged()->update(QRect());
 }

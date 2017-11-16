@@ -167,6 +167,7 @@ set(SCRIBUS_UI_SRC
 	ui/propertiespalette_shadowoptions.ui
 	ui/propertiespalette_shapebase.ui
 	ui/propertywidgetframe_xyz.ui
+	ui/propertywidgetframe_xyztransform.ui
 	ui/propertywidgetframe_xyzext.ui
 	ui/propertywidgetframe_transparency.ui
 	ui/propertywidgetimage_image.ui
@@ -476,6 +477,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiespalette_utils.h
 	ui/propertywidgetframe_xyz.h
 	ui/propertywidgetframe_xyzext.h
+	ui/propertywidgetframe_xyztransform.h
 	ui/propertywidgetframe_transparency.h
 	ui/propertywidgetimage_image.h
 	ui/propertywidgetimage_imagesettings.h
@@ -969,6 +971,7 @@ set(SCRIBUS_SOURCES
 	ui/propertiespalette_utils.cpp
 	ui/propertywidgetframe_xyz.cpp
 	ui/propertywidgetframe_xyzext.cpp
+	ui/propertywidgetframe_xyztransform.cpp
 	ui/propertywidgetframe_transparency.cpp
 	ui/propertywidgetimage_image.cpp
 	ui/propertywidgetimage_imagesettings.cpp

@@ -1014,7 +1014,8 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertiescontentpalette_table.h \
     scribus/ui/propertywidgettable_table.h \
     scribus/ui/propertywidgetframe_xyzext.h \
-    scribus/ui/propertywidgetframe_xyz.h
+    scribus/ui/propertywidgetframe_xyz.h \
+    scribus/ui/propertywidgetframe_xyztransform.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1177,7 +1178,8 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgetframe_transparency.ui \
     scribus/ui/propertywidgettable_table.ui \
     scribus/ui/propertywidgetframe_xyzext.ui \
-    scribus/ui/propertywidgetframe_xyz.ui
+    scribus/ui/propertywidgetframe_xyz.ui \
+    scribus/ui/propertywidgetframe_xyztransform.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -2152,7 +2154,8 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertiescontentpalette_table.cpp \
     scribus/ui/propertywidgettable_table.cpp \
     scribus/ui/propertywidgetframe_xyzext.cpp \
-    scribus/ui/propertywidgetframe_xyz.cpp
+    scribus/ui/propertywidgetframe_xyz.cpp \
+    scribus/ui/propertywidgetframe_xyztransform.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

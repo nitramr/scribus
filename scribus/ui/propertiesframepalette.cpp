@@ -49,6 +49,7 @@ for which a new license (GPL+exception) is in place.
 #include "propertiespalette_utils.h"
 #include "propertywidgetframe_xyz.h"
 #include "propertywidgetframe_xyzext.h"
+#include "propertywidgetframe_xyztransform.h"
 #include "scribus.h"
 #include "scribusview.h"
 #include "selection.h"
@@ -76,6 +77,7 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 
 	xyzPal = new PropertyWidgetFrame_XYZ(this);
 	xyzExtPal = new PropertyWidgetFrame_XYZExt(this);
+	xyzTransformPal = new PropertyWidgetFrame_XYZTransform(this);
 	shadowPal = new PropertiesPalette_Shadow(this);
 	shadowOptionsPal = new PropertiesPalette_ShadowOptions(this);
 	shapePal = new PropertiesPalette_Shape(this);
@@ -84,12 +86,13 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	colorPal = new Cpalette(this);
 	transparencyPal = new PropertyWidgetFrame_Transparency(this);
 
-	ScPopupMenu * popupFontFeatures = new ScPopupMenu(shadowOptionsPal);
-	ScPopupMenu * popupXYZ = new ScPopupMenu(xyzExtPal);
 
+	ScPopupMenu * popupXYZ = new ScPopupMenu(xyzExtPal);
 	layoutSectionXYZ = new ScLayoutSection(tr("XYZ"), popupXYZ);
 	layoutSectionXYZ->addWidget(xyzPal);
+	layoutSectionXYZ->addWidget(xyzTransformPal);
 
+	ScPopupMenu * popupFontFeatures = new ScPopupMenu(shadowOptionsPal);
 	layoutSectionDropShadow = new ScLayoutSection(tr("Drop Shadow"), popupFontFeatures, true);
 	layoutSectionDropShadow->addWidget(shadowPal);
 	layoutSectionDropShadow->setVisible(false);
@@ -151,6 +154,9 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	connect(layoutSectionDropShadow, SIGNAL(toggleState(bool)), shadowPal, SLOT(setShadowOn(bool)));
 	connect(shadowPal, SIGNAL(shadowOn(bool)), layoutSectionDropShadow, SLOT(setToggleOn(bool)));
 
+	connect(xyzTransformPal, SIGNAL(updateXY(double,double)), xyzPal, SLOT(showXY(double,double)));
+	connect(xyzTransformPal, SIGNAL(setRotation(double)), xyzPal, SLOT(setRotation(double)));
+
 	m_haveItem = false;
 
 }
@@ -185,6 +191,7 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	move(p2);*/
 
 	this->xyzPal->setMainWindow(mw);
+	this->xyzTransformPal->setMainWindow(mw);
 	this->xyzExtPal->setMainWindow(mw);
 	this->shadowPal->setMainWindow(mw);
 	this->shadowOptionsPal->setMainWindow(mw);
@@ -224,6 +231,7 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	m_haveItem = false;
 
 	xyzPal->setDoc(m_doc);
+	xyzTransformPal->setDoc(m_doc);
 	xyzExtPal->setDoc(m_doc);
 	shadowPal->setDoc(m_doc);
 	shadowOptionsPal->setDoc(m_doc);
@@ -254,6 +262,7 @@ void PropertiesFramePalette::unsetDoc()
 	m_item = NULL;
 
 	xyzPal->unsetDoc();
+	xyzTransformPal->unsetDoc();
 	xyzExtPal->unsetDoc();
 	shadowPal->unsetItem();
 	shadowPal->unsetDoc();
@@ -405,6 +414,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	if (!sender() || (m_doc->appMode == modeEditTable))
 	{
 		xyzPal->handleSelectionChanged();
+		xyzTransformPal->handleSelectionChanged();
 		xyzExtPal->handleSelectionChanged();
 		shadowPal->handleSelectionChanged();
 		shadowOptionsPal->handleSelectionChanged();
@@ -560,6 +570,7 @@ void PropertiesFramePalette::unitChange()
 	m_unitIndex = m_doc->unitIndex();
 
 	xyzPal->unitChange();
+	xyzTransformPal->unitChange();
 	xyzExtPal->unitChange();
 	shadowPal->unitChange();
 	shadowOptionsPal->unitChange();
@@ -576,6 +587,8 @@ void PropertiesFramePalette::NewLineMode(int mode)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
+	xyzTransformPal->setLineMode(mode);
+	xyzTransformPal->sendRotation();
 	xyzPal->setLineMode(mode);
 	xyzPal->showWH(m_item->width(), m_item->height());
 	updateGeometry();
@@ -817,6 +830,7 @@ bool PropertiesFramePalette::userActionOn()
 {
 	bool userActionOn = false;
 	userActionOn  = xyzPal->userActionOn();
+	userActionOn  |= xyzTransformPal->userActionOn();
 //	userActionOn |= imagePal->userActionOn();
 	return userActionOn;
 }
@@ -848,6 +862,7 @@ void PropertiesFramePalette::languageChange()
 	layoutSectionTransparency->setTitle(tr("&Transparency"));
 
 	xyzPal->languageChange();
+	xyzTransformPal->languageChange();
 	xyzExtPal->languageChange();
 	shadowPal->languageChange();
 	shadowOptionsPal->languageChange();

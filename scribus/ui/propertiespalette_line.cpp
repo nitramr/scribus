@@ -666,8 +666,6 @@ void PropertiesPalette_Line::languageChange()
 	lineTypeLabel->setText( tr("T&ype of Line:"));
 	startArrowLabel->setText( tr("Start Arrow:"));
 	endArrowLabel->setText( tr("End Arrow:"));
-	startArrowScaleLabel->setText( tr("Scaling:"));
-	endArrowScaleLabel->setText( tr("Scaling:"));
 	if (m_haveDoc)
 	{
 		QSignalBlocker startArrowBlocker(startArrow);

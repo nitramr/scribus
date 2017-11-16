@@ -42,6 +42,7 @@ class PropertiesPalette_ShadowOptions;
 class PropertiesPalette_Shape;
 class PropertyWidgetFrame_XYZ;
 class PropertyWidgetFrame_XYZExt;
+class PropertyWidgetFrame_XYZTransform;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
@@ -79,6 +80,7 @@ public:
 	PropertiesPalette_Shape* shapePal;
 	PropertyWidgetFrame_XYZ*   xyzPal;
 	PropertyWidgetFrame_XYZExt*   xyzExtPal;
+	PropertyWidgetFrame_XYZTransform*   xyzTransformPal;
 	Cpalette *colorPal;
 	PropertyWidgetFrame_Transparency *transparencyPal;
 

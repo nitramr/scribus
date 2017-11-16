@@ -15,12 +15,12 @@ ScPopupMenu::ScPopupMenu(QWidget *widget)
 
 	m_layout = new QVBoxLayout();
 	m_layout->setSizeConstraint(QLayout::SetMinimumSize);
-	m_layout->setMargin(1);
+	m_layout->setMargin(0);
 	m_layout->setAlignment( Qt::AlignTop );
 
-	label = new QLabel();
+//	label = new QLabel();
 
-	addWidget(label);
+//	addWidget(label);
 
 	if(widget){
 		addWidget(widget);
@@ -111,10 +111,10 @@ void ScPopupMenu::showPopup(bool state){
 	QPoint ptnGlobalBuddy(m_buddy->mapToGlobal(m_buddy->pos()));
 	QRect screen = QApplication::desktop()->screenGeometry();
 
-	label->setText("Buddy local: " + QString::number(m_buddy->x()) + "+" + QString::number(m_buddy->y()) + '\n' +
-					"WindowPoint: " + QString::number(windowPoint.x()) + "+" + QString::number(windowPoint.y()) + '\n' +
-					"Buddy Global: " + QString::number(ptnGlobalBuddy.x()) + "+" + QString::number(ptnGlobalBuddy.y())
-																								 );
+//	label->setText("Buddy local: " + QString::number(m_buddy->x()) + "+" + QString::number(m_buddy->y()) + '\n' +
+//					"WindowPoint: " + QString::number(windowPoint.x()) + "+" + QString::number(windowPoint.y()) + '\n' +
+//					"Buddy Global: " + QString::number(ptnGlobalBuddy.x()) + "+" + QString::number(ptnGlobalBuddy.y())
+//																								 );
 	movePopup(ptnGlobalBuddy);
 
 	this->setVisible(state);

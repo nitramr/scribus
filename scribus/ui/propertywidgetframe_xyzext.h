@@ -12,7 +12,6 @@ for which a new license (GPL+exception) is in place.
 #include "scribusapi.h"
 #include "scrspinbox.h"
 #include "sclistboxpixmap.h"
-#include "scguardedptr.h"
 #include "propertywidgetbase.h"
 
 class NameWidget;
@@ -55,14 +54,11 @@ public slots:
 
 	void showPrintingEnabled(bool);
 
-//	void handleAppModeChanged(int oldMode, int mode);
 	void handleSelectionChanged();
 
 private slots:
 	void handlePrint();
 	void handleNewName();
-//	void handleGrouping();
-//	void handleUngrouping();
 
 protected:
 	ScribusMainWindow *m_ScMW;
@@ -70,7 +66,6 @@ protected:
 	bool      m_haveDoc;
 	bool      m_haveItem;
 	PageItem *m_item;
-//	ScGuardedPtr<ScribusDoc> m_doc;
 
 };
 

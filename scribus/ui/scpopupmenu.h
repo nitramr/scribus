@@ -5,7 +5,7 @@
 #include "scribusstructs.h"
 
 #include <QBoxLayout>
-#include <QLabel>
+//#include <QLabel>
 #include <QPushButton>
 #include <QMenu>
 #include <QWidgetAction>
@@ -28,7 +28,7 @@ private:
 	QVBoxLayout *m_layout;
 	QWidget *panel;
 	QPushButton *m_buddy;
-	QLabel * label;
+//	QLabel * label;
 	QWidgetAction * action;
 
 private slots:
