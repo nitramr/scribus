@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PropertiesPalette_ShapeBase</class>
- <widget class="QWidget" name="PropertiesPalette_ShapeBase">
+ <class>PropertyWidgetFrame_Shape</class>
+ <widget class="QWidget" name="PropertyWidgetFrame_Shape">
   <property name="geometry">
    <rect>
     <x>0</x>

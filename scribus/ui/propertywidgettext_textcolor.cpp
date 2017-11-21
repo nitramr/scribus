@@ -23,7 +23,6 @@ PropertyWidgetText_TextColor::PropertyWidgetText_TextColor(QWidget* parent) : QW
 
 	strokeColor->setPixmapType(ColorCombo::fancyPixmaps);
 	strokeColorBox = new ScColorFillsBox();
-//	strokeColorBox->setMenu(strokeColorMenu);
 	strokeLayout->insertWidget(0,strokeColorBox);
 	ScPopupMenu * strokeColorMenu = new ScPopupMenu(strokeColor);
 	strokeColorMenu->setBuddy(strokeColorBox);
@@ -31,7 +30,6 @@ PropertyWidgetText_TextColor::PropertyWidgetText_TextColor(QWidget* parent) : QW
 
 	backColor->setPixmapType(ColorCombo::fancyPixmaps);
 	backColorBox = new ScColorFillsBox();
-//	backColorBox->setMenu(backColorMenu);
 	backLayout->insertWidget(0,backColorBox);
 	ScPopupMenu * backColorMenu = new ScPopupMenu(backColor);
 	backColorMenu->setBuddy(backColorBox);

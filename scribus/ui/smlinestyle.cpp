@@ -12,7 +12,7 @@ for which a new license (GPL+exception) is in place.
 #include "smlinestylewidget.h"
 #include "scribus.h"
 #include "propertiesframepalette.h"
-#include "propertiespalette_line.h"
+#include "propertywidgetframe_line.h"
 #include "scribusdoc.h"
 
 #include "selection.h"

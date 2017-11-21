@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTALIGNMENT_H
-#define PROPERTYWIDGET_TEXTALIGNMENT_H
+#ifndef PROPERTYWIDGETTEXT_TEXTALIGNMENT_H
+#define PROPERTYWIDGETTEXT_TEXTALIGNMENT_H
 
-#include "ui_propertywidget_textalignment.h"
+#include "ui_propertywidgettext_textalignment.h"
 
 #include "propertywidgetbase.h"
 

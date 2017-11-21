@@ -43,8 +43,6 @@ protected:
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-//	ScGuardedPtr<ScribusDoc> m_doc;
-
 
 private:
 

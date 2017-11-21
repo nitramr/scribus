@@ -162,14 +162,15 @@ set(SCRIBUS_UI_SRC
 	ui/prefs_documentitemattributesbase.ui
 	ui/printdialogbase.ui
 	ui/propertiespalette_groupbase.ui
-	ui/propertiespalette_linebase.ui
-	ui/propertiespalette_shadowbase.ui
-	ui/propertiespalette_shadowoptions.ui
-	ui/propertiespalette_shapebase.ui
+	ui/propertywidgetframe_line.ui
+	ui/propertywidgetframe_lineadvanced.ui
 	ui/propertywidgetframe_xyz.ui
 	ui/propertywidgetframe_xyztransform.ui
 	ui/propertywidgetframe_xyzext.ui
 	ui/propertywidgetframe_transparency.ui
+	ui/propertywidgetframe_shadow.ui
+	ui/propertywidgetframe_shadowoptions.ui
+	ui/propertywidgetframe_shape.ui
 	ui/propertywidgetimage_image.ui
 	ui/propertywidgetimage_imagesettings.ui
 	ui/propertywidgettable_table.ui
@@ -353,7 +354,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/colorlistmodel.h
 	ui/colorsandfills.h
 	ui/contextmenu.h
-	ui/cpalette.h
+	ui/colorpalette.h
 	ui/cupsoptions.h
 	ui/curvewidget.h
 	ui/customfdialog.h
@@ -470,15 +471,16 @@ set(SCRIBUS_MOC_CLASSES
 	ui/propertiescontentpalette_text.h
 	ui/propertiesframepalette.h
 	ui/propertiespalette_group.h
-	ui/propertiespalette_line.h
-	ui/propertiespalette_shadow.h
-	ui/propertiespalette_shadowoptions.h
-	ui/propertiespalette_shape.h
 	ui/propertiespalette_utils.h
+	ui/propertywidgetframe_line.h
+	ui/propertywidgetframe_lineadvanced.h
 	ui/propertywidgetframe_xyz.h
 	ui/propertywidgetframe_xyzext.h
 	ui/propertywidgetframe_xyztransform.h
 	ui/propertywidgetframe_transparency.h
+	ui/propertywidgetframe_shadow.h
+	ui/propertywidgetframe_shadowoptions.h
+	ui/propertywidgetframe_shape.h
 	ui/propertywidgetimage_image.h
 	ui/propertywidgetimage_imagesettings.h
 	ui/propertywidgettable_table.h
@@ -848,7 +850,7 @@ set(SCRIBUS_SOURCES
 	ui/colorlistmodel.cpp
 	ui/colorsandfills.cpp
 	ui/contextmenu.cpp
-	ui/cpalette.cpp
+	ui/colorpalette.cpp
 	ui/cupsoptions.cpp
 	ui/curvewidget.cpp
 	ui/customfdialog.cpp
@@ -964,15 +966,16 @@ set(SCRIBUS_SOURCES
 	ui/propertiescontentpalette_text.cpp
 	ui/propertiesframepalette.cpp
 	ui/propertiespalette_group.cpp
-	ui/propertiespalette_line.cpp
-	ui/propertiespalette_shadow.cpp
-	ui/propertiespalette_shadowoptions.cpp
-	ui/propertiespalette_shape.cpp
 	ui/propertiespalette_utils.cpp
+	ui/propertywidgetframe_line.cpp
+	ui/propertywidgetframe_lineadvanced.cpp
 	ui/propertywidgetframe_xyz.cpp
 	ui/propertywidgetframe_xyzext.cpp
 	ui/propertywidgetframe_xyztransform.cpp
 	ui/propertywidgetframe_transparency.cpp
+	ui/propertywidgetframe_shadow.cpp
+	ui/propertywidgetframe_shadowoptions.cpp
+	ui/propertywidgetframe_shape.cpp
 	ui/propertywidgetimage_image.cpp
 	ui/propertywidgetimage_imagesettings.cpp
 	ui/propertywidgettable_table.cpp

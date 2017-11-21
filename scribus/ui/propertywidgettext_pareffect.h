@@ -1,7 +1,7 @@
-#ifndef PROPERTYWIDGET_PAREFFECT_H
-#define PROPERTYWIDGET_PAREFFECT_H
+#ifndef PROPERTYWIDGETTEXT_PAREFFECT_H
+#define PROPERTYWIDGETTEXT_PAREFFECT_H
 
-#include "ui_propertywidget_pareffectbase.h"
+#include "ui_propertywidgettext_pareffectbase.h"
 #include "numeration.h"
 #include "propertywidgetbase.h"
 #include "ui/charselectenhanced.h"

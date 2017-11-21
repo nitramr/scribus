@@ -42,8 +42,6 @@ public:
 protected:
 	/// The current main window.
 	ScribusMainWindow* m_ScMW;
-	/// The current document.
-//	ScGuardedPtr<ScribusDoc> m_doc;
 	/// The currently edited item.
 	PageItem* m_item;
 	/// The previous edited selected items.

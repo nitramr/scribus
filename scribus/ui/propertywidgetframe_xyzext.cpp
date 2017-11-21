@@ -67,12 +67,24 @@ PropertyWidgetFrame_XYZExt::PropertyWidgetFrame_XYZExt( QWidget* parent) : QWidg
 	m_haveItem = false;
 }
 
+/*********************************************************************
+*
+*Setup
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZExt::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	//connect(mw->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZExt::setDoc(ScribusDoc *d)
 {
@@ -114,6 +126,12 @@ void PropertyWidgetFrame_XYZExt::unsetDoc()
 
 	setEnabled(false);
 }
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZExt::unsetItem()
 {
@@ -200,6 +218,13 @@ void PropertyWidgetFrame_XYZExt::setCurrentItem(PageItem *i)
 	}
 }
 
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
 //void PropertyWidgetFrame_XYZExt::handleAppModeChanged(int oldMode, int mode)
 //{
 //	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -207,6 +232,12 @@ void PropertyWidgetFrame_XYZExt::setCurrentItem(PageItem *i)
 //	doUnGroup->setEnabled(mode != modeEdit && mode != modeEditClip && m_item->isGroup());
 //	doLock->setEnabled(mode != modeEditClip);
 //}
+
+void PropertyWidgetFrame_XYZExt::languageChange()
+{
+	retranslateUi(this);
+
+}
 
 void PropertyWidgetFrame_XYZExt::handleSelectionChanged()
 {
@@ -273,6 +304,11 @@ void PropertyWidgetFrame_XYZExt::unitChange()
 	m_haveItem = tmp;
 }
 
+/*********************************************************************
+*
+* Feature Print
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZExt::handlePrint()
 {
@@ -281,6 +317,16 @@ void PropertyWidgetFrame_XYZExt::handlePrint()
 	m_ScMW->scrActions["itemPrintingEnabled"]->toggle();
 }
 
+void PropertyWidgetFrame_XYZExt::showPrintingEnabled(bool isPrintingEnabled)
+{
+	noPrint->setChecked(!isPrintingEnabled);
+}
+
+/*********************************************************************
+*
+* Feature Name
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZExt::handleNewName()
 {
@@ -329,30 +375,11 @@ void PropertyWidgetFrame_XYZExt::handleNewName()
 	}
 }
 
-
-void PropertyWidgetFrame_XYZExt::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-	}
-	else
-		QWidget::changeEvent(e);
-}
-
-void PropertyWidgetFrame_XYZExt::languageChange()
-{
-//	setWindowTitle( tr("Properties"));
-	retranslateUi(this);
-
-}
-
-
-void PropertyWidgetFrame_XYZExt::showPrintingEnabled(bool isPrintingEnabled)
-{
-	noPrint->setChecked(!isPrintingEnabled);
-}
-
+/*********************************************************************
+*
+* Feature Grouping
+*
+**********************************************************************/
 
 //void PropertyWidgetFrame_XYZExt::handleGrouping()
 //{
@@ -370,3 +397,21 @@ void PropertyWidgetFrame_XYZExt::showPrintingEnabled(bool isPrintingEnabled)
 //	m_doc->invalidateAll();
 //	m_doc->regionsChanged()->update(QRect());
 //}
+
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_XYZExt::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+	}
+	else
+		QWidget::changeEvent(e);
+}
+

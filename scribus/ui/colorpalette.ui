@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabFillStroke">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabFill">
       <attribute name="title">
@@ -75,7 +75,7 @@
        <item>
         <widget class="QStackedWidget" name="fillModeStack">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="solidFillPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -196,7 +196,7 @@
            <item>
             <widget class="QStackedWidget" name="stackedWidget_2">
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="page_3">
               <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -810,7 +810,7 @@
        <item>
         <widget class="QStackedWidget" name="strokeModeStack">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="solidStrokePage">
           <layout class="QVBoxLayout" name="verticalLayout_7">

@@ -38,14 +38,15 @@ for which a new license (GPL+exception) is in place.
 #include "colorcombo.h"
 #include "colorlistbox.h"
 #include "commonstrings.h"
-#include "cpalette.h"
+#include "colorpalette.h"
 #include "dasheditor.h"
 #include "pageitem_table.h"
 #include "propertiespalette_group.h"
-#include "propertiespalette_line.h"
-#include "propertiespalette_shadow.h"
-#include "propertiespalette_shadowoptions.h"
-#include "propertiespalette_shape.h"
+#include "propertywidgetframe_line.h"
+#include "propertywidgetframe_lineadvanced.h"
+#include "propertywidgetframe_shadow.h"
+#include "propertywidgetframe_shadowoptions.h"
+#include "propertywidgetframe_shape.h"
 #include "propertiespalette_utils.h"
 #include "propertywidgetframe_xyz.h"
 #include "propertywidgetframe_xyzext.h"
@@ -78,12 +79,13 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	xyzPal = new PropertyWidgetFrame_XYZ(this);
 	xyzExtPal = new PropertyWidgetFrame_XYZExt(this);
 	xyzTransformPal = new PropertyWidgetFrame_XYZTransform(this);
-	shadowPal = new PropertiesPalette_Shadow(this);
-	shadowOptionsPal = new PropertiesPalette_ShadowOptions(this);
-	shapePal = new PropertiesPalette_Shape(this);
+	shadowPal = new PropertyWidgetFrame_Shadow(this);
+	shadowOptionsPal = new PropertyWidgetFrame_ShadowOptions(this);
+	shapePal = new PropertyWidgetFrame_Shape(this);
 	groupPal = new PropertiesPalette_Group(this);
-	linePal = new PropertiesPalette_Line(this);
-	colorPal = new Cpalette(this);
+	linePal = new PropertyWidgetFrame_Line(this);
+	lineAdvancedPal = new PropertyWidgetFrame_LineAdvanced(this);
+	colorPal = new ColorPalette(this);
 	transparencyPal = new PropertyWidgetFrame_Transparency(this);
 
 
@@ -105,7 +107,8 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	layoutSectionGroup->addWidget(groupPal);
 	layoutSectionGroup->setVisible(false);
 
-	layoutSectionLine = new ScLayoutSection(tr("&Line"));
+	ScPopupMenu * popupLineAdvanced = new ScPopupMenu(lineAdvancedPal);
+	layoutSectionLine = new ScLayoutSection(tr("&Line"), popupLineAdvanced);
 	layoutSectionLine->addWidget(linePal);
 	layoutSectionLine->setVisible(false);
 
@@ -141,6 +144,7 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	languageChange();
 
 	connect(linePal, SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
+	connect(lineAdvancedPal, SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
 
 	connect(groupPal, SIGNAL(shapeChanged(int)) , this, SLOT(handleNewShape(int)));
 	connect(groupPal, SIGNAL(shapeEditStarted()), this, SLOT(handleShapeEdit()));
@@ -198,6 +202,7 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	this->shapePal->setMainWindow(mw);
 	this->groupPal->setMainWindow(mw);
 	this->linePal->setMainWindow(mw);
+	this->lineAdvancedPal->setMainWindow(mw);
 
 	//connect(this->Cpal, SIGNAL(gradientChanged()), m_ScMW, SLOT(updtGradFill()));
 	//connect(this->Cpal, SIGNAL(strokeGradientChanged()), m_ScMW, SLOT(updtGradStroke()));
@@ -238,6 +243,7 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	shapePal->setDoc(m_doc);
 	groupPal->setDoc(m_doc);
 	linePal->setDoc(m_doc);
+	lineAdvancedPal->setDoc(m_doc);
 
 	updateColorList();
 
@@ -274,6 +280,8 @@ void PropertiesFramePalette::unsetDoc()
 	groupPal->unsetDoc();
 	linePal->unsetItem();
 	linePal->unsetDoc();
+	lineAdvancedPal->unsetItem();
+	lineAdvancedPal->unsetDoc();
 
 	colorPal->setCurrentItem(NULL);
 	colorPal->setDocument(NULL);
@@ -295,6 +303,7 @@ void PropertiesFramePalette::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
+
 	colorPal->setCurrentItem(NULL);
 	transparencyPal->setCurrentItem(NULL);
 	shapePal->unsetItem();
@@ -302,6 +311,8 @@ void PropertiesFramePalette::unsetItem()
 	shadowPal->unsetItem();
 	shadowOptionsPal->unsetItem();
 	linePal->unsetItem();
+	lineAdvancedPal->unsetItem();
+
 	handleSelectionChanged();
 }
 
@@ -377,6 +388,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		setDoc(i->doc());
 
 	disconnect(linePal , SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
+	disconnect(lineAdvancedPal , SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
 
 	m_haveItem = false;
 	m_item = i;
@@ -386,6 +398,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 	setTextFlowMode(m_item->textFlowMode());
 
 	connect(linePal , SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
+	connect(lineAdvancedPal , SIGNAL(lineModeChanged(int)), this, SLOT(NewLineMode(int)));
 
 //CB replaces old emits from PageItem::emitAllToGUI()
 	setLocked(i->locked());
@@ -421,6 +434,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		shapePal->handleSelectionChanged();
 		groupPal->handleSelectionChanged();
 		linePal->handleSelectionChanged();
+		lineAdvancedPal->handleSelectionChanged();
 		colorPal->handleSelectionChanged();
 	}
 
@@ -577,6 +591,7 @@ void PropertiesFramePalette::unitChange()
 	shapePal->unitChange();
 	groupPal->unitChange();
 	linePal->unitChange();
+	lineAdvancedPal->unitChange();
 
 	colorPal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
 	transparencyPal->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
@@ -870,6 +885,7 @@ void PropertiesFramePalette::languageChange()
 	groupPal->languageChange();
 	colorPal->languageChange();
 	linePal->languageChange();
+	lineAdvancedPal->languageChange();
 }
 
 void PropertiesFramePalette::setGradientEditMode(bool on)

@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTSTYLES_H
-#define PROPERTYWIDGET_TEXTSTYLES_H
+#ifndef PROPERTYWIDGETTEXT_TEXTSTYLES_H
+#define PROPERTYWIDGETTEXT_TEXTSTYLES_H
 
-#include "ui_propertywidget_textstyles.h"
+#include "ui_propertywidgettext_textstyles.h"
 //#include "scrspinbox.h"
 //#include "scguardedptr.h"
 #include "propertywidgetbase.h"

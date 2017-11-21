@@ -4,51 +4,50 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTIESPALETTE_LINE_H
-#define PROPERTIESPALETTE_LINE_H
+#ifndef PROPERTYWIDGETFRAME_LINE_H
+#define PROPERTYWIDGETFRAME_LINE_H
 
-#include "ui_propertiespalette_linebase.h"
+#include "ui_propertywidgetframe_line.h"
 
 #include "scribusapi.h"
 #include "linecombo.h"
-#include "scguardedptr.h"
+#include "propertywidgetbase.h"
 
-class ArrowChooser;
 class DashEditor;
 class PageItem;
 class ScComboBox;
 class ScribusDoc;
 class ScribusMainWindow;
+//class StyleManager;
 
-class SCRIBUS_API PropertiesPalette_Line : public QWidget, Ui::PropertiesPalette_LineBase
+class SCRIBUS_API PropertyWidgetFrame_Line : public QWidget, Ui::PropertyWidgetFrame_Line,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
 public:
-	PropertiesPalette_Line(QWidget* parent);
-	~PropertiesPalette_Line() {delete lineStyles->itemDelegate();};
+	PropertyWidgetFrame_Line(QWidget* parent);
+	~PropertyWidgetFrame_Line() {delete lineStyles->itemDelegate();};
 
 	virtual void changeEvent(QEvent *e);
 
 	void updateLineStyles();
-	void updateArrowStyles();
 
 protected:
 
 	bool      m_haveDoc;
 	bool      m_haveItem;
-	bool      m_lineMode;
 	double    m_unitRatio;
 	int       m_unitIndex;
 
 	PageItem *m_item;
 	ScribusMainWindow*       m_ScMW;
-	ScGuardedPtr<ScribusDoc> m_doc;
+
+//	StyleManager *m_styleManager;
 
 private:
 
 	PageItem* currentItemFromSelection();
-	void      updateArrowStyles(ScribusDoc *dd);
 	void      updateLineStyles(ScribusDoc *dd);
 
 public slots:
@@ -63,7 +62,6 @@ public slots:
 	void handleUpdateRequest(int);
 
 	void showLineWidth(double s);
-	void showLineValues(Qt::PenStyle p, Qt::PenCapStyle pc, Qt::PenJoinStyle pj);
 
 	void languageChange();
 	void unitChange();
@@ -72,18 +70,13 @@ private slots:
 
 	void handleLineWidth();
 	void handleLineStyle();
-	void handleLineJoin();
-	void handleLineEnd();
-	void handleLineMode();
 	void handleDashChange();
-	void handleStartArrow(int id);
-	void handleEndArrow(int id);
-	void handleStartArrowScale(double sc);
-	void handleEndArrowScale(double sc);
 	void handleLineStyle(QListWidgetItem *c);
+//	void handleLineEdit();
 
-signals:
-	void lineModeChanged(int);
+	void showLineValues(Qt::PenStyle p);
+
+
 };
 
 #endif

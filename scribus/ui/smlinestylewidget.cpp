@@ -83,9 +83,9 @@ void SMLineStyleWidget::fillEndCombo()
 	IconManager* im  = IconManager::instance();
 
 	endCombo->clear();
-	endCombo->addItem(im->loadIcon("ButtCap.png"), tr( "Flat Cap" ) );
-	endCombo->addItem(im->loadIcon("SquareCap.png"), tr( "Square Cap" ) );
-	endCombo->addItem(im->loadIcon("RoundCap.png"), tr( "Round Cap" ) );
+	endCombo->addItem(im->loadIcon("16/stroke-cap-butt.png"), tr( "Flat Cap" ) );
+	endCombo->addItem(im->loadIcon("16/stroke-cap-square.png"), tr( "Square Cap" ) );
+	endCombo->addItem(im->loadIcon("16/stroke-cap-round.png"), tr( "Round Cap" ) );
 }
 
 void SMLineStyleWidget::fillJoinCombo()
@@ -93,9 +93,9 @@ void SMLineStyleWidget::fillJoinCombo()
 	IconManager* im  = IconManager::instance();
 
 	joinCombo->clear();
-	joinCombo->addItem(im->loadIcon("MiterJoin.png"), tr( "Miter Join" ) );
-	joinCombo->addItem(im->loadIcon("BevelJoin.png"), tr( "Bevel Join" ) );
-	joinCombo->addItem(im->loadIcon("RoundJoin.png"), tr( "Round Join" ) );
+	joinCombo->addItem(im->loadIcon("16/stroke-join-miter.png"), tr( "Miter Join" ) );
+	joinCombo->addItem(im->loadIcon("16/stroke-join-bevel.png"), tr( "Bevel Join" ) );
+	joinCombo->addItem(im->loadIcon("16/stroke-join-round.png"), tr( "Round Join" ) );
 }
 
 void SMLineStyleWidget::showStyle(const multiLine &lineStyle, ColorList &colorList, int subLine)

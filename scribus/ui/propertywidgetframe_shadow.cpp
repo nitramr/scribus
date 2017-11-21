@@ -5,7 +5,7 @@ a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
 
-#include "propertiespalette_shadow.h"
+#include "propertywidgetframe_shadow.h"
 
 #if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
 #define _USE_MATH_DEFINES
@@ -29,7 +29,7 @@ for which a new license (GPL+exception) is in place.
 
 
 
-PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : QWidget(parent)
+PropertyWidgetFrame_Shadow::PropertyWidgetFrame_Shadow( QWidget* parent) : QWidget(parent)
 {
 
 
@@ -84,8 +84,6 @@ PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : QWidget(p
 	shadowColor = new ScColorFillsBox();
 	ScPopupMenu * shadowColorMenu = new ScPopupMenu(softShadowColor);
 	shadowColorMenu->setBuddy(shadowColor);
-
-	//shadowColor->setMenu(shadowColorMenu);
 	verticalLayoutColor->insertWidget(0,shadowColor);
 
 
@@ -98,7 +96,7 @@ PropertiesPalette_Shadow::PropertiesPalette_Shadow( QWidget* parent) : QWidget(p
 	m_haveItem = false;
 }
 
-void PropertiesPalette_Shadow::connectSignals(){
+void PropertyWidgetFrame_Shadow::connectSignals(){
 
 
 	connect(softShadowBlurRadius, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
@@ -109,7 +107,7 @@ void PropertiesPalette_Shadow::connectSignals(){
 	connect(softShadowYOffset, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
 }
 
-void PropertiesPalette_Shadow::disconnectSignals(){
+void PropertyWidgetFrame_Shadow::disconnectSignals(){
 
 
 	disconnect(softShadowBlurRadius, SIGNAL(valueChanged(double)), this, SLOT(handleNewValues()));
@@ -121,7 +119,7 @@ void PropertiesPalette_Shadow::disconnectSignals(){
 }
 
 
-void PropertiesPalette_Shadow::setMainWindow(ScribusMainWindow* mw)
+void PropertyWidgetFrame_Shadow::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
@@ -133,7 +131,7 @@ void PropertiesPalette_Shadow::setMainWindow(ScribusMainWindow* mw)
 *
 **********************************************************************/
 
-void PropertiesPalette_Shadow::setDoc(ScribusDoc *d)
+void PropertyWidgetFrame_Shadow::setDoc(ScribusDoc *d)
 {
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
@@ -191,7 +189,7 @@ void PropertiesPalette_Shadow::setDoc(ScribusDoc *d)
 
 
 
-void PropertiesPalette_Shadow::unsetDoc()
+void PropertyWidgetFrame_Shadow::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -211,7 +209,7 @@ void PropertiesPalette_Shadow::unsetDoc()
 *
 **********************************************************************/
 
-void PropertiesPalette_Shadow::unsetItem()
+void PropertyWidgetFrame_Shadow::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
@@ -221,7 +219,7 @@ void PropertiesPalette_Shadow::unsetItem()
 
 
 
-void PropertiesPalette_Shadow::setCurrentItem(PageItem *i)
+void PropertyWidgetFrame_Shadow::setCurrentItem(PageItem *i)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -259,7 +257,7 @@ void PropertiesPalette_Shadow::setCurrentItem(PageItem *i)
 *
 **********************************************************************/
 
-void PropertiesPalette_Shadow::handleFillColorBox(){
+void PropertyWidgetFrame_Shadow::handleFillColorBox(){
 
 	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -277,7 +275,7 @@ void PropertiesPalette_Shadow::handleFillColorBox(){
 }
 
 
-void PropertiesPalette_Shadow::showColor(QString b, double sb)
+void PropertyWidgetFrame_Shadow::showColor(QString b, double sb)
 {
 	if (!m_doc || !m_item || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -307,14 +305,14 @@ void PropertiesPalette_Shadow::showColor(QString b, double sb)
 *
 **********************************************************************/
 
-void PropertiesPalette_Shadow::updateColorList()
+void PropertyWidgetFrame_Shadow::updateColorList()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	softShadowColor->setColors(m_doc->PageColors);
 }
 
-void PropertiesPalette_Shadow::handleNewValues()
+void PropertyWidgetFrame_Shadow::handleNewValues()
 {
 	if (m_haveItem)
 	{
@@ -342,14 +340,14 @@ void PropertiesPalette_Shadow::handleNewValues()
 }
 
 
-void PropertiesPalette_Shadow::setShadowOn(bool isOn){
+void PropertyWidgetFrame_Shadow::setShadowOn(bool isOn){
 	shadow = isOn;
 	handleNewValues();
 
 }
 
 
-void PropertiesPalette_Shadow::setShadowOptions(int blendMode, bool erase, bool objTrans){
+void PropertyWidgetFrame_Shadow::setShadowOptions(int blendMode, bool erase, bool objTrans){
 	shadowB = blendMode;
 	shadowE = erase;
 	shadowT = objTrans;
@@ -357,7 +355,7 @@ void PropertiesPalette_Shadow::setShadowOptions(int blendMode, bool erase, bool 
 }
 
 
-void PropertiesPalette_Shadow::handleSelectionChanged()
+void PropertyWidgetFrame_Shadow::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -368,13 +366,13 @@ void PropertiesPalette_Shadow::handleSelectionChanged()
 	updateGeometry();
 }
 
-void PropertiesPalette_Shadow::handleUpdateRequest(int updateFlags)
+void PropertyWidgetFrame_Shadow::handleUpdateRequest(int updateFlags)
 {
 	if (updateFlags & reqColorsUpdate)
 		updateColorList();
 }
 
-PageItem* PropertiesPalette_Shadow::currentItemFromSelection()
+PageItem* PropertyWidgetFrame_Shadow::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 	if (m_doc)
@@ -387,7 +385,7 @@ PageItem* PropertiesPalette_Shadow::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertiesPalette_Shadow::languageChange()
+void PropertyWidgetFrame_Shadow::languageChange()
 {
 	disconnectSignals();
 
@@ -401,7 +399,7 @@ void PropertiesPalette_Shadow::languageChange()
 	connectSignals();
 }
 
-void PropertiesPalette_Shadow::unitChange()
+void PropertyWidgetFrame_Shadow::unitChange()
 {
 	if (!m_haveDoc)
 		return;
@@ -423,7 +421,7 @@ void PropertiesPalette_Shadow::unitChange()
 //	this->model()->blockSignals(sigBlocked4);
 }
 
-void PropertiesPalette_Shadow::updateSpinBoxConstants()
+void PropertyWidgetFrame_Shadow::updateSpinBoxConstants()
 {
 	if (!m_haveDoc)
 		return;
@@ -438,7 +436,7 @@ void PropertiesPalette_Shadow::updateSpinBoxConstants()
 *
 **********************************************************************/
 
-void PropertiesPalette_Shadow::changeEvent(QEvent *e)
+void PropertyWidgetFrame_Shadow::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
 	{

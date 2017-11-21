@@ -65,7 +65,7 @@
 #include "ui/pageselector.h"
 #include "ui/polyprops.h"
 #include "ui/propertiesframepalette.h"
-#include "ui/propertiespalette_line.h"
+#include "ui/propertywidgetframe_line.h"
 #include "ui/propertiescontentpalette_text.h"
 #include "ui/propertywidgetframe_xyz.h"
 #include "undomanager.h"

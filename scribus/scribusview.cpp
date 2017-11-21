@@ -115,7 +115,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui/pageselector.h"
 #include "ui/propertiesframepalette.h"
 #include "ui/propertywidgetimage_image.h"
-#include "ui/propertiespalette_line.h"
+#include "ui/propertywidgetframe_line.h"
 #include "ui/propertiescontentpalette_text.h"
 #include "ui/rulermover.h"
 #include "ui/scrapbookpalette.h"

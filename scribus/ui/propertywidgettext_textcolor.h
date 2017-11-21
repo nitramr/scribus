@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTCOLOR_H
-#define PROPERTYWIDGET_TEXTCOLOR_H
+#ifndef PROPERTYWIDGETTEXT_TEXTCOLOR_H
+#define PROPERTYWIDGETTEXT_TEXTCOLOR_H
 
-#include "ui_propertywidget_textcolorbase.h"
+#include "ui_propertywidgettext_textcolorbase.h"
 
 #include "propertywidgetbase.h"
 #include "sccolorfillsbox.h"

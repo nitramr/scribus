@@ -4,10 +4,10 @@ to the COPYING file provided with the program. Following this notice may exist
 a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
-#ifndef PROPERTYWIDGET_TEXTADVANCED_H
-#define PROPERTYWIDGET_TEXTADVANCED_H
+#ifndef PROPERTYWIDGETTEXT_TEXTADVANCED_H
+#define PROPERTYWIDGETTEXT_TEXTADVANCED_H
 
-#include "ui_propertywidget_textadvanced.h"
+#include "ui_propertywidgettext_textadvanced.h"
 //#include "scguardedptr.h"
 #include "propertywidgetbase.h"
 

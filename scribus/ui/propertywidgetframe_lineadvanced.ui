@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PropertiesPalette_LineBase</class>
- <widget class="QWidget" name="PropertiesPalette_LineBase">
+ <class>PropertyWidgetFrame_LineAdvanced</class>
+ <widget class="QWidget" name="PropertyWidgetFrame_LineAdvanced">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>312</height>
+    <height>139</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -26,80 +26,6 @@
    <string notr="true">Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>4</number>
-     </property>
-     <item>
-      <widget class="QListWidget" name="lineStyles"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="spacing">
-      <number>4</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="ScrSpinBox" name="lineWidth">
-         <property name="specialValueText">
-          <string>Hairline</string>
-         </property>
-         <property name="maximum">
-          <double>300.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lineWidthLabel">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Line &amp;Width:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="LineCombo" name="lineType"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="lineTypeLabel">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>T&amp;ype of Line:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <property name="spacing">
@@ -296,16 +222,6 @@
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="DashEditor" name="dashEditor">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -320,20 +236,9 @@
    <header>ui/sccombobox.h</header>
   </customwidget>
   <customwidget>
-   <class>LineCombo</class>
-   <extends>QComboBox</extends>
-   <header>ui/linecombo.h</header>
-  </customwidget>
-  <customwidget>
    <class>ArrowChooser</class>
    <extends>QComboBox</extends>
    <header>ui/arrowchooser.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DashEditor</class>
-   <extends>QFrame</extends>
-   <header>ui/dasheditor.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

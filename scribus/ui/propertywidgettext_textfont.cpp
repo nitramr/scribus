@@ -26,8 +26,6 @@ PropertyWidgetText_TextFont::PropertyWidgetText_TextFont(QWidget* parent) : QWid
 	m_item=0;
 	m_haveDoc = false;
 	m_haveItem = false;
-//	m_unitIndex = 0;
-//	m_unitRatio = 1.0;
 
 	setupUi(this);	
 
@@ -37,13 +35,13 @@ PropertyWidgetText_TextFont::PropertyWidgetText_TextFont(QWidget* parent) : QWid
 	fillColor = new ColorCombo();
 	fillColor->setPixmapType(ColorCombo::fancyPixmaps);
 	fillsColorBox = new ScColorFillsBox();
-//	fillsColorBox->setMenu(fillsColorMenu);
-	verticalLayout_fontColor->insertWidget(0,fillsColorBox);
 	ScPopupMenu * fillsColorMenu = new ScPopupMenu(fillColor);
 	fillsColorMenu->setBuddy(fillsColorBox);
+	verticalLayout_fontColor->insertWidget(0,fillsColorBox);
 
 	fillShade = new ShadeButton(this);
 	verticalLayout_fillShade->insertWidget(0,fillShade);
+
 
 	languageChange();
 
@@ -77,7 +75,7 @@ void PropertyWidgetText_TextFont::setMainWindow(ScribusMainWindow* mw)
 void PropertyWidgetText_TextFont::connectSignals()
 {
 	// Text
-	connect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill())     , Qt::UniqueConnection);
+	connect(fillColor   , SIGNAL(currentIndexChanged(int)), this, SLOT(handleTextFill())     , Qt::UniqueConnection);
 	connect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade())    , Qt::UniqueConnection);
 
 }
@@ -85,7 +83,7 @@ void PropertyWidgetText_TextFont::connectSignals()
 void PropertyWidgetText_TextFont::disconnectSignals()
 {
 	// Text
-	disconnect(fillColor   , SIGNAL(activated(int)), this, SLOT(handleTextFill()));
+	disconnect(fillColor   , SIGNAL(currentIndexChanged(int)), this, SLOT(handleTextFill()));
 	disconnect(fillShade   , SIGNAL(clicked())     , this, SLOT(handleTextShade()));
 
 }
@@ -402,7 +400,6 @@ void PropertyWidgetText_TextFont::handleTextShade()
 		return;
 	if (fillShade == sender()) // Fills
 	{
-		int b = fillShade->getValue();
 		PageItem *i2 = m_item;
 		if (m_doc->appMode == modeEditTable)
 			i2 = m_item->asTable()->activeCell().textFrame();
@@ -410,11 +407,13 @@ void PropertyWidgetText_TextFont::handleTextShade()
 		{
 			Selection tempSelection(this, false);
 			tempSelection.addItem(i2, true);
-			m_doc->itemSelection_SetFillShade(b, &tempSelection);
+			m_doc->itemSelection_SetFillShade(fillShade->getValue(), &tempSelection);
+
 			// draw color box
 			handleFillColorBox();
 		}
 	}
+
 }
 
 

@@ -105,12 +105,24 @@ PropertyWidgetFrame_XYZ::PropertyWidgetFrame_XYZ( QWidget* parent) : QWidget(par
 	heightSpin->showValue(0);
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZ::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(mw->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZ::setDoc(ScribusDoc *d)
 {
@@ -179,33 +191,17 @@ void PropertyWidgetFrame_XYZ::unsetDoc()
 	setEnabled(false);
 }
 
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZ::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
-}
-
-void PropertyWidgetFrame_XYZ::setLineMode(int lineMode)
-{
-	if (lineMode == 0)
-	{
-		xposLabel->setText( tr( "&X-Pos:" ) );
-		yposLabel->setText( tr( "&Y-Pos:" ) );
-		widthLabel->setText( tr( "&Width:" ) );
-		heightLabel->setText( tr( "&Height:" ) );
-		heightSpin->setEnabled(false);
-		m_lineMode = false;
-	}
-	else
-	{
-		xposLabel->setText( tr( "&X1:" ) );
-		yposLabel->setText( tr( "Y&1:" ) );
-		widthLabel->setText( tr( "X&2:" ) );
-		heightLabel->setText( tr( "&Y2:" ) );
-		heightSpin->setEnabled(true);
-		m_lineMode = true;
-	}
 }
 
 PageItem* PropertyWidgetFrame_XYZ::currentItemFromSelection()
@@ -319,6 +315,34 @@ void PropertyWidgetFrame_XYZ::setCurrentItem(PageItem *i)
 	updateSpinBoxConstants();
 }
 
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_XYZ::setLineMode(int lineMode)
+{
+	if (lineMode == 0)
+	{
+		xposLabel->setText( tr( "&X-Pos:" ) );
+		yposLabel->setText( tr( "&Y-Pos:" ) );
+		widthLabel->setText( tr( "&Width:" ) );
+		heightLabel->setText( tr( "&Height:" ) );
+		heightSpin->setEnabled(false);
+		m_lineMode = false;
+	}
+	else
+	{
+		xposLabel->setText( tr( "&X1:" ) );
+		yposLabel->setText( tr( "Y&1:" ) );
+		widthLabel->setText( tr( "X&2:" ) );
+		heightLabel->setText( tr( "&Y2:" ) );
+		heightSpin->setEnabled(true);
+		m_lineMode = true;
+	}
+}
+
 void PropertyWidgetFrame_XYZ::handleAppModeChanged(int oldMode, int mode)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -395,7 +419,6 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 			if (currItem->asOSGFrame())
 			{
 				setEnabled(true);
-//				rotationSpin->setEnabled(false);
 			}
 #endif
 			break;
@@ -408,7 +431,6 @@ void PropertyWidgetFrame_XYZ::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-//	updateGeometry();
 }
 
 void PropertyWidgetFrame_XYZ::unitChange()
@@ -425,6 +447,41 @@ void PropertyWidgetFrame_XYZ::unitChange()
 	heightSpin->setNewUnit( m_unitIndex );
 	m_haveItem = tmp;
 }
+
+void PropertyWidgetFrame_XYZ::languageChange()
+{
+	setWindowTitle( tr("Properties"));
+	retranslateUi(this);
+
+	QString ptSuffix = tr(" pt");
+
+	QString ein = (m_haveDoc) ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
+
+	xposSpin->setSuffix(ein);
+	yposSpin->setSuffix(ein);
+	widthSpin->setSuffix(ein);
+	heightSpin->setSuffix(ein);
+}
+
+void PropertyWidgetFrame_XYZ::updateSpinBoxConstants()
+{
+	if (!m_haveDoc)
+		return;
+	if(m_doc->m_Selection->count()==0)
+		return;
+	widthSpin->setConstants(&m_doc->constants());
+	heightSpin->setConstants(&m_doc->constants());
+	xposSpin->setConstants(&m_doc->constants());
+	yposSpin->setConstants(&m_doc->constants());
+
+}
+
+
+/*********************************************************************
+*
+* Feature Position
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZ::setRotation(double rotation){
 	m_rotation = rotation;
@@ -952,6 +1009,12 @@ void PropertyWidgetFrame_XYZ::handleBasePoint(int m)
 	}
 }
 
+/*********************************************************************
+*
+* Feature Lock
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZ::handleLock()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -966,6 +1029,33 @@ void PropertyWidgetFrame_XYZ::handleLockSize()
 	m_ScMW->scrActions["itemLockSize"]->toggle();
 }
 
+void PropertyWidgetFrame_XYZ::showLocked(bool isLocked)
+{
+	xposSpin->setEnabled(!isLocked);
+	yposSpin->setEnabled(!isLocked);
+	widthSpin->setEnabled(!isLocked);
+	heightSpin->setEnabled(!isLocked);
+
+	doLock->setChecked(isLocked);
+}
+
+void PropertyWidgetFrame_XYZ::showSizeLocked(bool isSizeLocked)
+{
+	bool b=isSizeLocked;
+	if (m_haveItem && m_item->locked())
+		b=true;
+
+	widthSpin->setEnabled(!b);
+	heightSpin->setEnabled(!b);
+
+	noResize->setChecked(isSizeLocked);
+}
+
+/*********************************************************************
+*
+* Undo
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZ::installSniffer(ScrSpinBox *spinBox)
 {
@@ -1004,6 +1094,12 @@ void PropertyWidgetFrame_XYZ::spinboxFinishUserAction()
 	}
 }
 
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZ::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -1012,67 +1108,4 @@ void PropertyWidgetFrame_XYZ::changeEvent(QEvent *e)
 	}
 	else
 		QWidget::changeEvent(e);
-}
-
-void PropertyWidgetFrame_XYZ::languageChange()
-{
-	setWindowTitle( tr("Properties"));
-	retranslateUi(this);
-
-	QString ptSuffix = tr(" pt");
-
-	QString ein = (m_haveDoc) ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
-
-	xposSpin->setSuffix(ein);
-	yposSpin->setSuffix(ein);
-	widthSpin->setSuffix(ein);
-	heightSpin->setSuffix(ein);
-}
-
-void PropertyWidgetFrame_XYZ::updateSpinBoxConstants()
-{
-	if (!m_haveDoc)
-		return;
-	if(m_doc->m_Selection->count()==0)
-		return;
-	widthSpin->setConstants(&m_doc->constants());
-	heightSpin->setConstants(&m_doc->constants());
-	xposSpin->setConstants(&m_doc->constants());
-	yposSpin->setConstants(&m_doc->constants());
-
-}
-
-void PropertyWidgetFrame_XYZ::showLocked(bool isLocked)
-{
-	xposSpin->setReadOnly(isLocked);
-	yposSpin->setReadOnly(isLocked);
-	widthSpin->setReadOnly(isLocked);
-	heightSpin->setReadOnly(isLocked);
-	QPalette pal(qApp->palette());
-	if (isLocked)
-		pal.setCurrentColorGroup(QPalette::Disabled);
-
-	xposSpin->setPalette(pal);
-	yposSpin->setPalette(pal);
-	widthSpin->setPalette(pal);
-	heightSpin->setPalette(pal);
-
-	doLock->setChecked(isLocked);
-}
-
-void PropertyWidgetFrame_XYZ::showSizeLocked(bool isSizeLocked)
-{
-	bool b=isSizeLocked;
-	if (m_haveItem && m_item->locked())
-		b=true;
-	widthSpin->setReadOnly(b);
-	heightSpin->setReadOnly(b);
-	QPalette pal(qApp->palette());
-	
-	if (b)
-		pal.setCurrentColorGroup(QPalette::Disabled);
-
-	widthSpin->setPalette(pal);
-	heightSpin->setPalette(pal);
-	noResize->setChecked(isSizeLocked);
 }

@@ -17,7 +17,7 @@ for which a new license (GPL+exception) is in place.
 #include "scribusview.h"
 #include "selection.h"
 #include "ui/propertiesframepalette.h"
-#include "ui/propertiespalette_line.h"
+#include "ui/propertywidgetframe_line.h"
 #include "ui/propertiescontentpalette_text.h"
 
 #include <QString>

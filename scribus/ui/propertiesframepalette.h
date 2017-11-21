@@ -33,13 +33,14 @@ class QWidget;
 #include "flowlayout.h"
 
 class ColorCombo;
-class Cpalette;
+class ColorPalette;
 class NameWidget;
 class PropertiesPalette_Group;
-class PropertiesPalette_Line;
-class PropertiesPalette_Shadow;
-class PropertiesPalette_ShadowOptions;
-class PropertiesPalette_Shape;
+class PropertyWidgetFrame_Line;
+class PropertyWidgetFrame_LineAdvanced;
+class PropertyWidgetFrame_Shadow;
+class PropertyWidgetFrame_ShadowOptions;
+class PropertyWidgetFrame_Shape;
 class PropertyWidgetFrame_XYZ;
 class PropertyWidgetFrame_XYZExt;
 class PropertyWidgetFrame_XYZTransform;
@@ -74,14 +75,15 @@ public:
                          // commmited
 
 	PropertiesPalette_Group* groupPal;
-	PropertiesPalette_Line*  linePal;
-	PropertiesPalette_Shadow* shadowPal;
-	PropertiesPalette_ShadowOptions* shadowOptionsPal;
-	PropertiesPalette_Shape* shapePal;
+	PropertyWidgetFrame_Line*  linePal;
+	PropertyWidgetFrame_LineAdvanced*  lineAdvancedPal;
+	PropertyWidgetFrame_Shadow* shadowPal;
+	PropertyWidgetFrame_ShadowOptions* shadowOptionsPal;
+	PropertyWidgetFrame_Shape* shapePal;
 	PropertyWidgetFrame_XYZ*   xyzPal;
 	PropertyWidgetFrame_XYZExt*   xyzExtPal;
 	PropertyWidgetFrame_XYZTransform*   xyzTransformPal;
-	Cpalette *colorPal;
+	ColorPalette *colorPal;
 	PropertyWidgetFrame_Transparency *transparencyPal;
 
 

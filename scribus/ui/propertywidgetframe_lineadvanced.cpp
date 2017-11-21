@@ -5,7 +5,7 @@ a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
 
-#include "propertiespalette_line.h"
+#include "propertywidgetframe_lineadvanced.h"
 
 #if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
 #define _USE_MATH_DEFINES
@@ -15,7 +15,6 @@ for which a new license (GPL+exception) is in place.
 
 #include "arrowchooser.h"
 #include "commonstrings.h"
-#include "dasheditor.h"
 #include "iconmanager.h"
 #include "pageitem.h"
 #include "pageitem_textframe.h"
@@ -33,7 +32,7 @@ for which a new license (GPL+exception) is in place.
 
 //using namespace std;
 
-PropertiesPalette_Line::PropertiesPalette_Line( QWidget* parent) : QWidget(parent)
+PropertyWidgetFrame_LineAdvanced::PropertyWidgetFrame_LineAdvanced( QWidget* parent) : QWidget(parent)
 {
 	m_ScMW = 0;
 	m_doc  = 0;
@@ -47,10 +46,7 @@ PropertiesPalette_Line::PropertiesPalette_Line( QWidget* parent) : QWidget(paren
 	setupUi(this);
 	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
 
-	lineType->addItem( tr("Custom"));
-
 	lineModeLabel->setBuddy(lineMode);
-	lineTypeLabel->setBuddy(lineType);
 
 	startArrowLabel->setBuddy(startArrow);
 	endArrowLabel->setBuddy(endArrow);
@@ -63,29 +59,21 @@ PropertiesPalette_Line::PropertiesPalette_Line( QWidget* parent) : QWidget(paren
 	endArrowScale->setMinimum( 1 );
 	endArrowScale->setDecimals(0);
 
-	lineWidthLabel->setBuddy(lineWidth);
 	lineJoinLabel->setBuddy(lineJoinStyle);
 	lineEndLabel->setBuddy(lineEndStyle);
 
-	lineStyles->setItemDelegate(new LineFormatItemDelegate);
-	lineStyles->addItem( "No Style" );
-
 	languageChange();
 
-	connect(lineWidth     , SIGNAL(valueChanged(double)), this, SLOT(handleLineWidth()));
-	connect(lineType    , SIGNAL(activated(int))      , this, SLOT(handleLineStyle()));
 	connect(lineJoinStyle, SIGNAL(activated(int))      , this, SLOT(handleLineJoin()));
 	connect(lineEndStyle , SIGNAL(activated(int))      , this, SLOT(handleLineEnd()));
 	connect(lineMode  , SIGNAL(activated(int))      , this, SLOT(handleLineMode()));
-	connect(dashEditor, SIGNAL(dashChanged())       , this, SLOT(handleDashChange()));
 	connect(startArrow, SIGNAL(activated(int))      , this, SLOT(handleStartArrow(int )));
 	connect(endArrow  , SIGNAL(activated(int))      , this, SLOT(handleEndArrow(int )));
 	connect(startArrowScale, SIGNAL(valueChanged(double)), this, SLOT(handleStartArrowScale(double )));
 	connect(endArrowScale  , SIGNAL(valueChanged(double)), this, SLOT(handleEndArrowScale(double )));
-	connect(lineStyles, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleLineStyle(QListWidgetItem*)));
 }
 
-void PropertiesPalette_Line::changeEvent(QEvent *e)
+void PropertyWidgetFrame_LineAdvanced::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
 	{
@@ -95,7 +83,7 @@ void PropertiesPalette_Line::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 }
 
-PageItem* PropertiesPalette_Line::currentItemFromSelection()
+PageItem* PropertyWidgetFrame_LineAdvanced::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 
@@ -114,14 +102,14 @@ PageItem* PropertiesPalette_Line::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertiesPalette_Line::setMainWindow(ScribusMainWindow *mw)
+void PropertyWidgetFrame_LineAdvanced::setMainWindow(ScribusMainWindow *mw)
 {
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
 
-void PropertiesPalette_Line::setDoc(ScribusDoc *d)
+void PropertyWidgetFrame_LineAdvanced::setDoc(ScribusDoc *d)
 {
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
@@ -140,10 +128,6 @@ void PropertiesPalette_Line::setDoc(ScribusDoc *d)
 	m_haveDoc  = true;
 	m_haveItem = false;
 
-	lineWidth->setMaximum( 300 );
-	lineWidth->setMinimum( 0 );
-
-	updateLineStyles(m_doc);
 	startArrow->rebuildList(&m_doc->arrowStyles());
 	endArrow->rebuildList(&m_doc->arrowStyles());
 
@@ -151,7 +135,7 @@ void PropertiesPalette_Line::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
-void PropertiesPalette_Line::unsetDoc()
+void PropertyWidgetFrame_LineAdvanced::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -164,20 +148,17 @@ void PropertiesPalette_Line::unsetDoc()
 	m_doc   = NULL;
 	m_item  = NULL;
 
-	updateLineStyles(0);
-
 	setEnabled(false);
 }
 
-void PropertiesPalette_Line::unsetItem()
+void PropertyWidgetFrame_LineAdvanced::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	dashEditor->hide();
 	handleSelectionChanged();
 }
 
-void PropertiesPalette_Line::handleSelectionChanged()
+void PropertyWidgetFrame_LineAdvanced::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -226,19 +207,16 @@ void PropertiesPalette_Line::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
+
 }
 
-void PropertiesPalette_Line::handleUpdateRequest(int updateFlags)
+void PropertyWidgetFrame_LineAdvanced::handleUpdateRequest(int updateFlags)
 {
 	if (updateFlags & reqArrowStylesUpdate)
 		updateArrowStyles();
-	if (updateFlags & reqLineStylesUpdate)
-		updateLineStyles();
 }
 
-void PropertiesPalette_Line::setCurrentItem(PageItem *item)
+void PropertyWidgetFrame_LineAdvanced::setCurrentItem(PageItem *item)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -255,7 +233,6 @@ void PropertiesPalette_Line::setCurrentItem(PageItem *item)
 	m_haveItem = false;
 	m_item = item;
 
-	lineStyles->blockSignals(true);
 	startArrow->blockSignals(true);
 	endArrow->blockSignals(true);
 	startArrowScale->blockSignals(true);
@@ -281,46 +258,24 @@ void PropertiesPalette_Line::setCurrentItem(PageItem *item)
 		endArrowScale->setEnabled(false);
 	}
 
-	if (lineStyles->currentItem())
-		lineStyles->currentItem()->setSelected(false);
-
 	bool setter = false;
 	if (m_item->NamedLStyle.isEmpty())
 	{
 		setter = true;
-		QListWidgetItem *itemStl = NULL;
-		itemStl = lineStyles->item(0);
-		if (itemStl != NULL)
-			itemStl->setSelected(true);
 	}
 	else
 	{
-		QList<QListWidgetItem*> results (lineStyles->findItems(m_item->NamedLStyle, Qt::MatchFixedString|Qt::MatchCaseSensitive));
-		if (results.count() > 0)
-			results[0]->setSelected(true);
 		setter = false;
 	}
 
-	lineType->setEnabled(setter);
-	lineWidth->setEnabled(setter);
 	lineJoinStyle->setEnabled(setter);
 	lineEndStyle->setEnabled(setter);
-
-	if (m_item->dashes().count() == 0)
-		dashEditor->hide();
-	else
-	{
-		lineType->setCurrentIndex(37);
-		dashEditor->setDashValues(m_item->dashes(), qMax(m_item->lineWidth(), 0.001), m_item->dashOffset());
-		dashEditor->show();
-	}
 
 	if (m_lineMode)
 		lineMode->setCurrentIndex(1);
 	else
 		lineMode->setCurrentIndex(0);
 
-	lineStyles->blockSignals(false);
 	startArrow->blockSignals(false);
 	endArrow->blockSignals(false);
 	startArrowScale->blockSignals(false);
@@ -336,8 +291,7 @@ void PropertiesPalette_Line::setCurrentItem(PageItem *item)
 
 	m_haveItem = true;
 
-	showLineWidth(m_item->lineWidth());
-	showLineValues(m_item->lineStyle(), m_item->lineEnd(), m_item->lineJoin());
+	showLineValues(/*m_item->lineStyle(), */m_item->lineEnd(), m_item->lineJoin());
 
 	if (m_item->asOSGFrame())
 	{
@@ -349,12 +303,12 @@ void PropertiesPalette_Line::setCurrentItem(PageItem *item)
 	}
 }
 
-void PropertiesPalette_Line::updateArrowStyles()
+void PropertyWidgetFrame_LineAdvanced::updateArrowStyles()
 {
 	updateArrowStyles(m_doc);
 }
 
-void PropertiesPalette_Line::updateArrowStyles(ScribusDoc *doc)
+void PropertyWidgetFrame_LineAdvanced::updateArrowStyles(ScribusDoc *doc)
 {
 	if (doc)
 	{
@@ -363,74 +317,11 @@ void PropertiesPalette_Line::updateArrowStyles(ScribusDoc *doc)
 	}
 }
 
-void PropertiesPalette_Line::updateLineStyles()
-{
-	updateLineStyles(m_doc);
-}
 
-void PropertiesPalette_Line::updateLineStyles(ScribusDoc *dd)
+void PropertyWidgetFrame_LineAdvanced::showLineValues(Qt::PenCapStyle pc, Qt::PenJoinStyle pj)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
-	
-	lineStyles->blockSignals(true);
-	lineStyles->clear();
-	if (dd != 0)
-	{
-		QHash<QString,multiLine>::Iterator it;
-		for (it = dd->MLineStyles.begin(); it != dd->MLineStyles.end(); ++it)
-			lineStyles->addItem( new LineFormatItem(dd, it.value(), it.key()) );
-		lineStyles->sortItems();
-		lineStyles->insertItem( 0, tr("No Style"));
-		if (lineStyles->currentItem())
-			lineStyles->currentItem()->setSelected(false);
-	}
-	lineStyles->blockSignals(false);
-}
-
-void PropertiesPalette_Line::showLineWidth(double s)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	lineWidth->showValue(s * m_unitRatio);
-	if (m_haveItem)
-	{
-		if (m_item->dashes().count() != 0)
-		{
-			dashEditor->blockSignals(true);
-			if (m_item->lineWidth() != 0.0)
-			{
-				dashEditor->setDashValues(m_item->dashes(), m_item->lineWidth(), m_item->dashOffset());
-				dashEditor->setEnabled(true);
-			}
-			else
-				dashEditor->setEnabled(false);
-			dashEditor->blockSignals(false);
-		}
-	}
-}
-
-void PropertiesPalette_Line::showLineValues(Qt::PenStyle p, Qt::PenCapStyle pc, Qt::PenJoinStyle pj)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	lineType->blockSignals(true);
-	dashEditor->blockSignals(true);
-	if (m_haveItem)
-	{
-		if (m_item->dashes().count() != 0)
-		{
-			lineType->setCurrentIndex(37);
-			dashEditor->setDashValues(m_item->dashes(), qMax(m_item->lineWidth(), 0.001), m_item->dashOffset());
-		}
-		else
-			lineType->setCurrentIndex(static_cast<int>(p) - 1);
-	}
-	else
-		lineType->setCurrentIndex(static_cast<int>(p) - 1);
-	dashEditor->blockSignals(false);
-	lineType->blockSignals(false);
 
 	lineEndStyle->blockSignals(true);
 	switch (pc)
@@ -469,75 +360,8 @@ void PropertiesPalette_Line::showLineValues(Qt::PenStyle p, Qt::PenCapStyle pc, 
 	lineJoinStyle->blockSignals(false);
 }
 
-void PropertiesPalette_Line::handleLineWidth()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		double oldL = m_item->lineWidth();
-		m_doc->itemSelection_SetLineWidth(lineWidth->value() / m_unitRatio);
-		if (m_item->dashes().count() != 0)
-		{
-			if ((oldL != 0.0) && (m_item->lineWidth() != 0.0))
-			{
-				for (int a = 0; a < m_item->DashValues.count(); a++)
-				{
-					m_item->DashValues[a] = m_item->DashValues[a] / oldL * m_item->lineWidth();
-				}
-				m_item->setDashOffset(m_item->dashOffset() / oldL * m_item->lineWidth());
-			}
-			if (m_item->lineWidth() != 0.0)
-			{
-				dashEditor->setDashValues(m_item->dashes(), m_item->lineWidth(), m_item->dashOffset());
-				dashEditor->setEnabled((m_item->lineWidth() != 0.0));
-			}
-			else
-				dashEditor->setEnabled(false);
-		}
-		m_doc->invalidateAll();
-		m_doc->regionsChanged()->update(QRect());
-	}
-}
 
-void PropertiesPalette_Line::handleLineStyle()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		if (lineType->currentIndex() == 37)
-		{
-			if (m_item->dashes().count() == 0)
-			{
-				if ((m_item->lineStyle() == 0) || (m_item->lineStyle() == 1))
-				{
-					m_item->DashValues.append(4.0 * qMax(m_item->lineWidth(), 1.0));
-					m_item->DashValues.append(2.0 * qMax(m_item->lineWidth(), 1.0));
-				}
-				else
-					getDashArray(m_item->lineStyle(), qMax(m_item->lineWidth(), 1.0), m_item->DashValues);
-			}
-			if (m_item->lineWidth() != 0.0)
-				dashEditor->setDashValues(m_item->dashes(), m_item->lineWidth(), m_item->dashOffset());
-			else
-			{
-				dashEditor->setEnabled(false);
-				dashEditor->setDashValues(m_item->dashes(), 1.0, m_item->dashOffset());
-			}
-			dashEditor->show();
-			m_item->update();
-		}
-		else
-		{
-			m_item->DashValues.clear();
-			dashEditor->hide();
-			m_doc->itemSelection_SetLineArt(static_cast<Qt::PenStyle>(lineType->currentIndex()+1));
-		}
-	}
-}
-
-void PropertiesPalette_Line::handleLineJoin()
+void PropertyWidgetFrame_LineAdvanced::handleLineJoin()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -560,7 +384,7 @@ void PropertiesPalette_Line::handleLineJoin()
 	}
 }
 
-void PropertiesPalette_Line::handleLineEnd()
+void PropertyWidgetFrame_LineAdvanced::handleLineEnd()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -583,7 +407,7 @@ void PropertiesPalette_Line::handleLineEnd()
 	}
 }
 
-void PropertiesPalette_Line::handleLineMode()
+void PropertyWidgetFrame_LineAdvanced::handleLineMode()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -591,70 +415,46 @@ void PropertiesPalette_Line::handleLineMode()
 	emit lineModeChanged(lineMode->currentIndex());
 }
 
-void PropertiesPalette_Line::handleStartArrow(int id)
+void PropertyWidgetFrame_LineAdvanced::handleStartArrow(int id)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_ApplyArrowHead(id,-1);
 }
 
-void PropertiesPalette_Line::handleEndArrow(int id)
+void PropertyWidgetFrame_LineAdvanced::handleEndArrow(int id)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_ApplyArrowHead(-1, id);
 }
 
-void PropertiesPalette_Line::handleStartArrowScale(double sc)
+void PropertyWidgetFrame_LineAdvanced::handleStartArrowScale(double sc)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_ApplyArrowScale(static_cast<int>(sc), -1, NULL);
 }
 
-void PropertiesPalette_Line::handleEndArrowScale(double sc)
+void PropertyWidgetFrame_LineAdvanced::handleEndArrowScale(double sc)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 	m_doc->itemSelection_ApplyArrowScale(-1, static_cast<int>(sc), NULL);
 }
 
-void PropertiesPalette_Line::handleDashChange()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		if (m_item->lineWidth() != 0.0)
-		{
-			m_item->setDashes(dashEditor->getDashValues(m_item->lineWidth()));
-			m_item->setDashOffset(dashEditor->Offset->value() * m_item->lineWidth());
-		}
-		m_item->update();
-	}
-}
-
-void PropertiesPalette_Line::handleLineStyle(QListWidgetItem *widgetItem)
+void PropertyWidgetFrame_LineAdvanced::handleLineStyle(QListWidgetItem *widgetItem)
 {
 	if (!m_doc || !m_ScMW || m_ScMW->scriptIsRunning() || !widgetItem)
 		return;
 	bool setter = (widgetItem->listWidget()->currentRow() == 0);
 	m_doc->itemSelection_SetNamedLineStyle(setter ? QString("") : widgetItem->text());
-	lineType->setEnabled(setter);
-	lineWidth->setEnabled(setter);
 	lineJoinStyle->setEnabled(setter);
 	lineEndStyle->setEnabled(setter);
 }
 
-void PropertiesPalette_Line::languageChange()
+void PropertyWidgetFrame_LineAdvanced::languageChange()
 {
-	QSignalBlocker lineTypeBlocker(lineType);
-	int oldLineStyle = lineType->currentIndex();
-	lineType->clear();
-	lineType->updateList();
-	lineType->addItem( tr("Custom"));
-	lineType->setCurrentIndex(oldLineStyle);
-
 	QSignalBlocker lineModeBlocker(lineMode);
 	int oldLineMode = lineMode->currentIndex();
 	lineMode->clear();
@@ -663,7 +463,6 @@ void PropertiesPalette_Line::languageChange()
 	lineMode->setCurrentIndex(oldLineMode);
 
 	lineModeLabel->setText( tr("&Basepoint:"));
-	lineTypeLabel->setText( tr("T&ype of Line:"));
 	startArrowLabel->setText( tr("Start Arrow:"));
 	endArrowLabel->setText( tr("End Arrow:"));
 	if (m_haveDoc)
@@ -677,7 +476,6 @@ void PropertiesPalette_Line::languageChange()
 		endArrow->rebuildList(&m_doc->arrowStyles());
 		endArrow->setCurrentIndex(arrowItem);
 	}
-	lineWidthLabel->setText( tr("Line &Width:"));
 	lineJoinLabel->setText( tr("Ed&ges:"));
 
 	QSignalBlocker lineJoinStyleBlocker(lineJoinStyle);
@@ -702,36 +500,20 @@ void PropertiesPalette_Line::languageChange()
 	startArrowScale->setSuffix(pctSuffix);
 	endArrowScale->setSuffix(pctSuffix);
 
-	QString ptSuffix = tr(" pt");
-	QString suffix = (m_doc) ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
-
-	lineWidth->setSuffix(suffix);
-	lineWidth->setSpecialValueText( tr("Hairline"));
-
-	if(lineStyles->count() > 0)
-		lineStyles->item(0)->setText( tr("No Style") );
-
 	lineMode->setToolTip( tr("Change settings for left or end points"));
-	lineType->setToolTip( tr("Pattern of line"));
-	lineWidth->setToolTip( tr("Thickness of line"));
 	lineJoinStyle->setToolTip( tr("Type of line joins"));
 	lineEndStyle->setToolTip( tr("Type of line end"));
-	lineStyles->setToolTip( tr("Line style of current object"));
 	startArrow->setToolTip( tr("Arrow head style for start of line"));
 	endArrow->setToolTip( tr("Arrow head style for end of line"));
 	startArrowScale->setToolTip( tr("Arrow head scale for start of line"));
 	endArrowScale->setToolTip( tr("Arrow head scale for end of line"));
 }
 
-void PropertiesPalette_Line::unitChange()
+void PropertyWidgetFrame_LineAdvanced::unitChange()
 {
 	if (!m_doc)
 		return;
 
 	m_unitRatio = m_doc->unitRatio();
 	m_unitIndex = m_doc->unitIndex();
-
-	lineWidth->blockSignals(true);
-	lineWidth->setNewUnit( m_unitIndex );
-	lineWidth->blockSignals(false);
 }

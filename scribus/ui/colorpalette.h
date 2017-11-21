@@ -21,8 +21,8 @@ for which a new license (GPL+exception) is in place.
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CPALETTE_H
-#define CPALETTE_H
+#ifndef COLORPALETTE_H
+#define COLORPALETTE_H
 
 #include <QWidget>
 #include <QPointer>
@@ -48,15 +48,15 @@ class UndoManager;
   *@author Franz Schmid
   */
 
-class SCRIBUS_API Cpalette : public QWidget, Ui::colorPalette
+class SCRIBUS_API ColorPalette : public QWidget, Ui::colorPalette
 {
 	Q_OBJECT
 
 	friend class PropertiesFramePalette;
 
 public:
-	Cpalette(QWidget* parent);
-	~Cpalette() {};
+	ColorPalette(QWidget* parent);
+	~ColorPalette() {};
 
 	void setDocument(ScribusDoc* doc);
 

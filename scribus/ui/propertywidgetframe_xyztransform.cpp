@@ -99,12 +99,24 @@ PropertyWidgetFrame_XYZTransform::PropertyWidgetFrame_XYZTransform( QWidget* par
 	rotationSpin->showValue(0);
 }
 
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZTransform::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(mw->appModeHelper, SIGNAL(AppModeChanged(int, int)), this, SLOT(handleAppModeChanged(int, int)));
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZTransform::setDoc(ScribusDoc *d)
 {
@@ -152,27 +164,17 @@ void PropertyWidgetFrame_XYZTransform::unsetDoc()
 	setEnabled(false);
 }
 
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZTransform::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
-}
-
-void PropertyWidgetFrame_XYZTransform::setLineMode(int lineMode)
-{
-	if (lineMode == 0)
-	{
-		rotationSpin->setEnabled(true);
-
-		m_lineMode = false;
-	}
-	else
-	{
-		rotationSpin->setEnabled(false);
-
-		m_lineMode = true;
-	}
 }
 
 PageItem* PropertyWidgetFrame_XYZTransform::currentItemFromSelection()
@@ -284,6 +286,28 @@ void PropertyWidgetFrame_XYZTransform::setCurrentItem(PageItem *i)
 	}
 }
 
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_XYZTransform::setLineMode(int lineMode)
+{
+	if (lineMode == 0)
+	{
+		rotationSpin->setEnabled(true);
+
+		m_lineMode = false;
+	}
+	else
+	{
+		rotationSpin->setEnabled(false);
+
+		m_lineMode = true;
+	}
+}
+
 void PropertyWidgetFrame_XYZTransform::handleAppModeChanged(int oldMode, int mode)
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -390,6 +414,19 @@ void PropertyWidgetFrame_XYZTransform::unitChange()
 	m_haveItem = tmp;
 }
 
+void PropertyWidgetFrame_XYZTransform::languageChange()
+{
+	retranslateUi(this);
+
+}
+
+
+
+/*********************************************************************
+*
+* Feature Rotation
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZTransform::showRotation(double r)
 {
@@ -440,6 +477,17 @@ void PropertyWidgetFrame_XYZTransform::handleRotation()
 	}
 }
 
+void PropertyWidgetFrame_XYZTransform::showLocked(bool isLocked)
+{
+	rotationSpin->setEnabled(!isLocked);
+}
+
+/*********************************************************************
+*
+* Feature Level
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZTransform::handleLower()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
@@ -472,6 +520,11 @@ void PropertyWidgetFrame_XYZTransform::handleBack()
 	levelLabel->setText( QString::number(m_item->level()) );
 }
 
+/*********************************************************************
+*
+* Feature Flip
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZTransform::handleFlipH()
 {
@@ -487,6 +540,43 @@ void PropertyWidgetFrame_XYZTransform::handleFlipV()
 	m_ScMW->scrActions["itemFlipV"]->toggle();
 }
 
+void PropertyWidgetFrame_XYZTransform::showFlippedH(bool isFlippedH)
+{
+	flipH->setChecked(isFlippedH);
+}
+
+void PropertyWidgetFrame_XYZTransform::showFlippedV(bool isFlippedV)
+{
+	flipV->setChecked(isFlippedV);
+}
+
+/*********************************************************************
+*
+* Feature Grouping
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_XYZTransform::handleGrouping()
+{
+	m_ScMW->GroupObj();
+	doGroup->setEnabled(false);
+	doUnGroup->setEnabled(true);
+	handleSelectionChanged();
+
+}
+
+void PropertyWidgetFrame_XYZTransform::handleUngrouping()
+{
+	m_ScMW->UnGroupObj();
+	m_doc->invalidateAll();
+	m_doc->regionsChanged()->update(QRect());
+}
+
+/*********************************************************************
+*
+* Undo
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_XYZTransform::installSniffer(ScrSpinBox *spinBox)
 {
@@ -525,6 +615,12 @@ void PropertyWidgetFrame_XYZTransform::spinboxFinishUserAction()
 	}
 }
 
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_XYZTransform::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -533,49 +629,4 @@ void PropertyWidgetFrame_XYZTransform::changeEvent(QEvent *e)
 	}
 	else
 		QWidget::changeEvent(e);
-}
-
-void PropertyWidgetFrame_XYZTransform::languageChange()
-{
-	retranslateUi(this);
-
-}
-
-
-void PropertyWidgetFrame_XYZTransform::showLocked(bool isLocked)
-{
-
-	rotationSpin->setReadOnly(isLocked);
-	QPalette pal(qApp->palette());
-	if (isLocked)
-		pal.setCurrentColorGroup(QPalette::Disabled);
-
-	rotationSpin->setPalette(pal);
-
-}
-
-void PropertyWidgetFrame_XYZTransform::showFlippedH(bool isFlippedH)
-{
-	flipH->setChecked(isFlippedH);
-}
-
-void PropertyWidgetFrame_XYZTransform::showFlippedV(bool isFlippedV)
-{
-	flipV->setChecked(isFlippedV);
-}
-
-void PropertyWidgetFrame_XYZTransform::handleGrouping()
-{
-	m_ScMW->GroupObj();
-	doGroup->setEnabled(false);
-	doUnGroup->setEnabled(true);
-	handleSelectionChanged();
-
-}
-
-void PropertyWidgetFrame_XYZTransform::handleUngrouping()
-{
-	m_ScMW->UnGroupObj();
-	m_doc->invalidateAll();
-	m_doc->regionsChanged()->update(QRect());
 }

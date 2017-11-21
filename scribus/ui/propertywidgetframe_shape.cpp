@@ -5,7 +5,7 @@ a copyright and/or license notice that predates the release of Scribus 1.3.2
 for which a new license (GPL+exception) is in place.
 */
 
-#include "propertiespalette_shape.h"
+#include "propertywidgetframe_shape.h"
 
 #if defined(_MSC_VER) && !defined(_USE_MATH_DEFINES)
 #define _USE_MATH_DEFINES
@@ -36,14 +36,13 @@ for which a new license (GPL+exception) is in place.
 #include "util_math.h"
 
 
-PropertiesPalette_Shape::PropertiesPalette_Shape( QWidget* parent)
+PropertyWidgetFrame_Shape::PropertyWidgetFrame_Shape( QWidget* parent)
 	: QWidget(parent),
 	  m_haveDoc(false),
 	  m_haveItem(false),
 	  m_unitRatio(1.0),
 	  m_unitIndex(SC_PT),
-	  m_item(NULL),
-	  m_doc(NULL)
+	  m_item(NULL)
 {
 	m_tmpSelection = new Selection(this, false);
 	m_tmpSelection->clear();
@@ -70,7 +69,7 @@ PropertiesPalette_Shape::PropertiesPalette_Shape( QWidget* parent)
 	stackedWidget->setCurrentIndex(0);
 }
 
-void PropertiesPalette_Shape::changeEvent(QEvent *e)
+void PropertyWidgetFrame_Shape::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
 	{
@@ -81,14 +80,14 @@ void PropertiesPalette_Shape::changeEvent(QEvent *e)
 }
 
 
-void PropertiesPalette_Shape::setMainWindow(ScribusMainWindow* mw)
+void PropertyWidgetFrame_Shape::setMainWindow(ScribusMainWindow* mw)
 {
 	m_ScMW = mw;
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
 
-void PropertiesPalette_Shape::setDoc(ScribusDoc *d)
+void PropertyWidgetFrame_Shape::setDoc(ScribusDoc *d)
 {
 	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
@@ -113,7 +112,7 @@ void PropertiesPalette_Shape::setDoc(ScribusDoc *d)
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 }
 
-void PropertiesPalette_Shape::unsetDoc()
+void PropertyWidgetFrame_Shape::unsetDoc()
 {
 	if (m_doc)
 	{
@@ -132,14 +131,14 @@ void PropertiesPalette_Shape::unsetDoc()
 	setEnabled(false);
 }
 
-void PropertiesPalette_Shape::unsetItem()
+void PropertyWidgetFrame_Shape::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
 }
 
-PageItem* PropertiesPalette_Shape::currentItemFromSelection()
+PageItem* PropertyWidgetFrame_Shape::currentItemFromSelection()
 {
 	PageItem *currentItem = NULL;
 
@@ -149,12 +148,12 @@ PageItem* PropertiesPalette_Shape::currentItemFromSelection()
 	return currentItem;
 }
 
-void PropertiesPalette_Shape::setCustomShapeIcon(int submode)
+void PropertyWidgetFrame_Shape::setCustomShapeIcon(int submode)
 {
 	customShape->setIcon( customShape->getIconPixmap(submode) );
 }
 
-void PropertiesPalette_Shape::setLocked(bool isLocked)
+void PropertyWidgetFrame_Shape::setLocked(bool isLocked)
 {
 	QPalette pal(qApp->palette());
 	if (isLocked)
@@ -170,17 +169,17 @@ void PropertiesPalette_Shape::setLocked(bool isLocked)
 	}
 }
 
-void PropertiesPalette_Shape::setSizeLocked(bool )
+void PropertyWidgetFrame_Shape::setSizeLocked(bool )
 {
 	enableEditShape();
 }
 
-void PropertiesPalette_Shape::setRoundRectEnabled(bool enabled)
+void PropertyWidgetFrame_Shape::setRoundRectEnabled(bool enabled)
 {
 	roundRect->setEnabled(enabled);
 }
 
-void PropertiesPalette_Shape::enableCustomShape()
+void PropertyWidgetFrame_Shape::enableCustomShape()
 {
 	bool enabled = false;
 	if (m_item)
@@ -200,7 +199,7 @@ void PropertiesPalette_Shape::enableCustomShape()
 	customShape->setEnabled(enabled);
 }
 
-void PropertiesPalette_Shape::enableEditShape()
+void PropertyWidgetFrame_Shape::enableEditShape()
 {
 	bool enabled = false;
 	if (m_item)
@@ -214,7 +213,7 @@ void PropertiesPalette_Shape::enableEditShape()
 	editShape->setEnabled(enabled);
 }
 
-void PropertiesPalette_Shape::handleSelectionChanged()
+void PropertyWidgetFrame_Shape::handleSelectionChanged()
 {
 	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -310,7 +309,7 @@ void PropertiesPalette_Shape::handleSelectionChanged()
 	//repaint();
 }
 
-void PropertiesPalette_Shape::handleUpdateRequest(int updateFlags)
+void PropertyWidgetFrame_Shape::handleUpdateRequest(int updateFlags)
 {
 	if ((updateFlags & reqCustomShapeUpdate) && (m_haveDoc && m_doc))
 	{
@@ -318,7 +317,7 @@ void PropertiesPalette_Shape::handleUpdateRequest(int updateFlags)
 	}
 }
 
-void PropertiesPalette_Shape::setCurrentItem(PageItem *item)
+void PropertyWidgetFrame_Shape::setCurrentItem(PageItem *item)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -398,7 +397,7 @@ void PropertiesPalette_Shape::setCurrentItem(PageItem *item)
 	showTextFlowMode(m_item->textFlowMode());
 }
 
-void PropertiesPalette_Shape::handleTextFlow()
+void PropertyWidgetFrame_Shape::handleTextFlow()
 {
 	PageItem::TextFlowMode mode = PageItem::TextFlowDisabled;
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
@@ -425,7 +424,7 @@ void PropertiesPalette_Shape::handleTextFlow()
 	}
 }
 
-void PropertiesPalette_Shape::handleShapeEdit()
+void PropertyWidgetFrame_Shape::handleShapeEdit()
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -457,7 +456,7 @@ void PropertiesPalette_Shape::handleShapeEdit()
 	}
 }
 
-void PropertiesPalette_Shape::handleShapeEditEnded()
+void PropertyWidgetFrame_Shape::handleShapeEditEnded()
 {
 	disconnect(m_ScMW->nodePalette, SIGNAL(paletteClosed()), this, SLOT(handleShapeEditEnded()));
 	if ((m_haveDoc) && (m_haveItem))
@@ -471,7 +470,7 @@ void PropertiesPalette_Shape::handleShapeEditEnded()
 	}
 }
 
-void PropertiesPalette_Shape::handleCornerRadius()
+void PropertyWidgetFrame_Shape::handleCornerRadius()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -483,7 +482,7 @@ void PropertiesPalette_Shape::handleCornerRadius()
 	m_item->update();
 }
 
-void PropertiesPalette_Shape::handleFillRule()
+void PropertyWidgetFrame_Shape::handleFillRule()
 {
 	if (!m_haveDoc || !m_haveItem || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -491,7 +490,7 @@ void PropertiesPalette_Shape::handleFillRule()
 	m_item->update();
 }
 
-void PropertiesPalette_Shape::handleNewShape(int f, int c, qreal *vals)
+void PropertyWidgetFrame_Shape::handleNewShape(int f, int c, qreal *vals)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
 		return;
@@ -513,7 +512,7 @@ void PropertiesPalette_Shape::handleNewShape(int f, int c, qreal *vals)
 	}
 }
 
-void PropertiesPalette_Shape::showTextFlowMode(PageItem::TextFlowMode mode)
+void PropertyWidgetFrame_Shape::showTextFlowMode(PageItem::TextFlowMode mode)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveItem)
 		return;
@@ -536,7 +535,7 @@ void PropertiesPalette_Shape::showTextFlowMode(PageItem::TextFlowMode mode)
 	}
 }
 
-void PropertiesPalette_Shape::languageChange()
+void PropertyWidgetFrame_Shape::languageChange()
 {
 	QString ptSuffix = unitGetSuffixFromIndex(SC_PT);
 	QString suffix   = m_doc ? unitGetSuffixFromIndex(m_doc->unitIndex()) : ptSuffix;
@@ -545,7 +544,7 @@ void PropertiesPalette_Shape::languageChange()
 	retranslateUi(this);
 }
 
-void PropertiesPalette_Shape::unitChange()
+void PropertyWidgetFrame_Shape::unitChange()
 {
 	if (!m_doc)
 		return;
