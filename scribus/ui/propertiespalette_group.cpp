@@ -142,11 +142,11 @@ void PropertiesPalette_Group::setDoc(ScribusDoc *d)
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
 	}
 	
-	disconnect(this->transPalWidget, SIGNAL(NewTrans(double)), 0, 0);
-	disconnect(this->transPalWidget, SIGNAL(NewBlend(int)), 0, 0);
-	disconnect(this->transPalWidget, SIGNAL(NewGradient(int)), 0, 0);
-	disconnect(this->transPalWidget, SIGNAL(NewPattern(QString)), 0, 0);
-	disconnect(this->transPalWidget, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+//	disconnect(this->transPalWidget, SIGNAL(NewTrans(double)), 0, 0);
+//	disconnect(this->transPalWidget, SIGNAL(NewBlend(int)), 0, 0);
+//	disconnect(this->transPalWidget, SIGNAL(NewGradient(int)), 0, 0);
+//	disconnect(this->transPalWidget, SIGNAL(NewPattern(QString)), 0, 0);
+//	disconnect(this->transPalWidget, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
 
 	m_doc  = d;
 	m_item = NULL;
@@ -158,11 +158,11 @@ void PropertiesPalette_Group::setDoc(ScribusDoc *d)
 	m_haveDoc  = true;
 	m_haveItem = false;
 
-	connect(this->transPalWidget, SIGNAL(NewTrans(double))   , this, SLOT(handleGroupTransparency(double)));
-	connect(this->transPalWidget, SIGNAL(NewBlend(int))      , this, SLOT(handleGroupBlending(int)));
-	connect(this->transPalWidget, SIGNAL(NewGradient(int))   , this, SLOT(handleGroupGradMask(int)));
-	connect(this->transPalWidget, SIGNAL(NewPattern(QString)), this, SLOT(handleGroupPatternMask(QString)));
-	connect(this->transPalWidget, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), this, SLOT(handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
+//	connect(this->transPalWidget, SIGNAL(NewTrans(double))   , this, SLOT(handleGroupTransparency(double)));
+//	connect(this->transPalWidget, SIGNAL(NewBlend(int))      , this, SLOT(handleGroupBlending(int)));
+//	connect(this->transPalWidget, SIGNAL(NewGradient(int))   , this, SLOT(handleGroupGradMask(int)));
+//	connect(this->transPalWidget, SIGNAL(NewPattern(QString)), this, SLOT(handleGroupPatternMask(QString)));
+//	connect(this->transPalWidget, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), this, SLOT(handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
 
 	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
@@ -237,7 +237,6 @@ void PropertiesPalette_Group::setCurrentItem(PageItem *item)
 	m_haveItem = false;
 	m_item = item;
 
-	transPalWidget->setCurrentItem(m_item);
 	nonZero->setChecked(!m_item->fillRule);
 	evenOdd->setChecked(m_item->fillRule);
 	clipGroups->setChecked(m_item->groupClipping());
@@ -474,53 +473,53 @@ void PropertiesPalette_Group::updateColorSpecialGradient()
 }
 
 
-void PropertiesPalette_Group::handleGroupTransparency(double trans)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_item->setFillTransparency(trans);
-		m_item->update();
-	}
-}
+//void PropertiesPalette_Group::handleGroupTransparency(double trans)
+//{
+//	if ((m_haveDoc) && (m_haveItem))
+//	{
+//		m_item->setFillTransparency(trans);
+//		m_item->update();
+//	}
+//}
 
-void PropertiesPalette_Group::handleGroupBlending(int blend)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_item->setFillBlendmode(blend);
-		m_item->update();
-	}
-}
+//void PropertiesPalette_Group::handleGroupBlending(int blend)
+//{
+//	if ((m_haveDoc) && (m_haveItem))
+//	{
+//		m_item->setFillBlendmode(blend);
+//		m_item->update();
+//	}
+//}
 
-void PropertiesPalette_Group::handleGroupGradMask(int typ)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_item->GrMask = typ;
-		if ((typ > 0) && (typ < 7))
-			m_item->updateGradientVectors();
-		m_item->update();
-	}
-}
+//void PropertiesPalette_Group::handleGroupGradMask(int typ)
+//{
+//	if ((m_haveDoc) && (m_haveItem))
+//	{
+//		m_item->GrMask = typ;
+//		if ((typ > 0) && (typ < 7))
+//			m_item->updateGradientVectors();
+//		m_item->update();
+//	}
+//}
 
-void PropertiesPalette_Group::handleGroupPatternMask(QString pattern)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_item->setPatternMask(pattern);
-		m_item->update();
-	}
-}
+//void PropertiesPalette_Group::handleGroupPatternMask(QString pattern)
+//{
+//	if ((m_haveDoc) && (m_haveItem))
+//	{
+//		m_item->setPatternMask(pattern);
+//		m_item->update();
+//	}
+//}
 
-void PropertiesPalette_Group::handleGroupPatternMaskProps(double imageScaleX, double imageScaleY, double offsetX, double offsetY, double rotation, double skewX, double skewY, bool mirrorX, bool mirrorY)
-{
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_item->setMaskTransform(imageScaleX, imageScaleY, offsetX, offsetY, rotation, skewX, skewY);
-		m_item->setMaskFlip(mirrorX, mirrorY);
-		m_item->update();
-	}
-}
+//void PropertiesPalette_Group::handleGroupPatternMaskProps(double imageScaleX, double imageScaleY, double offsetX, double offsetY, double rotation, double skewX, double skewY, bool mirrorX, bool mirrorY)
+//{
+//	if ((m_haveDoc) && (m_haveItem))
+//	{
+//		m_item->setMaskTransform(imageScaleX, imageScaleY, offsetX, offsetY, rotation, skewX, skewY);
+//		m_item->setMaskFlip(mirrorX, mirrorY);
+//		m_item->update();
+//	}
+//}
 
 
 /*********************************************************************

@@ -44,6 +44,7 @@ for which a new license (GPL+exception) is in place.
 #include <QCheckBox>
 #include <QDebug>
 
+#include "appmodes.h"
 #include "colorlistbox.h"
 #include "commonstrings.h"
 #include "gradienteditor.h"
@@ -70,8 +71,14 @@ ColorPalette::ColorPalette(QWidget* parent) : QWidget(parent)
 {
 	undoManager = UndoManager::instance();
 	m_ScMW = 0;
+	m_item = 0;
+	m_haveDoc   = false;
+	m_haveItem  = false;
+	m_unitIndex = 0;
+	m_unitRatio = 1.0;
+
+
 	m_blockUpdates = 0;
-	currentItem = NULL;
 	patternList = NULL;
 	CGradDia = NULL;
 	CGradDia = new GradientVectorDialog(this->parentWidget());
@@ -129,6 +136,10 @@ ColorPalette::ColorPalette(QWidget* parent) : QWidget(parent)
 	hatchDist->setValues(1, 1000, 0, 1);
 	/*editFillColorSelector->setChecked(true);
 	editFillColorSelectorButton();*/
+
+	connect(this, SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(NewSpGradient(double, double, double, double, double, double, double, double, double, double )));
+	connect(this, SIGNAL(editGradient(int)), this, SLOT(toggleGradientEdit(int)));
+
 }
 
 /*********************************************************************
@@ -271,69 +282,177 @@ void ColorPalette::disconnectSignals()
 
 void ColorPalette::setDoc(ScribusDoc* d)
 {
-	disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
-	disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
-	disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
-	disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
-	disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
-	disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
-	disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
-	disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
-	disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
-	disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
-	disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
-	disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
-	disconnect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+//	disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
+//	disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
+//	disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
+//	disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
+//	disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
+//	disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
+//	disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+//	disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+//	disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
+//	disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
+//	disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
+//	disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
+//	disconnect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+
+//	if (m_doc)
+//	{
+//		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+//		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+//		disconnect(m_doc->scMW()     , SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
+//	}
+
+//	ScribusDoc* oldDoc = m_doc;
+//	m_doc = d;
+
+//	if (d == NULL)
+//	{
+//		colorListStroke->cList = NULL;
+//		colorListFill->cList = NULL;
+//		disconnectSignals();
+//	}
+//	else
+//	{
+//		colorListStroke->cList = &d->PageColors;
+//		colorListFill->cList = &d->PageColors;
+//		gradEdit->setColors(d->PageColors);
+//		m_unitIndex = d->unitIndex();
+
+//		updateColorList();
+//		updateCList();
+
+//		connect(this, SIGNAL(NewPen(QString))      , d, SLOT(itemSelection_SetItemPen(QString)));
+//		connect(this, SIGNAL(NewBrush(QString))    , d, SLOT(itemSelection_SetItemBrush(QString)));
+//		connect(this, SIGNAL(NewPenShade(double))     , this, SLOT(handleStrokeShade(double)));
+//		connect(this, SIGNAL(NewBrushShade(double))   , this, SLOT(handleFillShade(double)));
+//		connect(this, SIGNAL(NewGradient(int))     , d, SLOT(itemSelection_SetItemGradFill(int)));
+//		connect(this, SIGNAL(NewGradientS(int))    , d, SLOT(itemSelection_SetItemGradStroke(int)));
+//		connect(this, SIGNAL(NewPattern(QString))  , d, SLOT(itemSelection_SetItemPatternFill(QString)));
+//		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemPatternProps(double, double, double, double, double, double, double, bool, bool)));
+//		connect(this, SIGNAL(NewOverprint(int))    , this, SLOT(handleOverprint(int)));
+//		connect(this, SIGNAL(NewPatternS(QString)) , d, SLOT(itemSelection_SetItemStrokePattern(QString)));
+//		connect(this, SIGNAL(NewPatternTypeS(bool)), d, SLOT(itemSelection_SetItemStrokePatternType(bool)));
+//		connect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemStrokePatternProps(double, double, double, double, double, double, double, double, bool, bool)));
+//		connect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+
+//		connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+//		connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+//		connect(m_doc->scMW()     , SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
+//	}
+
+//	if (oldDoc != m_doc)
+//	{
+//		showGradient(0);
+//	}
+
+	// -------------------
+
+	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
+		return;
 
 	if (m_doc)
 	{
+		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
+		disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
+		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
+		disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+
+
 		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
 		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-		disconnect(m_doc->scMW()     , SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
+		disconnect(m_doc->scMW(), SIGNAL(UpdateRequest(int)), this, 0);
 	}
 
 	ScribusDoc* oldDoc = m_doc;
 	m_doc = d;
+	m_item = NULL;
 
-	if (d == NULL)
+	if (!m_doc)
 	{
 		colorListStroke->cList = NULL;
 		colorListFill->cList = NULL;
 		disconnectSignals();
+		return;
 	}
-	else
-	{
-		colorListStroke->cList = &d->PageColors;
-		colorListFill->cList = &d->PageColors;
-		gradEdit->setColors(d->PageColors);
-		m_unitIndex = d->unitIndex();
 
-		updateColorList();
-		updateCList();
+	m_unitRatio   = m_doc->unitRatio();
+	m_unitIndex   = m_doc->unitIndex();
 
-		connect(this, SIGNAL(NewPen(QString))      , d, SLOT(itemSelection_SetItemPen(QString)));
-		connect(this, SIGNAL(NewBrush(QString))    , d, SLOT(itemSelection_SetItemBrush(QString)));
-		connect(this, SIGNAL(NewPenShade(double))     , this, SLOT(handleStrokeShade(double)));
-		connect(this, SIGNAL(NewBrushShade(double))   , this, SLOT(handleFillShade(double)));
-		connect(this, SIGNAL(NewGradient(int))     , d, SLOT(itemSelection_SetItemGradFill(int)));
-		connect(this, SIGNAL(NewGradientS(int))    , d, SLOT(itemSelection_SetItemGradStroke(int)));
-		connect(this, SIGNAL(NewPattern(QString))  , d, SLOT(itemSelection_SetItemPatternFill(QString)));
-		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemPatternProps(double, double, double, double, double, double, double, bool, bool)));
-		connect(this, SIGNAL(NewOverprint(int))    , this, SLOT(handleOverprint(int)));
-		connect(this, SIGNAL(NewPatternS(QString)) , d, SLOT(itemSelection_SetItemStrokePattern(QString)));
-		connect(this, SIGNAL(NewPatternTypeS(bool)), d, SLOT(itemSelection_SetItemStrokePatternType(bool)));
-		connect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemStrokePatternProps(double, double, double, double, double, double, double, double, bool, bool)));
-		connect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+	colorListStroke->cList = &d->PageColors;
+	colorListFill->cList = &d->PageColors;
+	gradEdit->setColors(d->PageColors);
+	m_unitIndex = d->unitIndex();
 
-		connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
-		connect(m_doc->scMW()     , SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
-	}
+	updateColorList();
+	updateCList();
+
+	connect(this, SIGNAL(NewPen(QString))      , d, SLOT(itemSelection_SetItemPen(QString)));
+	connect(this, SIGNAL(NewBrush(QString))    , d, SLOT(itemSelection_SetItemBrush(QString)));
+	connect(this, SIGNAL(NewPenShade(double))     , this, SLOT(handleStrokeShade(double)));
+	connect(this, SIGNAL(NewBrushShade(double))   , this, SLOT(handleFillShade(double)));
+	connect(this, SIGNAL(NewGradient(int))     , d, SLOT(itemSelection_SetItemGradFill(int)));
+	connect(this, SIGNAL(NewGradientS(int))    , d, SLOT(itemSelection_SetItemGradStroke(int)));
+	connect(this, SIGNAL(NewPattern(QString))  , d, SLOT(itemSelection_SetItemPatternFill(QString)));
+	connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemPatternProps(double, double, double, double, double, double, double, bool, bool)));
+	connect(this, SIGNAL(NewOverprint(int))    , this, SLOT(handleOverprint(int)));
+	connect(this, SIGNAL(NewPatternS(QString)) , d, SLOT(itemSelection_SetItemStrokePattern(QString)));
+	connect(this, SIGNAL(NewPatternTypeS(bool)), d, SLOT(itemSelection_SetItemStrokePatternType(bool)));
+	connect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), d, SLOT(itemSelection_SetItemStrokePatternProps(double, double, double, double, double, double, double, double, bool, bool)));
+	connect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+
+	connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+	connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+	connect(m_doc->scMW()     , SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
 
 	if (oldDoc != m_doc)
 	{
 		showGradient(0);
 	}
+
+	// Handle properties update when switching document
+	handleSelectionChanged();
+}
+
+void ColorPalette::unsetDoc()
+{
+
+	if (m_doc)
+	{
+		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
+		disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
+		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
+		disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(displayAllColors, SIGNAL(clicked()), this, SLOT(toggleColorDisplay()));
+
+		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+	}
+
+	m_haveDoc = false;
+	m_haveItem = false;
+	m_doc=NULL;
+	m_item = NULL;
+
+	setEnabled(false);
+
 }
 
 /*********************************************************************
@@ -344,7 +463,109 @@ void ColorPalette::setDoc(ScribusDoc* d)
 
 void ColorPalette::setCurrentItem(PageItem* i)
 {
-	if ((i == NULL) || (currentItem != i))
+//	if ((i == NULL) || (m_item != i))
+//	{
+//		editStrokeGradient = 0;
+//		CGradDia->hide();
+//		editMeshColors->setEnabled(true);
+//		gradEditButton->setEnabled(true);
+//	}
+
+//	m_item = i;
+//	disconnectSignals();
+	
+//	if (!m_item)
+//		return;
+
+//	showOverprint(m_item->doOverprint ? 1 : 0);
+//	showColorValues(m_item->lineColor(), m_item->fillColor(), m_item->lineShade(), m_item->fillShade());
+//	showGradient(m_item->gradientType());
+//	showGradientStroke(m_item->strokeGradientType());
+//	gradEdit->setGradient(m_item->fill_gradient);
+//	gradEditStroke->setGradient(m_item->stroke_gradient);
+//	if (!m_item->gradient().isEmpty())
+//	{
+//		setCurrentComboItem(namedGradient, m_item->gradient());
+//		gradEdit->setGradientEditable(false);
+//	}
+//	else
+//	{
+//		namedGradient->setCurrentIndex(0);
+//		gradEdit->setGradientEditable(true);
+//	}
+//	if (!m_item->strokeGradient().isEmpty())
+//	{
+//		setCurrentComboItem(namedGradientStroke, m_item->strokeGradient());
+//		gradEditStroke->setGradientEditable(false);
+//	}
+//	else
+//	{
+//		namedGradientStroke->setCurrentIndex(0);
+//		gradEditStroke->setGradientEditable(true);
+//	}
+//	if (m_item->GrTypeStroke > 0)
+//	{
+//		if (m_item->GrTypeStroke == 6)
+//			gradientTypeStroke->setCurrentIndex(0);
+//		else
+//			gradientTypeStroke->setCurrentIndex(1);
+//	}
+//	/*if (patternList->count() == 0)
+//	{
+//		tabWidgetStroke->setTabEnabled(2, false);
+//		tabWidget->setTabEnabled(2, false);
+//	}
+//	else
+//	{
+//		tabWidgetStroke->setTabEnabled(2, true);
+//		tabWidget->setTabEnabled(2, true);
+//	}*/
+//	enablePatterns(patternList->count() != 0);
+//	/*if (!currentItem->strokePattern().isEmpty())
+//		strokeModeCombo->setCurrentIndex(2);
+//	else if (currentItem->GrTypeStroke > 0)
+//		strokeModeCombo->setCurrentIndex(1);
+//	else
+//		strokeModeCombo->setCurrentIndex(0);*/
+//	if (m_item->gradientType() == 12)
+//		setMeshPatchPoint();
+//	else
+//		setMeshPoint();
+//	if(CGradDia && gradEditButton->isChecked())
+//	{
+//		if(tabFillStroke->currentIndex() == 0)
+//			setGradientVectorValues();
+//		else
+//			setGradientVectorStrokeValues();
+//	}
+//	editMeshColors->setEnabled(!CGradDia->isVisible());
+//	gradEditButton->setEnabled(!editMeshColors->isChecked());
+//	gradientType->setEnabled(!(gradEditButton->isChecked() || editMeshColors->isChecked()));
+//	fillModeCombo->setEnabled(!(gradEditButton->isChecked() || editMeshColors->isChecked()));
+
+//	double patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, patternSpace;
+//	bool mirrorX, mirrorY;
+//	m_item->patternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
+//	m_item->patternFlip(mirrorX, mirrorY);
+//	setActPattern(m_item->pattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
+//	m_item->strokePatternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, patternSpace);
+//	m_item->strokePatternFlip(mirrorX, mirrorY);
+//	setActPatternStroke(m_item->strokePattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY, patternSpace, m_item->isStrokePatternToPath());
+
+//	connectSignals();
+
+	// -----------------
+
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	if (!m_doc)
+		setDoc(i->doc());
+
+	m_haveItem = false;
+	m_item = i;
+
+	if ((i == NULL) || (m_item != i))
 	{
 		editStrokeGradient = 0;
 		CGradDia->hide();
@@ -352,21 +573,20 @@ void ColorPalette::setCurrentItem(PageItem* i)
 		gradEditButton->setEnabled(true);
 	}
 
-	currentItem = i;
 	disconnectSignals();
-	
-	if (!currentItem)
+
+	if (!m_item)
 		return;
 
-	showOverprint(currentItem->doOverprint ? 1 : 0);
-	showColorValues(currentItem->lineColor(), currentItem->fillColor(), currentItem->lineShade(), currentItem->fillShade());
-	showGradient(currentItem->gradientType());
-	showGradientStroke(currentItem->strokeGradientType());
-	gradEdit->setGradient(currentItem->fill_gradient);
-	gradEditStroke->setGradient(currentItem->stroke_gradient);
-	if (!currentItem->gradient().isEmpty())
+	showOverprint(m_item->doOverprint ? 1 : 0);
+	showColorValues(m_item->lineColor(), m_item->fillColor(), m_item->lineShade(), m_item->fillShade());
+	showGradient(m_item->gradientType());
+	showGradientStroke(m_item->strokeGradientType());
+	gradEdit->setGradient(m_item->fill_gradient);
+	gradEditStroke->setGradient(m_item->stroke_gradient);
+	if (!m_item->gradient().isEmpty())
 	{
-		setCurrentComboItem(namedGradient, currentItem->gradient());
+		setCurrentComboItem(namedGradient, m_item->gradient());
 		gradEdit->setGradientEditable(false);
 	}
 	else
@@ -374,9 +594,9 @@ void ColorPalette::setCurrentItem(PageItem* i)
 		namedGradient->setCurrentIndex(0);
 		gradEdit->setGradientEditable(true);
 	}
-	if (!currentItem->strokeGradient().isEmpty())
+	if (!m_item->strokeGradient().isEmpty())
 	{
-		setCurrentComboItem(namedGradientStroke, currentItem->strokeGradient());
+		setCurrentComboItem(namedGradientStroke, m_item->strokeGradient());
 		gradEditStroke->setGradientEditable(false);
 	}
 	else
@@ -384,9 +604,9 @@ void ColorPalette::setCurrentItem(PageItem* i)
 		namedGradientStroke->setCurrentIndex(0);
 		gradEditStroke->setGradientEditable(true);
 	}
-	if (currentItem->GrTypeStroke > 0)
+	if (m_item->GrTypeStroke > 0)
 	{
-		if (currentItem->GrTypeStroke == 6)
+		if (m_item->GrTypeStroke == 6)
 			gradientTypeStroke->setCurrentIndex(0);
 		else
 			gradientTypeStroke->setCurrentIndex(1);
@@ -408,7 +628,7 @@ void ColorPalette::setCurrentItem(PageItem* i)
 		strokeModeCombo->setCurrentIndex(1);
 	else
 		strokeModeCombo->setCurrentIndex(0);*/
-	if (currentItem->gradientType() == 12)
+	if (m_item->gradientType() == 12)
 		setMeshPatchPoint();
 	else
 		setMeshPoint();
@@ -426,19 +646,22 @@ void ColorPalette::setCurrentItem(PageItem* i)
 
 	double patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, patternSpace;
 	bool mirrorX, mirrorY;
-	currentItem->patternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
-	currentItem->patternFlip(mirrorX, mirrorY);
-	setActPattern(currentItem->pattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
-	currentItem->strokePatternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, patternSpace);
-	currentItem->strokePatternFlip(mirrorX, mirrorY);
-	setActPatternStroke(currentItem->strokePattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY, patternSpace, currentItem->isStrokePatternToPath());
+	m_item->patternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
+	m_item->patternFlip(mirrorX, mirrorY);
+	setActPattern(m_item->pattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
+	m_item->strokePatternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, patternSpace);
+	m_item->strokePatternFlip(mirrorX, mirrorY);
+	setActPatternStroke(m_item->strokePattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY, patternSpace, m_item->isStrokePatternToPath());
+
+	m_haveItem = true;
 
 	connectSignals();
+
 }
 
 void ColorPalette::updateFromItem()
 {
-	setCurrentItem(currentItem);
+	setCurrentItem(m_item);
 }
 
 
@@ -451,23 +674,15 @@ PageItem* ColorPalette::currentItemFromSelection()
 	return currentItem;
 }
 
-void ColorPalette::enablePatterns(bool enable)
+
+void ColorPalette::unsetItem()
 {
-	if (enable)
-	{
-		if (fillModeCombo->count() < 4)
-			fillModeCombo->addItem( tr("Pattern") );
-		if (strokeModeCombo->count() < 3)
-			strokeModeCombo->addItem( tr("Pattern") );
-	}
-	else
-	{
-		if (fillModeCombo->count() == 4)
-			fillModeCombo->removeItem(3);
-		if (strokeModeCombo->count() == 3)
-			strokeModeCombo->removeItem(2);
-	}
+	m_haveItem = false;
+	m_item     = NULL;
+
+	handleSelectionChanged();
 }
+
 
 /*********************************************************************
 *
@@ -479,8 +694,19 @@ void ColorPalette::handleSelectionChanged()
 {
 	if (m_doc && !updatesBlocked())
 	{
-		PageItem* currentItem = currentItemFromSelection();
-		setCurrentItem(currentItem);
+		PageItem* currItem = currentItemFromSelection();
+		setCurrentItem(currItem);
+
+		int itemType = currItem ? (int) currItem->itemType() : -1;
+		m_haveItem   = (itemType != -1);
+
+		switch (itemType)
+		{
+		case -1:
+			m_haveItem = false;
+
+			this->showGradient(0);
+		}
 	}
 }
 
@@ -490,7 +716,7 @@ void ColorPalette::handleUpdateRequest(int updateFlags)
 		updateColorList();
 }
 
-void ColorPalette::unitChange(/*double, double, int unitIndex*/)
+void ColorPalette::unitChange()
 {
 	if (CGradDia)
 		CGradDia->unitChange(m_unitIndex);
@@ -501,7 +727,7 @@ void ColorPalette::unitChange(/*double, double, int unitIndex*/)
 void ColorPalette::languageChange()
 {
 	// Needed to avoid issues if an item is selected and patterns are available
-	if (currentItem)
+	if (m_item)
 		disconnectSignals();
 
 	// Save fill tab state
@@ -546,7 +772,7 @@ void ColorPalette::languageChange()
 	overPrintCombo->setCurrentIndex(oldOverPrintComboIndex);
 
 	// Reconnect signals if necessary
-	if (currentItem)
+	if (m_item)
 		connectSignals();
 }
 
@@ -704,15 +930,15 @@ void ColorPalette::updateColorList()
 	if (!m_doc)
 		return;
 	
-	if (currentItem)
+	if (m_item)
 		disconnectSignals();
 
 	this->setColors(m_doc->PageColors);
 	this->setGradients(&m_doc->docGradients);
 	this->setPatterns(&m_doc->docPatterns);
 
-	if (currentItem)
-		setCurrentItem(currentItem);
+	if (m_item)
+		setCurrentItem(m_item);
 }
 
 void ColorPalette::updateCList()
@@ -796,10 +1022,10 @@ void ColorPalette::handleGradientExtend(int val)
 	if (m_doc)
 	{
 		if (val == 0)
-			currentItem->setGradientExtend(VGradient::none);
+			m_item->setGradientExtend(VGradient::none);
 		else
-			currentItem->setGradientExtend(VGradient::pad);
-		currentItem->update();
+			m_item->setGradientExtend(VGradient::pad);
+		m_item->update();
 		m_doc->regionsChanged()->update(QRect());
 	}
 }
@@ -808,15 +1034,15 @@ void ColorPalette::setNamedGradient(const QString &name)
 {
 	if (namedGradient->currentIndex() == 0)
 	{
-		gradEdit->setGradient(currentItem->fill_gradient);
-		currentItem->setGradient("");
+		gradEdit->setGradient(m_item->fill_gradient);
+		m_item->setGradient("");
 		gradEdit->setGradientEditable(true);
 	}
 	else
 	{
 		gradEdit->setGradient(gradientList->value(name));
 		gradEdit->setGradientEditable(false);
-		currentItem->setGradient(name);
+		m_item->setGradient(name);
 	}
 	if (gradientType->currentIndex() == 0)
 		emit NewGradient(6);
@@ -857,12 +1083,12 @@ void ColorPalette::setGradientColors()
 	UndoTransaction trans;
 	if (UndoManager::undoEnabled())
 		trans = undoManager->beginTransaction(Um::Selection,Um::IFill,Um::GradVal,"",Um::IFill);
-	currentItem->set4ColorShade(static_cast<int>(color1Shade->value()), static_cast<int>(color2Shade->value()), static_cast<int>(color3Shade->value()), static_cast<int>(color4Shade->value()));
-	currentItem->set4ColorTransparency(t1, t2, t3, t4);
-	currentItem->set4ColorColors(color1, color2, color3, color4);
+	m_item->set4ColorShade(static_cast<int>(color1Shade->value()), static_cast<int>(color2Shade->value()), static_cast<int>(color3Shade->value()), static_cast<int>(color4Shade->value()));
+	m_item->set4ColorTransparency(t1, t2, t3, t4);
+	m_item->set4ColorColors(color1, color2, color3, color4);
 	if (trans)
 		trans.commit();
-	currentItem->update();
+	m_item->update();
 }
 
 void ColorPalette::showGradient(int number)
@@ -888,30 +1114,30 @@ void ColorPalette::showGradient(int number)
 		{
 			stackedWidget_2->setCurrentIndex(1);
 			gradientType->setCurrentIndex(3);
-			if ((currentItem->GrColorP1 != CommonStrings::None) && (!currentItem->GrColorP1.isEmpty()))
-				setCurrentComboItem(colorPoint1, currentItem->GrColorP1);
+			if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
+				setCurrentComboItem(colorPoint1, m_item->GrColorP1);
 			else
 				colorPoint1->setCurrentIndex(0);
-			if ((currentItem->GrColorP2 != CommonStrings::None) && (!currentItem->GrColorP2.isEmpty()))
-				setCurrentComboItem(colorPoint2, currentItem->GrColorP2);
+			if ((m_item->GrColorP2 != CommonStrings::None) && (!m_item->GrColorP2.isEmpty()))
+				setCurrentComboItem(colorPoint2, m_item->GrColorP2);
 			else
 				colorPoint2->setCurrentIndex(0);
-			if ((currentItem->GrColorP3 != CommonStrings::None) && (!currentItem->GrColorP3.isEmpty()))
-				setCurrentComboItem(colorPoint3, currentItem->GrColorP3);
+			if ((m_item->GrColorP3 != CommonStrings::None) && (!m_item->GrColorP3.isEmpty()))
+				setCurrentComboItem(colorPoint3, m_item->GrColorP3);
 			else
 				colorPoint3->setCurrentIndex(0);
-			if ((currentItem->GrColorP4 != CommonStrings::None) && (!currentItem->GrColorP4.isEmpty()))
-				setCurrentComboItem(colorPoint4, currentItem->GrColorP4);
+			if ((m_item->GrColorP4 != CommonStrings::None) && (!m_item->GrColorP4.isEmpty()))
+				setCurrentComboItem(colorPoint4, m_item->GrColorP4);
 			else
 				colorPoint4->setCurrentIndex(0);
-			color1Alpha->setValue(qRound(currentItem->GrCol1transp * 100));
-			color2Alpha->setValue(qRound(currentItem->GrCol2transp * 100));
-			color3Alpha->setValue(qRound(currentItem->GrCol3transp * 100));
-			color4Alpha->setValue(qRound(currentItem->GrCol4transp * 100));
-			color1Shade->setValue(currentItem->GrCol1Shade);
-			color2Shade->setValue(currentItem->GrCol2Shade);
-			color3Shade->setValue(currentItem->GrCol3Shade);
-			color4Shade->setValue(currentItem->GrCol4Shade);
+			color1Alpha->setValue(qRound(m_item->GrCol1transp * 100));
+			color2Alpha->setValue(qRound(m_item->GrCol2transp * 100));
+			color3Alpha->setValue(qRound(m_item->GrCol3transp * 100));
+			color4Alpha->setValue(qRound(m_item->GrCol4transp * 100));
+			color1Shade->setValue(m_item->GrCol1Shade);
+			color2Shade->setValue(m_item->GrCol2Shade);
+			color3Shade->setValue(m_item->GrCol3Shade);
+			color4Shade->setValue(m_item->GrCol4Shade);
 		}
 		else if (number == 10)
 		{
@@ -921,9 +1147,9 @@ void ColorPalette::showGradient(int number)
 		else if (number == 11)
 		{
 			stackedWidget_2->setCurrentIndex(2);
-			if ((currentItem->selectedMeshPointX > -1) && (currentItem->selectedMeshPointY > -1l))
+			if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
 			{
-				meshPoint mp = currentItem->meshGradientArray[currentItem->selectedMeshPointX][currentItem->selectedMeshPointY];
+				meshPoint mp = m_item->meshGradientArray[m_item->selectedMeshPointX][m_item->selectedMeshPointY];
 				setCurrentComboItem(colorMeshPoint, mp.colorName);
 				shadeMeshPoint->setValue(mp.shade);
 				transparencyMeshPoint->setValue(mp.transparency * 100);
@@ -941,7 +1167,7 @@ void ColorPalette::showGradient(int number)
 			gradientType->setCurrentIndex(0);
 		}
 		fillModeCombo->setCurrentIndex(1);
-		if (currentItem->getGradientExtend() == VGradient::none)
+		if (m_item->getGradientExtend() == VGradient::none)
 			gradientExtend->setCurrentIndex(0);
 		else
 			gradientExtend->setCurrentIndex(1);
@@ -949,15 +1175,15 @@ void ColorPalette::showGradient(int number)
 	else if (number == 14)
 	{
 		fillModeCombo->setCurrentIndex(2);
-		hatchAngle->setValue(currentItem->hatchAngle);
-		hatchDist->setValue(currentItem->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
-		hatchType->setCurrentIndex(currentItem->hatchType);
-		if ((currentItem->hatchForeground != CommonStrings::None) && (!currentItem->hatchForeground.isEmpty()))
-			setCurrentComboItem(hatchLineColor, currentItem->hatchForeground);
-		if (currentItem->hatchUseBackground)
+		hatchAngle->setValue(m_item->hatchAngle);
+		hatchDist->setValue(m_item->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
+		hatchType->setCurrentIndex(m_item->hatchType);
+		if ((m_item->hatchForeground != CommonStrings::None) && (!m_item->hatchForeground.isEmpty()))
+			setCurrentComboItem(hatchLineColor, m_item->hatchForeground);
+		if (m_item->hatchUseBackground)
 		{
-			if (!currentItem->hatchBackground.isEmpty())
-				setCurrentComboItem(hatchBackground, currentItem->hatchBackground);
+			if (!m_item->hatchBackground.isEmpty())
+				setCurrentComboItem(hatchBackground, m_item->hatchBackground);
 		}
 		else
 			setCurrentComboItem(hatchBackground, CommonStrings::None);
@@ -983,16 +1209,16 @@ void ColorPalette::slotGrad(int number)
 		bool sigBlocked1 = gradEdit->blockSignals(true);
 		bool sigBlocked2 = gradientType->blockSignals(true);
 		bool sigBlocked3 = namedGradient->blockSignals(true);
-		if (!currentItem->gradient().isEmpty())
+		if (!m_item->gradient().isEmpty())
 		{
-			setCurrentComboItem(namedGradient, currentItem->gradient());
-			gradEdit->setGradient(gradientList->value(currentItem->gradient()));
+			setCurrentComboItem(namedGradient, m_item->gradient());
+			gradEdit->setGradient(gradientList->value(m_item->gradient()));
 			gradEdit->setGradientEditable(false);
 		}
 		else
 		{
 			namedGradient->setCurrentIndex(0);
-			gradEdit->setGradient(currentItem->fill_gradient);
+			gradEdit->setGradient(m_item->fill_gradient);
 			gradEdit->setGradientEditable(true);
 		}
 		if (gradientType->currentIndex() == 0)
@@ -1013,30 +1239,30 @@ void ColorPalette::slotGrad(int number)
 		else if (gradientType->currentIndex() == 3)
 		{
 			stackedWidget_2->setCurrentIndex(1);
-			if ((currentItem->GrColorP1 != CommonStrings::None) && (!currentItem->GrColorP1.isEmpty()))
-				setCurrentComboItem(colorPoint1, currentItem->GrColorP1);
+			if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
+				setCurrentComboItem(colorPoint1, m_item->GrColorP1);
 			else
 				colorPoint1->setCurrentIndex(0);
-			if ((currentItem->GrColorP2 != CommonStrings::None) && (!currentItem->GrColorP2.isEmpty()))
-				setCurrentComboItem(colorPoint2, currentItem->GrColorP2);
+			if ((m_item->GrColorP2 != CommonStrings::None) && (!m_item->GrColorP2.isEmpty()))
+				setCurrentComboItem(colorPoint2, m_item->GrColorP2);
 			else
 				colorPoint2->setCurrentIndex(0);
-			if ((currentItem->GrColorP3 != CommonStrings::None) && (!currentItem->GrColorP3.isEmpty()))
-				setCurrentComboItem(colorPoint3, currentItem->GrColorP3);
+			if ((m_item->GrColorP3 != CommonStrings::None) && (!m_item->GrColorP3.isEmpty()))
+				setCurrentComboItem(colorPoint3, m_item->GrColorP3);
 			else
 				colorPoint3->setCurrentIndex(0);
-			if ((currentItem->GrColorP4 != CommonStrings::None) && (!currentItem->GrColorP4.isEmpty()))
-				setCurrentComboItem(colorPoint4, currentItem->GrColorP4);
+			if ((m_item->GrColorP4 != CommonStrings::None) && (!m_item->GrColorP4.isEmpty()))
+				setCurrentComboItem(colorPoint4, m_item->GrColorP4);
 			else
 				colorPoint4->setCurrentIndex(0);
-			color1Alpha->setValue(qRound(currentItem->GrCol1transp * 100));
-			color2Alpha->setValue(qRound(currentItem->GrCol2transp * 100));
-			color3Alpha->setValue(qRound(currentItem->GrCol3transp * 100));
-			color4Alpha->setValue(qRound(currentItem->GrCol4transp * 100));
-			color1Shade->setValue(currentItem->GrCol1Shade);
-			color2Shade->setValue(currentItem->GrCol2Shade);
-			color3Shade->setValue(currentItem->GrCol3Shade);
-			color4Shade->setValue(currentItem->GrCol4Shade);
+			color1Alpha->setValue(qRound(m_item->GrCol1transp * 100));
+			color2Alpha->setValue(qRound(m_item->GrCol2transp * 100));
+			color3Alpha->setValue(qRound(m_item->GrCol3transp * 100));
+			color4Alpha->setValue(qRound(m_item->GrCol4transp * 100));
+			color1Shade->setValue(m_item->GrCol1Shade);
+			color2Shade->setValue(m_item->GrCol2Shade);
+			color3Shade->setValue(m_item->GrCol3Shade);
+			color4Shade->setValue(m_item->GrCol4Shade);
 			emit NewGradient(9);
 		}
 		else if (gradientType->currentIndex() == 4)
@@ -1047,9 +1273,9 @@ void ColorPalette::slotGrad(int number)
 		else if (gradientType->currentIndex() == 5)
 		{
 			stackedWidget_2->setCurrentIndex(2);
-			if ((currentItem->selectedMeshPointX > -1) && (currentItem->selectedMeshPointY > -1l))
+			if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
 			{
-				meshPoint mp = currentItem->meshGradientArray[currentItem->selectedMeshPointX][currentItem->selectedMeshPointY];
+				meshPoint mp = m_item->meshGradientArray[m_item->selectedMeshPointX][m_item->selectedMeshPointY];
 				setCurrentComboItem(colorMeshPoint, mp.colorName);
 				shadeMeshPoint->setValue(mp.shade);
 				transparencyMeshPoint->setValue(mp.transparency * 100);
@@ -1067,15 +1293,15 @@ void ColorPalette::slotGrad(int number)
 	}
 	else if (number == 2)
 	{
-		hatchAngle->setValue(currentItem->hatchAngle);
-		hatchDist->setValue(currentItem->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
-		hatchType->setCurrentIndex(currentItem->hatchType);
-		if ((currentItem->hatchForeground != CommonStrings::None) && (!currentItem->hatchForeground.isEmpty()))
-			setCurrentComboItem(hatchLineColor, currentItem->hatchForeground);
-		if (currentItem->hatchUseBackground)
+		hatchAngle->setValue(m_item->hatchAngle);
+		hatchDist->setValue(m_item->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
+		hatchType->setCurrentIndex(m_item->hatchType);
+		if ((m_item->hatchForeground != CommonStrings::None) && (!m_item->hatchForeground.isEmpty()))
+			setCurrentComboItem(hatchLineColor, m_item->hatchForeground);
+		if (m_item->hatchUseBackground)
 		{
-			if (!currentItem->hatchBackground.isEmpty())
-				setCurrentComboItem(hatchBackground, currentItem->hatchBackground);
+			if (!m_item->hatchBackground.isEmpty())
+				setCurrentComboItem(hatchBackground, m_item->hatchBackground);
 		}
 		else
 			setCurrentComboItem(hatchBackground, CommonStrings::None);
@@ -1108,30 +1334,30 @@ void ColorPalette::slotGradType(int type)
 	else if (type == 3)
 	{
 		stackedWidget_2->setCurrentIndex(1);
-		if ((currentItem->GrColorP1 != CommonStrings::None) && (!currentItem->GrColorP1.isEmpty()))
-			setCurrentComboItem(colorPoint1, currentItem->GrColorP1);
+		if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
+			setCurrentComboItem(colorPoint1, m_item->GrColorP1);
 		else
 			colorPoint1->setCurrentIndex(0);
-		if ((currentItem->GrColorP2 != CommonStrings::None) && (!currentItem->GrColorP2.isEmpty()))
-			setCurrentComboItem(colorPoint2, currentItem->GrColorP2);
+		if ((m_item->GrColorP2 != CommonStrings::None) && (!m_item->GrColorP2.isEmpty()))
+			setCurrentComboItem(colorPoint2, m_item->GrColorP2);
 		else
 			colorPoint2->setCurrentIndex(0);
-		if ((currentItem->GrColorP3 != CommonStrings::None) && (!currentItem->GrColorP3.isEmpty()))
-			setCurrentComboItem(colorPoint3, currentItem->GrColorP3);
+		if ((m_item->GrColorP3 != CommonStrings::None) && (!m_item->GrColorP3.isEmpty()))
+			setCurrentComboItem(colorPoint3, m_item->GrColorP3);
 		else
 			colorPoint3->setCurrentIndex(0);
-		if ((currentItem->GrColorP4 != CommonStrings::None) && (!currentItem->GrColorP4.isEmpty()))
-			setCurrentComboItem(colorPoint4, currentItem->GrColorP4);
+		if ((m_item->GrColorP4 != CommonStrings::None) && (!m_item->GrColorP4.isEmpty()))
+			setCurrentComboItem(colorPoint4, m_item->GrColorP4);
 		else
 			colorPoint4->setCurrentIndex(0);
-		color1Alpha->setValue(qRound(currentItem->GrCol1transp * 100));
-		color2Alpha->setValue(qRound(currentItem->GrCol2transp * 100));
-		color3Alpha->setValue(qRound(currentItem->GrCol3transp * 100));
-		color4Alpha->setValue(qRound(currentItem->GrCol4transp * 100));
-		color1Shade->setValue(currentItem->GrCol1Shade);
-		color2Shade->setValue(currentItem->GrCol2Shade);
-		color3Shade->setValue(currentItem->GrCol3Shade);
-		color4Shade->setValue(currentItem->GrCol4Shade);
+		color1Alpha->setValue(qRound(m_item->GrCol1transp * 100));
+		color2Alpha->setValue(qRound(m_item->GrCol2transp * 100));
+		color3Alpha->setValue(qRound(m_item->GrCol3transp * 100));
+		color4Alpha->setValue(qRound(m_item->GrCol4transp * 100));
+		color1Shade->setValue(m_item->GrCol1Shade);
+		color2Shade->setValue(m_item->GrCol2Shade);
+		color3Shade->setValue(m_item->GrCol3Shade);
+		color4Shade->setValue(m_item->GrCol4Shade);
 		emit NewGradient(9);
 	}
 	else if (type == 4)
@@ -1142,9 +1368,9 @@ void ColorPalette::slotGradType(int type)
 	else if (type == 5)
 	{
 		stackedWidget_2->setCurrentIndex(2);
-		if ((currentItem->selectedMeshPointX > -1) && (currentItem->selectedMeshPointY > -1l))
+		if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
 		{
-			meshPoint mp = currentItem->meshGradientArray[currentItem->selectedMeshPointX][currentItem->selectedMeshPointY];
+			meshPoint mp = m_item->meshGradientArray[m_item->selectedMeshPointX][m_item->selectedMeshPointY];
 			setCurrentComboItem(colorMeshPoint, mp.colorName);
 			shadeMeshPoint->setValue(mp.shade);
 			transparencyMeshPoint->setValue(mp.transparency * 100);
@@ -1182,6 +1408,150 @@ void ColorPalette::updateColorSpecialGradient()
 			this->setMeshPatchPoint();
 		else if (m_ScMW->view->editStrokeGradient == 9)
 			this->setMeshPatch();
+	}
+}
+
+void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk, double cx, double cy)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		QRectF upRect;
+		UndoTransaction trans;
+		if (UndoManager::undoEnabled())
+			trans = undoManager->beginTransaction(Um::Selection, Um::ILine, Um::GradPos + "p", "", Um::ILine);
+		if (m_ScMW->view->editStrokeGradient == 1)
+		{
+			m_item->setGradientStrokeStartX(x1 / m_unitRatio);
+			m_item->setGradientStrokeStartY(y1 / m_unitRatio);
+			m_item->setGradientStrokeEndX(x2 / m_unitRatio);
+			m_item->setGradientStrokeEndY(y2 / m_unitRatio);
+			m_item->setGradientStrokeFocalX(fx / m_unitRatio);
+			m_item->setGradientStrokeFocalY(fy / m_unitRatio);
+			m_item->setGradientStrokeScale(sg);
+			m_item->setGradientStrokeSkew(sk);
+			if (m_item->strokeGradientType() == 6)
+			{
+				m_item->setGradientStrokeFocalX(m_item->gradientStrokeStartX());
+				m_item->setGradientStrokeFocalY(m_item->gradientStrokeStartY());
+			}
+			m_item->update();
+			upRect = QRectF(QPointF(m_item->gradientStrokeStartX(), m_item->gradientStrokeStartY()), QPointF(m_item->gradientStrokeEndX(), m_item->gradientStrokeEndY()));
+			double radEnd = distance(m_item->gradientStrokeEndX() - m_item->gradientStrokeStartX(), m_item->gradientStrokeEndY() - m_item->gradientStrokeStartY());
+			double rotEnd = xy2Deg(m_item->gradientStrokeEndX() - m_item->gradientStrokeStartX(), m_item->gradientStrokeEndY() - m_item->gradientStrokeStartY());
+			QTransform m;
+			m.translate(m_item->gradientStrokeStartX(), m_item->gradientStrokeStartY());
+			m.rotate(rotEnd);
+			m.rotate(-90);
+			m.rotate(m_item->gradientStrokeSkew());
+			m.translate(radEnd * m_item->gradientStrokeScale(), 0);
+			QPointF shP = m.map(QPointF(0,0));
+			upRect = upRect.united(QRectF(shP, QPointF(m_item->gradientStrokeEndX(), m_item->gradientStrokeEndY())).normalized());
+			upRect = upRect.united(QRectF(shP, QPointF(m_item->gradientStrokeStartX(), m_item->gradientStrokeStartY())).normalized());
+			upRect |= QRectF(shP, QPointF(0, 0)).normalized();
+			upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
+		}
+		else if (m_ScMW->view->editStrokeGradient == 3)
+		{
+			m_item->setGradientControl1(FPoint(x1 / m_unitRatio, y1 / m_unitRatio));
+			m_item->setGradientControl2(FPoint(x2 / m_unitRatio, y2 / m_unitRatio));
+			m_item->setGradientControl3(FPoint(fx / m_unitRatio, fy / m_unitRatio));
+			m_item->setGradientControl4(FPoint(sg / m_unitRatio, sk / m_unitRatio));
+			m_item->update();
+			upRect = QRectF(QPointF(-m_item->width(), -m_item->height()), QPointF(m_item->width() * 2, m_item->height() * 2)).normalized();
+		}
+		else if (m_ScMW->view->editStrokeGradient == 4)
+		{
+			m_item->setGradientControl1(FPoint(x1 / m_unitRatio, y1 / m_unitRatio));
+			m_item->setGradientControl2(FPoint(x2 / m_unitRatio, y2 / m_unitRatio));
+			m_item->setGradientControl3(FPoint(fx / m_unitRatio, fy / m_unitRatio));
+			m_item->setGradientControl4(FPoint(sg / m_unitRatio, sk / m_unitRatio));
+			m_item->setGradientControl5(FPoint(cx / m_unitRatio, cy / m_unitRatio));
+			m_item->update();
+			upRect = QRectF(QPointF(-m_item->width(), -m_item->height()), QPointF(m_item->width() * 2, m_item->height() * 2)).normalized();
+		}
+		else
+		{
+			if (m_item->gradientType() == 13 && UndoManager::undoEnabled())
+			{
+				SimpleState *ss= new SimpleState("Refresh");
+				ss->set("UNDO_UPDATE_CONICAL");
+				undoManager->action(m_item,ss);
+			}
+			m_item->setGradientStartX(x1 / m_unitRatio);
+			m_item->setGradientStartY(y1 / m_unitRatio);
+			m_item->setGradientEndX(x2 / m_unitRatio);
+			m_item->setGradientEndY(y2 / m_unitRatio);
+			m_item->setGradientFocalX(fx / m_unitRatio);
+			m_item->setGradientFocalY(fy / m_unitRatio);
+			m_item->setGradientScale(sg);
+			m_item->setGradientSkew(sk);
+			if (m_item->strokeGradientType() == 6)
+			{
+				m_item->setGradientFocalX(m_item->gradientStartX());
+				m_item->setGradientFocalY(m_item->gradientStartY());
+			}
+			if (m_item->gradientType() == 13 && UndoManager::undoEnabled())
+			{
+				m_item->createConicalMesh();
+				SimpleState *ss= new SimpleState("Refresh");
+				ss->set("REDO_UPDATE_CONICAL");
+				undoManager->action(m_item,ss);
+			}
+			m_item->update();
+			upRect = QRectF(QPointF(m_item->gradientStartX(), m_item->gradientStartY()), QPointF(m_item->gradientEndX(), m_item->gradientEndY()));
+			double radEnd = distance(m_item->gradientEndX() - m_item->gradientStartX(), m_item->gradientEndY() - m_item->gradientStartY());
+			double rotEnd = xy2Deg(m_item->gradientEndX() - m_item->gradientStartX(), m_item->gradientEndY() - m_item->gradientStartY());
+			QTransform m;
+			m.translate(m_item->gradientStartX(), m_item->gradientStartY());
+			m.rotate(rotEnd);
+			m.rotate(-90);
+			m.rotate(m_item->gradientSkew());
+			m.translate(radEnd * m_item->gradientScale(), 0);
+			QPointF shP = m.map(QPointF(0,0));
+			upRect |= QRectF(shP, QPointF(m_item->gradientEndX(), m_item->gradientEndY())).normalized();
+			upRect |= QRectF(shP, QPointF(m_item->gradientStartX(), m_item->gradientStartY())).normalized();
+			upRect |= QRectF(shP, QPointF(0, 0)).normalized();
+			upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
+		}
+		if (trans)
+			trans.commit();
+		upRect.translate(m_item->xPos(), m_item->yPos());
+		m_doc->regionsChanged()->update(upRect.adjusted(-10.0, -10.0, 10.0, 10.0));
+		m_doc->changed();
+	}
+}
+
+void ColorPalette::toggleGradientEdit(int stroke)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_ScMW->view->editStrokeGradient = stroke;
+		if (stroke == 1)
+		{
+			if (this->gradEditButtonStroke->isChecked())
+				m_ScMW->view->requestMode(modeEditGradientVectors);
+			else
+				m_ScMW->view->requestMode(modeNormal);
+		}
+		else
+		{
+			if ((this->gradEditButton->isChecked()) || (this->editMeshColors->isChecked()))
+			{
+				if ((stroke == 5) || (stroke == 6) || (stroke == 7))
+					m_ScMW->view->requestMode(modeEditMeshGradient);
+				else if ((stroke == 8) || (stroke == 9) || (stroke == 10) || (stroke == 11))
+					m_ScMW->view->requestMode(modeEditMeshPatch);
+				else
+					m_ScMW->view->requestMode(modeEditGradientVectors);
+			}
+			else
+				m_ScMW->view->requestMode(modeNormal);
+		}
+		m_ScMW->view->RefreshGradient(m_item);
 	}
 }
 
@@ -1227,10 +1597,10 @@ void ColorPalette::handleStrokeGradientExtend(int val)
 	if (m_doc)
 	{
 		if (val == 0)
-			currentItem->setStrokeGradientExtend(VGradient::none);
+			m_item->setStrokeGradientExtend(VGradient::none);
 		else
-			currentItem->setStrokeGradientExtend(VGradient::pad);
-		currentItem->update();
+			m_item->setStrokeGradientExtend(VGradient::pad);
+		m_item->update();
 		m_doc->regionsChanged()->update(QRect());
 	}
 }
@@ -1239,15 +1609,15 @@ void ColorPalette::setNamedGradientStroke(const QString &name)
 {
 	if (namedGradientStroke->currentIndex() == 0)
 	{
-		gradEditStroke->setGradient(currentItem->stroke_gradient);
-		currentItem->setStrokeGradient("");
+		gradEditStroke->setGradient(m_item->stroke_gradient);
+		m_item->setStrokeGradient("");
 		gradEditStroke->setGradientEditable(true);
 	}
 	else
 	{
 		gradEditStroke->setGradient(gradientList->value(name));
 		gradEditStroke->setGradientEditable(false);
-		currentItem->setStrokeGradient(name);
+		m_item->setStrokeGradient(name);
 	}
 	if (gradientTypeStroke->currentIndex() == 0)
 		emit NewGradientS(6);
@@ -1260,16 +1630,16 @@ void ColorPalette::slotGradStroke(int number)
 	if (number == 1)
 	{
 		bool sigBlocked = namedGradientStroke->blockSignals(true);
-		if (!currentItem->strokeGradient().isEmpty())
+		if (!m_item->strokeGradient().isEmpty())
 		{
-			setCurrentComboItem(namedGradientStroke, currentItem->strokeGradient());
-			gradEditStroke->setGradient(gradientList->value(currentItem->strokeGradient()));
+			setCurrentComboItem(namedGradientStroke, m_item->strokeGradient());
+			gradEditStroke->setGradient(gradientList->value(m_item->strokeGradient()));
 			gradEditStroke->setGradientEditable(false);
 		}
 		else
 		{
 			namedGradientStroke->setCurrentIndex(0);
-			gradEditStroke->setGradient(currentItem->stroke_gradient);
+			gradEditStroke->setGradient(m_item->stroke_gradient);
 			gradEditStroke->setGradientEditable(true);
 		}
 		emit NewPatternS("");
@@ -1305,7 +1675,7 @@ void ColorPalette::showGradientStroke(int number)
 		else
 			gradientTypeStroke->setCurrentIndex(0);
 		strokeModeCombo->setCurrentIndex(1);
-		if (currentItem->getStrokeGradientExtend() == VGradient::none)
+		if (m_item->getStrokeGradientExtend() == VGradient::none)
 			GradientExtendS->setCurrentIndex(0);
 		else
 			GradientExtendS->setCurrentIndex(1);
@@ -1574,8 +1944,8 @@ void ColorPalette::changeHatchProps()
 	bool useB = (color2 != CommonStrings::None);
 	double angle = hatchAngle->value();
 	double dist = hatchDist->value() / unitGetRatioFromIndex(m_unitIndex);
-	currentItem->setHatchParameters(hatchType->currentIndex(), dist, angle, useB, color2, color1);
-	currentItem->update();
+	m_item->setHatchParameters(hatchType->currentIndex(), dist, angle, useB, color2, color1);
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
@@ -1600,6 +1970,24 @@ void ColorPalette::fillStrokeSelector(int /*index*/)
 		emit editGradient(editStrokeGradient);
 	}
 	updateFromItem();
+}
+
+void ColorPalette::enablePatterns(bool enable)
+{
+	if (enable)
+	{
+		if (fillModeCombo->count() < 4)
+			fillModeCombo->addItem( tr("Pattern") );
+		if (strokeModeCombo->count() < 3)
+			strokeModeCombo->addItem( tr("Pattern") );
+	}
+	else
+	{
+		if (fillModeCombo->count() == 4)
+			fillModeCombo->removeItem(3);
+		if (strokeModeCombo->count() == 3)
+			strokeModeCombo->removeItem(2);
+	}
 }
 
 /*void Cpalette::editLineColorSelectorButton()
@@ -1635,9 +2023,9 @@ void ColorPalette::editMeshPointColor()
 {
 	if (editMeshColors->isChecked())
 	{
-		if (currentItem->gradientType() == 11)
+		if (m_item->gradientType() == 11)
 			editStrokeGradient = 6;
-		else if (currentItem->gradientType() == 12)
+		else if (m_item->gradientType() == 12)
 			editStrokeGradient = 8;
 		else
 			editStrokeGradient = 0;
@@ -1659,8 +2047,8 @@ void ColorPalette::createNewMeshGradient()
 	dia->setWindowTitle( tr( "Create Mesh" ) );
 	if (dia->exec())
 	{
-		currentItem->createGradientMesh(dia->Rows->value(), dia->Cols->value());
-		currentItem->update();
+		m_item->createGradientMesh(dia->Rows->value(), dia->Cols->value());
+		m_item->update();
 		m_doc->regionsChanged()->update(QRect());
 	}
 	delete dia;
@@ -1668,15 +2056,15 @@ void ColorPalette::createNewMeshGradient()
 
 void ColorPalette::resetMeshGradient()
 {
-	currentItem->resetGradientMesh();
-	currentItem->update();
+	m_item->resetGradientMesh();
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
 void ColorPalette::meshGradientToShape()
 {
-	currentItem->meshToShape();
-	currentItem->update();
+	m_item->meshToShape();
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
@@ -1686,21 +2074,21 @@ void ColorPalette::updateMeshPoint()
 	if (color == CommonStrings::tr_NoneColor)
 		color = CommonStrings::None;
 	double t = transparencyMeshPoint->value() / 100.0;
-	currentItem->setMeshPointColor(currentItem->selectedMeshPointX, currentItem->selectedMeshPointY, color, static_cast<int>(shadeMeshPoint->value()), t, m_doc->view()->editStrokeGradient == 8);
-	currentItem->update();
+	m_item->setMeshPointColor(m_item->selectedMeshPointX, m_item->selectedMeshPointY, color, static_cast<int>(shadeMeshPoint->value()), t, m_doc->view()->editStrokeGradient == 8);
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
 void ColorPalette::setMeshPatchPoint()
 {
-	if ((currentItem->selectedMeshPointX > -1) && (currentItem->selectedMeshPointY > 0))
+	if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > 0))
 	{
 		colorMeshPoint->setEnabled(true);
 		shadeMeshPoint->setEnabled(true);
 		transparencyMeshPoint->setEnabled(true);
-		meshGradientPatch patch = currentItem->meshGradientPatches[currentItem->selectedMeshPointX];
+		meshGradientPatch patch = m_item->meshGradientPatches[m_item->selectedMeshPointX];
 		meshPoint mp;
-		switch (currentItem->selectedMeshPointY)
+		switch (m_item->selectedMeshPointY)
 		{
 			case 1:
 				mp = patch.TL;
@@ -1729,17 +2117,17 @@ void ColorPalette::setMeshPatchPoint()
 
 void ColorPalette::setMeshPatch()
 {
-	CGradDia->changebuttonRemovePatch((currentItem->selectedMeshPointX > -1) && (currentItem->meshGradientPatches.count() > 1));
+	CGradDia->changebuttonRemovePatch((m_item->selectedMeshPointX > -1) && (m_item->meshGradientPatches.count() > 1));
 }
 
 
 void ColorPalette::resetOneControlPoint()
 {
-	int grow = currentItem->selectedMeshPointX;
-	int gcol = currentItem->selectedMeshPointY;
-	int cont = currentItem->selectedMeshControlPoint;
+	int grow = m_item->selectedMeshPointX;
+	int gcol = m_item->selectedMeshPointY;
+	int cont = m_item->selectedMeshControlPoint;
 	meshPoint tmp;
-	if (currentItem->gradientType() == 12)
+	if (m_item->gradientType() == 12)
 	{
 		if ((grow == -1) || (gcol == 0))
 			return;
@@ -1755,55 +2143,55 @@ void ColorPalette::resetOneControlPoint()
 		switch (gcol)
 		{
 			case 1:
-				tmp = currentItem->meshGradientPatches[grow].TL;
+				tmp = m_item->meshGradientPatches[grow].TL;
 				if (cont == 2)
 					tmp.controlBottom = tmp.gridPoint;
 				if (cont == 4)
 					tmp.controlRight  = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].TL,tmp));
-				currentItem->meshGradientPatches[grow].TL = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].TL,tmp));
+				m_item->meshGradientPatches[grow].TL = tmp;
 				break;
 			case 2:
-				tmp = currentItem->meshGradientPatches[grow].TR;
+				tmp = m_item->meshGradientPatches[grow].TR;
 				if (cont == 2)
 					tmp.controlBottom = tmp.gridPoint;
 				if (cont == 3)
 					tmp.controlLeft   = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].TR,tmp));
-				currentItem->meshGradientPatches[grow].TR = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].TR,tmp));
+				m_item->meshGradientPatches[grow].TR = tmp;
 				break;
 			case 3:
-				tmp = currentItem->meshGradientPatches[grow].BR;
+				tmp = m_item->meshGradientPatches[grow].BR;
 				if (cont == 1)
 					tmp.controlTop  = tmp.gridPoint;
 				if (cont == 3)
 					tmp.controlLeft = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].BR,tmp));
-				currentItem->meshGradientPatches[grow].BR = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].BR,tmp));
+				m_item->meshGradientPatches[grow].BR = tmp;
 				break;
 			case 4:
-				tmp = currentItem->meshGradientPatches[grow].BL;
+				tmp = m_item->meshGradientPatches[grow].BL;
 				if (cont == 1)
 					tmp.controlTop   = tmp.gridPoint;
 				if (cont == 4)
 					tmp.controlRight = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].BL,tmp));
-				currentItem->meshGradientPatches[grow].BL = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].BL,tmp));
+				m_item->meshGradientPatches[grow].BL = tmp;
 				break;
 		}
 		if(UndoManager::undoEnabled())
-			undoManager->action(currentItem,ss);
+			undoManager->action(m_item,ss);
 	}
 	else
 	{
 		if ((grow == -1) || (gcol == -1))
 			return;
 
-		tmp = currentItem->meshGradientArray[grow][gcol];
+		tmp = m_item->meshGradientArray[grow][gcol];
 		if (cont == 1)
 			tmp.controlTop    = tmp.gridPoint;
 		else if (cont == 2)
@@ -1820,21 +2208,21 @@ void ColorPalette::resetOneControlPoint()
 			ss->set("ARRAY", true);
 			ss->set("X", grow);
 			ss->set("Y", gcol);
-			ss->setItem(qMakePair(currentItem->meshGradientArray[grow][gcol],tmp));
-			undoManager->action(currentItem,ss);
+			ss->setItem(qMakePair(m_item->meshGradientArray[grow][gcol],tmp));
+			undoManager->action(m_item,ss);
 		}
-		currentItem->meshGradientArray[grow][gcol] = tmp;
+		m_item->meshGradientArray[grow][gcol] = tmp;
 	}
-	currentItem->update();
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
 void ColorPalette::resetAllControlPoints()
 {
-	int grow = currentItem->selectedMeshPointX;
-	int gcol = currentItem->selectedMeshPointY;
+	int grow = m_item->selectedMeshPointX;
+	int gcol = m_item->selectedMeshPointY;
 	meshPoint tmp;
-	if (currentItem->gradientType() == 12)
+	if (m_item->gradientType() == 12)
 	{
 		if ((grow == -1) || (gcol == 0))
 			return;
@@ -1850,54 +2238,54 @@ void ColorPalette::resetAllControlPoints()
 		switch (gcol)
 		{
 			case 1:
-				tmp = currentItem->meshGradientPatches[grow].TL;
+				tmp = m_item->meshGradientPatches[grow].TL;
 				tmp.controlTop    = tmp.gridPoint;
 				tmp.controlLeft   = tmp.gridPoint;
 				tmp.controlRight  = tmp.gridPoint;
 				tmp.controlBottom = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].TL,tmp));
-				currentItem->meshGradientPatches[grow].TL = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].TL,tmp));
+				m_item->meshGradientPatches[grow].TL = tmp;
 		break;
 			case 2:
-				tmp = currentItem->meshGradientPatches[grow].TR;
+				tmp = m_item->meshGradientPatches[grow].TR;
 				tmp.controlTop    = tmp.gridPoint;
 				tmp.controlLeft   = tmp.gridPoint;
 				tmp.controlRight  = tmp.gridPoint;
 				tmp.controlBottom = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].TR,tmp));
-				currentItem->meshGradientPatches[grow].TR = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].TR,tmp));
+				m_item->meshGradientPatches[grow].TR = tmp;
 		break;
 			case 3:
-				tmp = currentItem->meshGradientPatches[grow].BR;
+				tmp = m_item->meshGradientPatches[grow].BR;
 				tmp.controlTop    = tmp.gridPoint;
 				tmp.controlLeft   = tmp.gridPoint;
 				tmp.controlRight  = tmp.gridPoint;
 				tmp.controlBottom = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].BR,tmp));
-				currentItem->meshGradientPatches[grow].BR = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].BR,tmp));
+				m_item->meshGradientPatches[grow].BR = tmp;
 		break;
 			case 4:
-				tmp = currentItem->meshGradientPatches[grow].BL;
+				tmp = m_item->meshGradientPatches[grow].BL;
 				tmp.controlTop    = tmp.gridPoint;
 				tmp.controlLeft   = tmp.gridPoint;
 				tmp.controlRight  = tmp.gridPoint;
 				tmp.controlBottom = tmp.gridPoint;
 				if(UndoManager::undoEnabled())
-					ss->setItem(qMakePair(currentItem->meshGradientPatches[grow].BL,tmp));
-				currentItem->meshGradientPatches[grow].BL = tmp;
+					ss->setItem(qMakePair(m_item->meshGradientPatches[grow].BL,tmp));
+				m_item->meshGradientPatches[grow].BL = tmp;
 		break;
 		}
 		if(UndoManager::undoEnabled())
-			undoManager->action(currentItem,ss);
+			undoManager->action(m_item,ss);
 	}
 	else
 	{
 		if ((grow == -1) || (gcol == -1))
 			return;
-		tmp = currentItem->meshGradientArray[grow][gcol];
+		tmp = m_item->meshGradientArray[grow][gcol];
 		tmp.controlTop    = tmp.gridPoint;
 		tmp.controlLeft   = tmp.gridPoint;
 		tmp.controlRight  = tmp.gridPoint;
@@ -1909,12 +2297,12 @@ void ColorPalette::resetAllControlPoints()
 			ss->set("ARRAY", true);
 			ss->set("X", grow);
 			ss->set("Y", gcol);
-			ss->setItem(qMakePair(currentItem->meshGradientArray[grow][gcol],tmp));
-			undoManager->action(currentItem,ss);
+			ss->setItem(qMakePair(m_item->meshGradientArray[grow][gcol],tmp));
+			undoManager->action(m_item,ss);
 		}
-		currentItem->meshGradientArray[grow][gcol] = tmp;
+		m_item->meshGradientArray[grow][gcol] = tmp;
 	}
-	currentItem->update();
+	m_item->update();
 	m_doc->regionsChanged()->update(QRect());
 }
 
@@ -1937,13 +2325,13 @@ void ColorPalette::editGradientVector()
 		CGradDia->hide();
 		editMeshColors->setEnabled(true);
 	}
-	if (currentItem->gradientType() == 9)
+	if (m_item->gradientType() == 9)
 		editStrokeGradient = 3;
-	else if (currentItem->gradientType() == 10)
+	else if (m_item->gradientType() == 10)
 		editStrokeGradient = 4;
-	else if (currentItem->gradientType() == 11)
+	else if (m_item->gradientType() == 11)
 		editStrokeGradient = 5;
-	else if (currentItem->gradientType() == 12)
+	else if (m_item->gradientType() == 12)
 		editStrokeGradient = 9;
 	else
 		editStrokeGradient = 0;
@@ -1974,32 +2362,32 @@ void ColorPalette::setGradientVectorValues()
 	if (gradEditButton->isChecked())
 	{
 		CGradDia->unitChange(m_doc->unitIndex());
-		CGradDia->setValues(currentItem->gradientStartX(), currentItem->gradientStartY(), currentItem->gradientEndX(), currentItem->gradientEndY(), currentItem->GrFocalX, currentItem->GrFocalY, currentItem->GrScale, currentItem->GrSkew, 0, 0);
-		if (currentItem->gradientType() == 6)
+		CGradDia->setValues(m_item->gradientStartX(), m_item->gradientStartY(), m_item->gradientEndX(), m_item->gradientEndY(), m_item->GrFocalX, m_item->GrFocalY, m_item->GrScale, m_item->GrSkew, 0, 0);
+		if (m_item->gradientType() == 6)
 			CGradDia->selectLinear();
-		else if (currentItem->gradientType() == 7)
+		else if (m_item->gradientType() == 7)
 			CGradDia->selectRadial();
-		else if (currentItem->gradientType() == 9)
+		else if (m_item->gradientType() == 9)
 		{
-			CGradDia->setValues(currentItem->GrControl1.x(), currentItem->GrControl1.y(), currentItem->GrControl2.x(), currentItem->GrControl2.y(), currentItem->GrControl3.x(), currentItem->GrControl3.y(), currentItem->GrControl4.x(), currentItem->GrControl4.y(), 0, 0);
+			CGradDia->setValues(m_item->GrControl1.x(), m_item->GrControl1.y(), m_item->GrControl2.x(), m_item->GrControl2.y(), m_item->GrControl3.x(), m_item->GrControl3.y(), m_item->GrControl4.x(), m_item->GrControl4.y(), 0, 0);
 			CGradDia->selectFourColor();
 		}
-		else if (currentItem->gradientType() == 10)
+		else if (m_item->gradientType() == 10)
 		{
-			CGradDia->setValues(currentItem->GrControl1.x(), currentItem->GrControl1.y(), currentItem->GrControl2.x(), currentItem->GrControl2.y(), currentItem->GrControl3.x(), currentItem->GrControl3.y(), currentItem->GrControl4.x(), currentItem->GrControl4.y(), currentItem->GrControl5.x(), currentItem->GrControl5.y());
+			CGradDia->setValues(m_item->GrControl1.x(), m_item->GrControl1.y(), m_item->GrControl2.x(), m_item->GrControl2.y(), m_item->GrControl3.x(), m_item->GrControl3.y(), m_item->GrControl4.x(), m_item->GrControl4.y(), m_item->GrControl5.x(), m_item->GrControl5.y());
 			CGradDia->selectDiamond();
 		}
-		else if (currentItem->gradientType() == 11)
+		else if (m_item->gradientType() == 11)
 		{
 			CGradDia->selectMesh();
 			editMeshColors->setEnabled(false);
 		}
-		else if (currentItem->gradientType() == 12)
+		else if (m_item->gradientType() == 12)
 		{
 			CGradDia->selectPatchMesh();
 			editMeshColors->setEnabled(false);
 		}
-		else if (currentItem->gradientType() == 13)
+		else if (m_item->gradientType() == 13)
 			CGradDia->selectConical();
 	}
 }
@@ -2009,8 +2397,8 @@ void ColorPalette::setGradientVectorStrokeValues()
 	if (gradEditButtonStroke->isChecked())
 	{
 		CGradDia->unitChange(m_doc->unitIndex());
-		CGradDia->setValues(currentItem->GrStrokeStartX, currentItem->GrStrokeStartY, currentItem->GrStrokeEndX, currentItem->GrStrokeEndY, currentItem->GrStrokeFocalX, currentItem->GrStrokeFocalY, currentItem->GrStrokeScale, currentItem->GrStrokeSkew, 0, 0);
-		if (currentItem->strokeGradientType() == 6)
+		CGradDia->setValues(m_item->GrStrokeStartX, m_item->GrStrokeStartY, m_item->GrStrokeEndX, m_item->GrStrokeEndY, m_item->GrStrokeFocalX, m_item->GrStrokeFocalY, m_item->GrStrokeScale, m_item->GrStrokeSkew, 0, 0);
+		if (m_item->strokeGradientType() == 6)
 			CGradDia->selectLinear();
 		else
 			CGradDia->selectRadial();
@@ -2038,12 +2426,12 @@ void ColorPalette::setSpecialGradient(double x1, double y1, double x2, double y2
 
 void ColorPalette::setMeshPoint()
 {
-	if ((currentItem->selectedMeshPointX > -1) && (currentItem->selectedMeshPointY > -1))
+	if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1))
 	{
 		colorMeshPoint->setEnabled(true);
 		shadeMeshPoint->setEnabled(true);
 		transparencyMeshPoint->setEnabled(true);
-		meshPoint mp = currentItem->meshGradientArray[currentItem->selectedMeshPointX][currentItem->selectedMeshPointY];
+		meshPoint mp = m_item->meshGradientArray[m_item->selectedMeshPointX][m_item->selectedMeshPointY];
 		setCurrentComboItem(colorMeshPoint, mp.colorName);
 		shadeMeshPoint->setValue(mp.shade);
 		transparencyMeshPoint->setValue(mp.transparency * 100);
@@ -2063,24 +2451,24 @@ void ColorPalette::endPatchAdd()
 
 void ColorPalette::snapToPatchGrid(bool val)
 {
-	currentItem->setSnapToPatchGrid(val);
+	m_item->setSnapToPatchGrid(val);
 }
 
 void ColorPalette::handleRemovePatch()
 {
-	if ((currentItem->selectedMeshPointX > -1) && (currentItem->meshGradientPatches.count() > 1))
+	if ((m_item->selectedMeshPointX > -1) && (m_item->meshGradientPatches.count() > 1))
 	{
 		if(UndoManager::undoEnabled())
 		{
 			ScItemState<meshGradientPatch> *ss = new ScItemState<meshGradientPatch>(Um::RemoveMeshPatch,"",Um::ILine);
 			ss->set("REMOVE_MESH_PATCH");
-			ss->setItem(currentItem->meshGradientPatches.takeAt(currentItem->selectedMeshPointX));
-			ss->set("POS", currentItem->selectedMeshPointX);
-			undoManager->action(currentItem,ss);
+			ss->setItem(m_item->meshGradientPatches.takeAt(m_item->selectedMeshPointX));
+			ss->set("POS", m_item->selectedMeshPointX);
+			undoManager->action(m_item,ss);
 		}
-		currentItem->selectedMeshPointX = -1;
-		CGradDia->changebuttonRemovePatch((currentItem->selectedMeshPointX > -1) && (currentItem->meshGradientPatches.count() > 1));
-		currentItem->update();
+		m_item->selectedMeshPointX = -1;
+		CGradDia->changebuttonRemovePatch((m_item->selectedMeshPointX > -1) && (m_item->meshGradientPatches.count() > 1));
+		m_item->update();
 		m_doc->regionsChanged()->update(QRect());
 		editStrokeGradient = 9;
 		emit editGradient(editStrokeGradient);

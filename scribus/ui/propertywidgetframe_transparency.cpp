@@ -35,7 +35,6 @@ for which a new license (GPL+exception) is in place.
 PropertyWidgetFrame_Transparency::PropertyWidgetFrame_Transparency(QWidget* parent) : QWidget(parent)
 {
 	m_ScMW = 0;
-	m_doc  = 0;
 	m_item = 0;
 	m_haveDoc   = false;
 	m_haveItem  = false;
@@ -163,6 +162,14 @@ void PropertyWidgetFrame_Transparency::setDoc(ScribusDoc* d)
 		connect(this, SIGNAL(NewGradient(int)), m_doc, SLOT(itemSelection_SetItemGradMask(int)));
 		connect(this, SIGNAL(NewPattern(QString)), m_doc, SLOT(itemSelection_SetItemPatternMask(QString)));
 		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), m_doc, SLOT(itemSelection_SetItemPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
+
+		// Group
+		connect(this, SIGNAL(NewTrans(double))   , this, SLOT(handleGroupTransparency(double)));
+		connect(this, SIGNAL(NewBlend(int))      , this, SLOT(handleGroupBlending(int)));
+		connect(this, SIGNAL(NewGradient(int))   , this, SLOT(handleGroupGradMask(int)));
+		connect(this, SIGNAL(NewPattern(QString)), this, SLOT(handleGroupPatternMask(QString)));
+		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), this, SLOT(handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
+
 
 		connect(m_doc->scMW(), SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
 		connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
@@ -693,6 +700,7 @@ void PropertyWidgetFrame_Transparency::handleSpecialGradient(double x1, double y
 	}
 }
 
+
 /*********************************************************************
 *
 * Feature Pattern
@@ -865,5 +873,57 @@ void PropertyWidgetFrame_Transparency::editFillSelectorButton()
 	setCurrentItem(m_item);
 }
 
+/*********************************************************************
+*
+* Feature Group Transparency
+*
+**********************************************************************/
 
+void PropertyWidgetFrame_Transparency::handleGroupTransparency(double trans)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_item->setFillTransparency(trans);
+		m_item->update();
+	}
+}
+
+void PropertyWidgetFrame_Transparency::handleGroupBlending(int blend)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_item->setFillBlendmode(blend);
+		m_item->update();
+	}
+}
+
+void PropertyWidgetFrame_Transparency::handleGroupGradMask(int typ)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_item->GrMask = typ;
+		if ((typ > 0) && (typ < 7))
+			m_item->updateGradientVectors();
+		m_item->update();
+	}
+}
+
+void PropertyWidgetFrame_Transparency::handleGroupPatternMask(QString pattern)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_item->setPatternMask(pattern);
+		m_item->update();
+	}
+}
+
+void PropertyWidgetFrame_Transparency::handleGroupPatternMaskProps(double imageScaleX, double imageScaleY, double offsetX, double offsetY, double rotation, double skewX, double skewY, bool mirrorX, bool mirrorY)
+{
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_item->setMaskTransform(imageScaleX, imageScaleY, offsetX, offsetY, rotation, skewX, skewY);
+		m_item->setMaskFlip(mirrorX, mirrorY);
+		m_item->update();
+	}
+}
 

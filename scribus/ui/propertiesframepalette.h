@@ -31,6 +31,7 @@ class QWidget;
 #include "spalette.h"
 #include "sclayoutsection.h" // Indigo Section
 #include "flowlayout.h"
+#include "propertywidgetbase.h"
 
 class ColorCombo;
 class ColorPalette;
@@ -51,7 +52,9 @@ class Selection;
 class UndoManager;
 class PropertyWidgetFrame_Transparency;
 
-class SCRIBUS_API PropertiesFramePalette : public ScDockPalette
+
+class SCRIBUS_API PropertiesFramePalette : public ScDockPalette,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
@@ -112,12 +115,7 @@ public slots:
 private slots:
 
 	void NewLineMode(int mode);
-//	void handleGradientChanged();
 	void handleNewShape(int frameType);
-	void NewSpGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk, double cx, double cy);
-	void toggleGradientEdit(int);
-//	void NewSpGradientM(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
-//	void toggleGradientEditM();
 	void handleShapeEdit();
 
 protected:
@@ -130,7 +128,7 @@ protected:
 	PageItem* m_item;
 	UndoManager *undoManager;
 	
-	ScGuardedPtr<ScribusDoc> m_doc;
+//	ScGuardedPtr<ScribusDoc> m_doc;
 
 	ScLayoutSection *layoutSectionXYZ;
 	ScLayoutSection *layoutSectionDropShadow;

@@ -62,6 +62,8 @@ public:
 
 	void setMainWindow(ScribusMainWindow *mw);
 	void setDoc(ScribusDoc* d);
+	void unsetDoc();
+	void unsetItem();
 
 	void updateColorList();
 
@@ -73,6 +75,10 @@ private:
 
 	PageItem* currentItemFromSelection();
 	UndoManager * undoManager;
+
+private slots:
+	void NewSpGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk, double cx, double cy);
+	void toggleGradientEdit(int);
 
 public slots:
 
@@ -155,8 +161,11 @@ signals:
 protected:
 	GradientVectorDialog* CGradDia;
 	ScribusMainWindow *m_ScMW;
-//	QPointer<ScribusDoc> m_doc;
-	PageItem* currentItem;
+	double    m_unitRatio;
+	int		  m_unitIndex;
+	bool      m_haveDoc;
+	bool      m_haveItem;
+	PageItem* m_item;
 	ColorList colorList;
 	QHash<QString, ScPattern> *patternList;
 	QHash<QString, VGradient> *gradientList;
@@ -179,7 +188,6 @@ protected:
 	double m_Pattern_spaceS;
 	bool   m_Pattern_mirrorXS;
 	bool   m_Pattern_mirrorYS;
-	int    m_unitIndex;
 	int    editStrokeGradient;
 
 	void   connectSignals();

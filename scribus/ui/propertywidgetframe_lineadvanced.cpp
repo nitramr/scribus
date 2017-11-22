@@ -73,34 +73,11 @@ PropertyWidgetFrame_LineAdvanced::PropertyWidgetFrame_LineAdvanced( QWidget* par
 	connect(endArrowScale  , SIGNAL(valueChanged(double)), this, SLOT(handleEndArrowScale(double )));
 }
 
-void PropertyWidgetFrame_LineAdvanced::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	QWidget::changeEvent(e);
-}
-
-PageItem* PropertyWidgetFrame_LineAdvanced::currentItemFromSelection()
-{
-	PageItem *currentItem = NULL;
-
-	if (m_doc)
-	{
-		if (m_doc->m_Selection->count() > 1)
-		{
-			currentItem = m_doc->m_Selection->itemAt(0);
-		}
-		else if (m_doc->m_Selection->count() == 1)
-		{
-			currentItem = m_doc->m_Selection->itemAt(0);
-		}
-	}
-
-	return currentItem;
-}
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_LineAdvanced::setMainWindow(ScribusMainWindow *mw)
 {
@@ -108,6 +85,12 @@ void PropertyWidgetFrame_LineAdvanced::setMainWindow(ScribusMainWindow *mw)
 
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this  , SLOT(handleUpdateRequest(int)));
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_LineAdvanced::setDoc(ScribusDoc *d)
 {
@@ -151,69 +134,37 @@ void PropertyWidgetFrame_LineAdvanced::unsetDoc()
 	setEnabled(false);
 }
 
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+PageItem* PropertyWidgetFrame_LineAdvanced::currentItemFromSelection()
+{
+	PageItem *currentItem = NULL;
+
+	if (m_doc)
+	{
+		if (m_doc->m_Selection->count() > 1)
+		{
+			currentItem = m_doc->m_Selection->itemAt(0);
+		}
+		else if (m_doc->m_Selection->count() == 1)
+		{
+			currentItem = m_doc->m_Selection->itemAt(0);
+		}
+	}
+
+	return currentItem;
+}
+
 void PropertyWidgetFrame_LineAdvanced::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
 	handleSelectionChanged();
-}
-
-void PropertyWidgetFrame_LineAdvanced::handleSelectionChanged()
-{
-	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-
-	PageItem* currItem = currentItemFromSelection();
-	if (m_doc->m_Selection->count() > 1)
-	{
-		setEnabled(true);
-	}
-	else
-	{
-		int itemType = currItem ? (int) currItem->itemType() : -1;
-		m_haveItem = (itemType != -1);
-
-		lineMode->setEnabled(false);
-		switch (itemType)
-		{
-		case -1:
-			setEnabled(false);
-			break;
-		case PageItem::ImageFrame:
-		case PageItem::LatexFrame:
-		case PageItem::OSGFrame:
-			setEnabled(currItem->asOSGFrame() == NULL);
-			break;
-		case PageItem::Line:
-			setEnabled(true);
-			lineMode->setEnabled(true);
-			break;
-		case PageItem::Arc:
-		case PageItem::ItemType1:
-		case PageItem::ItemType3:
-		case PageItem::Polygon:
-		case PageItem::PolyLine:
-		case PageItem::PathText:
-		case PageItem::RegularPolygon:
-		case PageItem::TextFrame:
-			setEnabled(true);
-			break;
-		case PageItem::Symbol:
-			setEnabled(false);
-			break;
-		}
-	}
-	if (currItem)
-	{
-		setCurrentItem(currItem);
-	}
-
-}
-
-void PropertyWidgetFrame_LineAdvanced::handleUpdateRequest(int updateFlags)
-{
-	if (updateFlags & reqArrowStylesUpdate)
-		updateArrowStyles();
 }
 
 void PropertyWidgetFrame_LineAdvanced::setCurrentItem(PageItem *item)
@@ -302,6 +253,142 @@ void PropertyWidgetFrame_LineAdvanced::setCurrentItem(PageItem *item)
 		setEnabled(false);
 	}
 }
+
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_LineAdvanced::handleSelectionChanged()
+{
+	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	PageItem* currItem = currentItemFromSelection();
+	if (m_doc->m_Selection->count() > 1)
+	{
+		setEnabled(true);
+	}
+	else
+	{
+		int itemType = currItem ? (int) currItem->itemType() : -1;
+		m_haveItem = (itemType != -1);
+
+		lineMode->setEnabled(false);
+		switch (itemType)
+		{
+		case -1:
+			setEnabled(false);
+			break;
+		case PageItem::ImageFrame:
+		case PageItem::LatexFrame:
+		case PageItem::OSGFrame:
+			setEnabled(currItem->asOSGFrame() == NULL);
+			break;
+		case PageItem::Line:
+			setEnabled(true);
+			lineMode->setEnabled(true);
+			break;
+		case PageItem::Arc:
+		case PageItem::ItemType1:
+		case PageItem::ItemType3:
+		case PageItem::Polygon:
+		case PageItem::PolyLine:
+		case PageItem::PathText:
+		case PageItem::RegularPolygon:
+		case PageItem::TextFrame:
+			setEnabled(true);
+			break;
+		case PageItem::Symbol:
+			setEnabled(false);
+			break;
+		}
+	}
+	if (currItem)
+	{
+		setCurrentItem(currItem);
+	}
+
+}
+
+void PropertyWidgetFrame_LineAdvanced::handleUpdateRequest(int updateFlags)
+{
+	if (updateFlags & reqArrowStylesUpdate)
+		updateArrowStyles();
+}
+
+void PropertyWidgetFrame_LineAdvanced::languageChange()
+{
+	QSignalBlocker lineModeBlocker(lineMode);
+	int oldLineMode = lineMode->currentIndex();
+	lineMode->clear();
+	lineMode->addItem( tr("Left Point"));
+	lineMode->addItem( tr("End Points"));
+	lineMode->setCurrentIndex(oldLineMode);
+
+	lineModeLabel->setText( tr("&Basepoint:"));
+	startArrowLabel->setText( tr("Start Arrow:"));
+	endArrowLabel->setText( tr("End Arrow:"));
+	if (m_haveDoc)
+	{
+		QSignalBlocker startArrowBlocker(startArrow);
+		int arrowItem = startArrow->currentIndex();
+		startArrow->rebuildList(&m_doc->arrowStyles());
+		startArrow->setCurrentIndex(arrowItem);
+		QSignalBlocker endArrowBlocker(endArrow);
+		arrowItem = endArrow->currentIndex();
+		endArrow->rebuildList(&m_doc->arrowStyles());
+		endArrow->setCurrentIndex(arrowItem);
+	}
+	lineJoinLabel->setText( tr("Ed&ges:"));
+
+	QSignalBlocker lineJoinStyleBlocker(lineJoinStyle);
+	int oldLJoinStyle = lineJoinStyle->currentIndex();
+	lineJoinStyle->clear();
+	IconManager* im=IconManager::instance();
+	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-miter.png"), tr("Miter Join"));
+	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-bevel.png"), tr("Bevel Join"));
+	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-round.png"), tr("Round Join"));
+	lineJoinStyle->setCurrentIndex(oldLJoinStyle);
+
+	QSignalBlocker lineEndStyleBlocker(lineEndStyle);
+	int oldLEndStyle = lineEndStyle->currentIndex();
+	lineEndStyle->clear();
+	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-butt.png"), tr("Flat Cap"));
+	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-square.png"), tr("Square Cap"));
+	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-round.png"), tr("Round Cap"));
+	lineEndStyle->setCurrentIndex(oldLEndStyle);
+	lineEndLabel->setText( tr("&Endings:"));
+
+	QString pctSuffix = tr(" %");
+	startArrowScale->setSuffix(pctSuffix);
+	endArrowScale->setSuffix(pctSuffix);
+
+	lineMode->setToolTip( tr("Change settings for left or end points"));
+	lineJoinStyle->setToolTip( tr("Type of line joins"));
+	lineEndStyle->setToolTip( tr("Type of line end"));
+	startArrow->setToolTip( tr("Arrow head style for start of line"));
+	endArrow->setToolTip( tr("Arrow head style for end of line"));
+	startArrowScale->setToolTip( tr("Arrow head scale for start of line"));
+	endArrowScale->setToolTip( tr("Arrow head scale for end of line"));
+}
+
+void PropertyWidgetFrame_LineAdvanced::unitChange()
+{
+	if (!m_doc)
+		return;
+
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+}
+
+/*********************************************************************
+*
+* Feature
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_LineAdvanced::updateArrowStyles()
 {
@@ -453,67 +540,19 @@ void PropertyWidgetFrame_LineAdvanced::handleLineStyle(QListWidgetItem *widgetIt
 	lineEndStyle->setEnabled(setter);
 }
 
-void PropertyWidgetFrame_LineAdvanced::languageChange()
-{
-	QSignalBlocker lineModeBlocker(lineMode);
-	int oldLineMode = lineMode->currentIndex();
-	lineMode->clear();
-	lineMode->addItem( tr("Left Point"));
-	lineMode->addItem( tr("End Points"));
-	lineMode->setCurrentIndex(oldLineMode);
 
-	lineModeLabel->setText( tr("&Basepoint:"));
-	startArrowLabel->setText( tr("Start Arrow:"));
-	endArrowLabel->setText( tr("End Arrow:"));
-	if (m_haveDoc)
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_LineAdvanced::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
 	{
-		QSignalBlocker startArrowBlocker(startArrow);
-		int arrowItem = startArrow->currentIndex();
-		startArrow->rebuildList(&m_doc->arrowStyles());
-		startArrow->setCurrentIndex(arrowItem);
-		QSignalBlocker endArrowBlocker(endArrow);
-		arrowItem = endArrow->currentIndex();
-		endArrow->rebuildList(&m_doc->arrowStyles());
-		endArrow->setCurrentIndex(arrowItem);
-	}
-	lineJoinLabel->setText( tr("Ed&ges:"));
-
-	QSignalBlocker lineJoinStyleBlocker(lineJoinStyle);
-	int oldLJoinStyle = lineJoinStyle->currentIndex();
-	lineJoinStyle->clear();
-	IconManager* im=IconManager::instance();
-	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-miter.png"), tr("Miter Join"));
-	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-bevel.png"), tr("Bevel Join"));
-	lineJoinStyle->addItem(im->loadIcon("16/stroke-join-round.png"), tr("Round Join"));
-	lineJoinStyle->setCurrentIndex(oldLJoinStyle);
-
-	QSignalBlocker lineEndStyleBlocker(lineEndStyle);
-	int oldLEndStyle = lineEndStyle->currentIndex();
-	lineEndStyle->clear();
-	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-butt.png"), tr("Flat Cap"));
-	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-square.png"), tr("Square Cap"));
-	lineEndStyle->addItem(im->loadIcon("16/stroke-cap-round.png"), tr("Round Cap"));
-	lineEndStyle->setCurrentIndex(oldLEndStyle);
-	lineEndLabel->setText( tr("&Endings:"));
-
-	QString pctSuffix = tr(" %");
-	startArrowScale->setSuffix(pctSuffix);
-	endArrowScale->setSuffix(pctSuffix);
-
-	lineMode->setToolTip( tr("Change settings for left or end points"));
-	lineJoinStyle->setToolTip( tr("Type of line joins"));
-	lineEndStyle->setToolTip( tr("Type of line end"));
-	startArrow->setToolTip( tr("Arrow head style for start of line"));
-	endArrow->setToolTip( tr("Arrow head style for end of line"));
-	startArrowScale->setToolTip( tr("Arrow head scale for start of line"));
-	endArrowScale->setToolTip( tr("Arrow head scale for end of line"));
-}
-
-void PropertyWidgetFrame_LineAdvanced::unitChange()
-{
-	if (!m_doc)
+		languageChange();
 		return;
-
-	m_unitRatio = m_doc->unitRatio();
-	m_unitIndex = m_doc->unitIndex();
+	}
+	QWidget::changeEvent(e);
 }

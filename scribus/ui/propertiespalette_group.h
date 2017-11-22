@@ -66,11 +66,11 @@ public slots:
 private slots:
 
 	//void handleGradientChanged();
-	void handleGroupTransparency(double trans);
-	void handleGroupBlending(int blend);
-	void handleGroupGradMask(int typ);
-	void handleGroupPatternMask(QString pattern);
-	void handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool);
+//	void handleGroupTransparency(double trans);
+//	void handleGroupBlending(int blend);
+//	void handleGroupGradMask(int typ);
+//	void handleGroupPatternMask(QString pattern);
+//	void handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool);
 
 	void handleTextFlow();
 	void handleNewShape(int f, int c, qreal *vals);

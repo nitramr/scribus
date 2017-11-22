@@ -66,7 +66,6 @@ public:
 	void setDoc(ScribusDoc* d);
 	void setCurrentItem(PageItem* i);
 	void hideSelectionButtons();
-//	void updateFromItem();
 
 	void updateColorList();
 
@@ -93,7 +92,6 @@ public slots:
 	void selectPattern(QListWidgetItem *c);
 	void setActPattern(QString pattern, double scaleX, double scaleY, double offsetX, double offsetY, double rotation, double skewX, double skewY, bool mirrorX, bool mirrorY);
 	void changePatternProps();
-//	void setSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
 	void updateColorSpecialGradient();
 	void setActTrans(double, double);
 	void setActBlend(int, int);
@@ -105,6 +103,12 @@ private slots:
 	void handleGradientChanged();
 	void handleGradientEdit();
 	void handleSpecialGradient(double, double, double, double, double, double, double, double );
+
+	void handleGroupTransparency(double trans);
+	void handleGroupBlending(int blend);
+	void handleGroupGradMask(int typ);
+	void handleGroupPatternMask(QString pattern);
+	void handleGroupPatternMaskProps(double, double, double, double, double, double, double, bool, bool);
 
 signals:
 	void NewTrans(double);
