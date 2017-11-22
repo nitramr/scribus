@@ -65,7 +65,7 @@ public slots:
 
 private slots:
 
-	void handleGradientChanged();
+	//void handleGradientChanged();
 	void handleGroupTransparency(double trans);
 	void handleGroupBlending(int blend);
 	void handleGroupGradMask(int typ);
@@ -80,8 +80,8 @@ private slots:
 	void handleShapeEdit();
 	void handleShapeEditEnded();
 
-	void handleSpecialGradient(double, double, double, double, double, double, double, double );
-	void handleGradientEdit();
+//	void handleSpecialGradient(double, double, double, double, double, double, double, double );
+//	void handleGradientEdit();
 
 signals:
 	void shapeChanged(int);

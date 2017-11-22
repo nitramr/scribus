@@ -32,10 +32,12 @@ for which a new license (GPL+exception) is in place.
 #include "scribusapi.h"
 #include "gradienteditor.h"
 #include "scribusdoc.h"
+#include "selection.h"
 #include "ui/scrpalettebase.h"
 #include "ui_propertywidgetframe_transparency.h"
 #include "ui/gradientvectordialog.h"
 #include "ui/patternpropsdialog.h"
+#include "propertywidgetbase.h"
 
 class PageItem;
 class ColorListBox;
@@ -48,7 +50,8 @@ class LinkButton;
   *@author Franz Schmid
   */
 
-class SCRIBUS_API PropertyWidgetFrame_Transparency : public QWidget, Ui::PropertyWidgetFrame_Transparency
+class SCRIBUS_API PropertyWidgetFrame_Transparency : public QWidget, Ui::PropertyWidgetFrame_Transparency,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
@@ -59,10 +62,11 @@ public:
 	PropertyWidgetFrame_Transparency(QWidget* parent);
 	~PropertyWidgetFrame_Transparency() {};
 
-	void setDocument(ScribusDoc* doc);
-	void setCurrentItem(PageItem* item);
+	void setMainWindow(ScribusMainWindow *mw);
+	void setDoc(ScribusDoc* d);
+	void setCurrentItem(PageItem* i);
 	void hideSelectionButtons();
-	void updateFromItem();
+//	void updateFromItem();
 
 	void updateColorList();
 
@@ -72,6 +76,9 @@ public:
 
 public slots:
 	void handleUpdateRequest(int);
+	void unsetDoc();
+	void unsetItem();
+	void handleSelectionChanged();
 
 	void editLineSelectorButton();
 	void editFillSelectorButton();
@@ -86,12 +93,18 @@ public slots:
 	void selectPattern(QListWidgetItem *c);
 	void setActPattern(QString pattern, double scaleX, double scaleY, double offsetX, double offsetY, double rotation, double skewX, double skewY, bool mirrorX, bool mirrorY);
 	void changePatternProps();
-	void setSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
+//	void setSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
+	void updateColorSpecialGradient();
 	void setActTrans(double, double);
 	void setActBlend(int, int);
 	void slotTransS(double val);
 	void slotTransF(double val);
-	void unitChange(double, double, int unitIndex);
+	void unitChange();
+
+private slots:
+	void handleGradientChanged();
+	void handleGradientEdit();
+	void handleSpecialGradient(double, double, double, double, double, double, double, double );
 
 signals:
 	void NewTrans(double);
@@ -107,10 +120,14 @@ signals:
 
 protected:
 	GradientVectorDialog* TGradDia;
-	QPointer<ScribusDoc> currentDoc;
-	PageItem* currentItem;
+	ScribusMainWindow *m_ScMW;
+	bool      m_haveDoc;
+	bool      m_haveItem;
+
+	PageItem* m_item;
 	ColorList colorList;
-	int currentUnit;
+	double    m_unitRatio;
+	int		  m_unitIndex;
 	QHash<QString, ScPattern> *patternList;
 	QHash<QString, VGradient> *gradientList;
 	double m_Pattern_scaleX;

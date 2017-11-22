@@ -112,12 +112,12 @@ public slots:
 private slots:
 
 	void NewLineMode(int mode);
-	void handleGradientChanged();
+//	void handleGradientChanged();
 	void handleNewShape(int frameType);
 	void NewSpGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk, double cx, double cy);
 	void toggleGradientEdit(int);
-	void NewSpGradientM(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
-	void toggleGradientEditM();
+//	void NewSpGradientM(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk);
+//	void toggleGradientEditM();
 	void handleShapeEdit();
 
 protected:

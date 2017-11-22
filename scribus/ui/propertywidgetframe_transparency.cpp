@@ -22,28 +22,39 @@ for which a new license (GPL+exception) is in place.
  ***************************************************************************/
 
 #include "propertywidgetframe_transparency.h"
+#include "appmodes.h"
 #include "sccolorengine.h"
 #include "scpainter.h"
 #include "scpattern.h"
 #include "scribus.h"
+#include "scribusview.h"
 #include "iconmanager.h"
 #include "util.h"
 #include "util_math.h"
 
 PropertyWidgetFrame_Transparency::PropertyWidgetFrame_Transparency(QWidget* parent) : QWidget(parent)
 {
-	currentItem = NULL;
+	m_ScMW = 0;
+	m_doc  = 0;
+	m_item = 0;
+	m_haveDoc   = false;
+	m_haveItem  = false;
+	m_unitIndex = 0;
+	m_unitRatio = 1.0;
+
 	patternList = NULL;
 	TGradDia = NULL;
 	TGradDia = new GradientVectorDialog(this->parentWidget());
 	TGradDia->hide();
 	setupUi(this);
+
 	editLineSelector->setIcon(IconManager::instance()->loadIcon("16/color-stroke.png"));
 	editFillSelector->setIcon(IconManager::instance()->loadIcon("16/color-fill.png"));
 	editFillSelector->setChecked(true);
 	strokeOpacity->setDecimals(0);
 	fillOpacity->setDecimals(0);
 	editFillSelectorButton();
+
 	connect(editLineSelector, SIGNAL(clicked()), this, SLOT(editLineSelectorButton()));
 	connect(editFillSelector, SIGNAL(clicked()), this, SLOT(editFillSelectorButton()));
 	connect(strokeOpacity, SIGNAL(valueChanged(double)), this, SLOT(slotTransS(double)));
@@ -62,6 +73,22 @@ PropertyWidgetFrame_Transparency::PropertyWidgetFrame_Transparency(QWidget* pare
 	connect(transpCalcGradient, SIGNAL(clicked()), this, SLOT(switchGradientMode()));
 	connect(transpCalcPattern, SIGNAL(clicked()), this, SLOT(switchPatternMode()));
 	connect(usePatternInverted, SIGNAL(clicked()), this, SLOT(switchPatternMode()));
+
+	connect(this , SIGNAL(editGradient())          , this, SLOT(handleGradientEdit()));
+	connect(this , SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(handleSpecialGradient(double, double, double, double, double, double, double, double )));
+}
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_Transparency::setMainWindow(ScribusMainWindow* mw)
+{
+	m_ScMW = mw;
+	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
+	connect(this, SIGNAL(gradientChanged()), this, SLOT(handleGradientChanged()));
 }
 
 void PropertyWidgetFrame_Transparency::connectSignals()
@@ -86,20 +113,123 @@ void PropertyWidgetFrame_Transparency::disconnectSignals()
 	disconnect(usePatternInverted, SIGNAL(clicked()), this, SLOT(switchPatternMode()));
 }
 
-void PropertyWidgetFrame_Transparency::setCurrentItem(PageItem* item)
-{
-	currentItem = item;
-	disconnectSignals();
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
-	if (!currentItem || !currentDoc)
+void PropertyWidgetFrame_Transparency::setDoc(ScribusDoc* d)
+{
+
+	if((d == (ScribusDoc*) m_doc) || (m_ScMW && m_ScMW->scriptIsRunning()))
 		return;
 
-	setActTrans(currentItem->fillTransparency(), currentItem->lineTransparency());
-	setActBlend(currentItem->fillBlendmode(), currentItem->lineBlendmode());
-	gradEdit->setGradient(currentItem->mask_gradient);
-	if (!currentItem->gradientMask().isEmpty())
+	if (m_doc)
 	{
-		setCurrentComboItem(namedGradient, currentItem->gradientMask());
+		disconnect(this, SIGNAL(NewTrans(double)), 0, 0);
+		disconnect(this, SIGNAL(NewTransS(double)), 0, 0);
+		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
+		disconnect(this, SIGNAL(NewBlend(int)), 0, 0);
+		disconnect(this, SIGNAL(NewBlendS(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+
+		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+		disconnect(m_doc->scMW(), SIGNAL(UpdateRequest(int)), this, 0);
+	}
+
+	m_doc  = d;
+	m_item = NULL;
+
+	if(!m_doc)
+		return;
+
+	m_unitRatio   = m_doc->unitRatio();
+	m_unitIndex   = m_doc->unitIndex();
+
+		gradEdit->setColors(d->PageColors);
+
+		updateColorList();
+
+		m_haveDoc = true;
+		m_haveItem = false;
+
+		connect(this, SIGNAL(NewTrans(double)), m_doc, SLOT(itemSelection_SetItemFillTransparency(double)));
+		connect(this, SIGNAL(NewTransS(double)), m_doc, SLOT(itemSelection_SetItemLineTransparency(double)));
+		connect(this, SIGNAL(NewBlend(int)), m_doc, SLOT(itemSelection_SetItemFillBlend(int)));
+		connect(this, SIGNAL(NewBlendS(int)), m_doc, SLOT(itemSelection_SetItemLineBlend(int)));
+		connect(this, SIGNAL(NewGradient(int)), m_doc, SLOT(itemSelection_SetItemGradMask(int)));
+		connect(this, SIGNAL(NewPattern(QString)), m_doc, SLOT(itemSelection_SetItemPatternMask(QString)));
+		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), m_doc, SLOT(itemSelection_SetItemPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
+
+		connect(m_doc->scMW(), SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
+		connect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		connect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+
+		// Handle properties update when switching document
+	handleSelectionChanged();
+}
+
+void PropertyWidgetFrame_Transparency::unsetDoc()
+{
+
+	if (m_doc)
+	{
+		disconnect(this, SIGNAL(NewTrans(double)), 0, 0);
+		disconnect(this, SIGNAL(NewTransS(double)), 0, 0);
+		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
+		disconnect(this, SIGNAL(NewBlend(int)), 0, 0);
+		disconnect(this, SIGNAL(NewBlendS(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+
+		disconnect(m_doc->m_Selection, SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		disconnect(m_doc             , SIGNAL(docChanged())      , this, SLOT(handleSelectionChanged()));
+	}
+
+	m_haveDoc = false;
+	m_haveItem = false;
+	m_doc=NULL;
+	m_item = NULL;
+
+	setEnabled(false);
+
+}
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+void PropertyWidgetFrame_Transparency::setCurrentItem(PageItem* i)
+{
+
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+
+	if (!m_doc)
+		setDoc(i->doc());
+
+	m_haveItem = false;
+	m_item = i;
+
+	disconnectSignals();
+
+	if (!m_item)
+		return;
+
+
+
+	setActTrans(m_item->fillTransparency(), m_item->lineTransparency());
+	setActBlend(m_item->fillBlendmode(), m_item->lineBlendmode());
+	gradEdit->setGradient(m_item->mask_gradient);
+
+	if (!m_item->gradientMask().isEmpty())
+	{
+		setCurrentComboItem(namedGradient, m_item->gradientMask());
 		gradEdit->setGradientEditable(false);
 	}
 	else
@@ -107,9 +237,10 @@ void PropertyWidgetFrame_Transparency::setCurrentItem(PageItem* item)
 		namedGradient->setCurrentIndex(0);
 		gradEdit->setGradientEditable(true);
 	}
-	if (currentItem->maskType() == 0)
+
+	if (m_item->maskType() == 0)
 		tabWidget->setCurrentIndex(0);
-	else if ((currentItem->maskType() == 1) || (currentItem->maskType() == 2) || (currentItem->maskType() == 4) || (currentItem->maskType() == 5))
+	else if ((m_item->maskType() == 1) || (m_item->maskType() == 2) || (m_item->maskType() == 4) || (m_item->maskType() == 5))
 		tabWidget->setCurrentIndex(1);
 	else
 		tabWidget->setCurrentIndex(2);
@@ -117,64 +248,51 @@ void PropertyWidgetFrame_Transparency::setCurrentItem(PageItem* item)
 		tabWidget->setTabEnabled(2, false);
 	else
 		tabWidget->setTabEnabled(2, true);
+
 	transpCalcGradient->setChecked(false);
 	transpCalcPattern->setChecked(false);
 	usePatternInverted->setChecked(false);
-	if ((currentItem->maskType() == 4) || (currentItem->maskType() == 5))
+
+	if ((m_item->maskType() == 4) || (m_item->maskType() == 5))
 		transpCalcGradient->setChecked(true);
-	if ((currentItem->maskType() == 6) || (currentItem->maskType() == 7))
+	if ((m_item->maskType() == 6) || (m_item->maskType() == 7))
 		transpCalcPattern->setChecked(true);
-	if ((currentItem->maskType() == 7) || (currentItem->maskType() == 8))
+	if ((m_item->maskType() == 7) || (m_item->maskType() == 8))
 		usePatternInverted->setChecked(true);
-	if ((currentItem->maskType() == 1) || (currentItem->maskType() == 4))
+	if ((m_item->maskType() == 1) || (m_item->maskType() == 4))
 		gradientType->setCurrentIndex(0);
-	else if ((currentItem->maskType() == 2) || (currentItem->maskType() == 5))
+	else if ((m_item->maskType() == 2) || (m_item->maskType() == 5))
 		gradientType->setCurrentIndex(1);
+
 	if(TGradDia && gradEditButton->isChecked())
-		TGradDia->setValues(currentItem->GrMaskStartX, currentItem->GrMaskStartY, currentItem->GrMaskEndX, currentItem->GrMaskEndY, currentItem->GrMaskFocalX, currentItem->GrMaskFocalY, currentItem->GrMaskScale, currentItem->GrMaskSkew, 0, 0);
+		TGradDia->setValues(m_item->GrMaskStartX, m_item->GrMaskStartY, m_item->GrMaskEndX, m_item->GrMaskEndY, m_item->GrMaskFocalX, m_item->GrMaskFocalY, m_item->GrMaskScale, m_item->GrMaskSkew, 0, 0);
+
 	double patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY;
 	bool mirrorX, mirrorY;
-	currentItem->maskTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
-	currentItem->maskFlip(mirrorX, mirrorY);
-	setActPattern(currentItem->patternMask(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
+	m_item->maskTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
+	m_item->maskFlip(mirrorX, mirrorY);
+	setActPattern(m_item->patternMask(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
+
+	m_haveItem = true;
 
 	connectSignals();
 }
 
-void PropertyWidgetFrame_Transparency::setDocument(ScribusDoc* doc)
+
+void PropertyWidgetFrame_Transparency::unsetItem()
 {
-	disconnect(this, SIGNAL(NewTrans(double)), 0, 0);
-	disconnect(this, SIGNAL(NewTransS(double)), 0, 0);
-	disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
-	disconnect(this, SIGNAL(NewBlend(int)), 0, 0);
-	disconnect(this, SIGNAL(NewBlendS(int)), 0, 0);
-	disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
-	disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
-	
-	if (currentDoc)
-	{
-		disconnect(currentDoc->scMW(), SIGNAL(UpdateRequest(int)), this, 0);
-	}
+	m_haveItem = false;
+	m_item     = NULL;
 
-	currentDoc = doc;
-
-	if (doc != NULL)
-	{
-		gradEdit->setColors(doc->PageColors);
-		currentUnit = doc->unitIndex();
-
-		updateColorList();
-
-		connect(this, SIGNAL(NewTrans(double)), doc, SLOT(itemSelection_SetItemFillTransparency(double)));
-		connect(this, SIGNAL(NewTransS(double)), doc, SLOT(itemSelection_SetItemLineTransparency(double)));
-		connect(this, SIGNAL(NewBlend(int)), doc, SLOT(itemSelection_SetItemFillBlend(int)));
-		connect(this, SIGNAL(NewBlendS(int)), doc, SLOT(itemSelection_SetItemLineBlend(int)));
-		connect(this, SIGNAL(NewGradient(int)), doc, SLOT(itemSelection_SetItemGradMask(int)));
-		connect(this, SIGNAL(NewPattern(QString)), doc, SLOT(itemSelection_SetItemPatternMask(QString)));
-		connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), doc, SLOT(itemSelection_SetItemPatternMaskProps(double, double, double, double, double, double, double, bool, bool)));
-		connect(doc->scMW(), SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
-	}
+	handleSelectionChanged();
 }
+
+
+/*********************************************************************
+*
+* Update helper
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_Transparency::handleUpdateRequest(int updateFlags)
 {
@@ -182,20 +300,51 @@ void PropertyWidgetFrame_Transparency::handleUpdateRequest(int updateFlags)
 		updateColorList();
 }
 
-void PropertyWidgetFrame_Transparency::updateColorList()
+void  PropertyWidgetFrame_Transparency::handleSelectionChanged()
 {
-	if (!currentDoc)
+	if (!m_haveDoc || !m_ScMW || m_ScMW->scriptIsRunning())
 		return;
 
-	if (currentItem)
+	PageItem* currItem = currentItemFromSelection();
+	if (m_doc->m_Selection->count() > 1)
+	{
+
+	}
+	else
+	{
+		int itemType = currItem ? (int) currItem->itemType() : -1;
+		m_haveItem   = (itemType != -1);
+
+		switch (itemType)
+		{
+		case -1:
+			m_haveItem = false;
+			break;
+		}
+	}
+
+	update();
+
+	if (currItem)
+	{
+		setCurrentItem(currItem);
+	}
+}
+
+void PropertyWidgetFrame_Transparency::updateColorList()
+{
+	if (!m_doc)
+		return;
+
+	if (m_item)
 		disconnectSignals();
 
-	this->setColors(currentDoc->PageColors);
-	this->setPatterns(&currentDoc->docPatterns);
-	this->setGradients(&currentDoc->docGradients);
+	this->setColors(m_doc->PageColors);
+	this->setPatterns(&m_doc->docPatterns);
+	this->setGradients(&m_doc->docGradients);
 
-	if (currentItem)
-		setCurrentItem(currentItem);
+	if (m_item)
+		setCurrentItem(m_item);
 }
 
 void PropertyWidgetFrame_Transparency::hideSelectionButtons()
@@ -206,10 +355,7 @@ void PropertyWidgetFrame_Transparency::hideSelectionButtons()
 	editFillSelector->setSizePolicy(QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored));
 }
 
-void PropertyWidgetFrame_Transparency::updateFromItem()
-{
-	setCurrentItem(currentItem);
-}
+
 
 void PropertyWidgetFrame_Transparency::updateCList()
 {
@@ -248,6 +394,29 @@ void PropertyWidgetFrame_Transparency::updateGradientList()
 	connect(namedGradient, SIGNAL(activated(const QString &)), this, SLOT(setNamedGradient(const QString &)));
 }
 
+void PropertyWidgetFrame_Transparency::unitChange(/*double, double, int unitIndex*/)
+{
+	if (!m_haveDoc || !m_doc)
+		return;
+	bool tmp = m_haveItem;
+	m_haveItem = false;
+
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+
+	if (TGradDia)
+		TGradDia->unitChange(m_unitIndex);
+
+	m_haveItem = tmp;
+}
+
+
+/*********************************************************************
+*
+* Feature Gradient
+*
+**********************************************************************/
+
 void PropertyWidgetFrame_Transparency::setGradients(QHash<QString, VGradient> *docGradients)
 {
 	gradientList = docGradients;
@@ -263,19 +432,22 @@ void PropertyWidgetFrame_Transparency::setColors(ColorList newColorList)
 
 void PropertyWidgetFrame_Transparency::slotGrad(int number)
 {
+	if(!m_item)
+		return;
+
 	if (number == 1)
 	{
 		disconnect(namedGradient, SIGNAL(activated(const QString &)), this, SLOT(setNamedGradient(const QString &)));
-		if (!currentItem->gradientMask().isEmpty())
+		if (!m_item->gradientMask().isEmpty())
 		{
-			setCurrentComboItem(namedGradient, currentItem->gradientMask());
-			gradEdit->setGradient(gradientList->value(currentItem->gradientMask()));
+			setCurrentComboItem(namedGradient, m_item->gradientMask());
+			gradEdit->setGradient(gradientList->value(m_item->gradientMask()));
 			gradEdit->setGradientEditable(false);
 		}
 		else
 		{
 			namedGradient->setCurrentIndex(0);
-			gradEdit->setGradient(currentItem->mask_gradient);
+			gradEdit->setGradient(m_item->mask_gradient);
 			gradEdit->setGradientEditable(true);
 		}
 		if (gradientType->currentIndex() == 0)
@@ -335,17 +507,20 @@ void PropertyWidgetFrame_Transparency::slotGradType(int type)
 
 void PropertyWidgetFrame_Transparency::setNamedGradient(const QString &name)
 {
+	if(!m_item)
+		return;
+
 	if (namedGradient->currentIndex() == 0)
 	{
-		gradEdit->setGradient(currentItem->mask_gradient);
-		currentItem->setGradientMask("");
+		gradEdit->setGradient(m_item->mask_gradient);
+		m_item->setGradientMask("");
 		gradEdit->setGradientEditable(true);
 	}
 	else
 	{
 		gradEdit->setGradient(gradientList->value(name));
 		gradEdit->setGradientEditable(false);
-		currentItem->setGradientMask(name);
+		m_item->setGradientMask(name);
 	}
 	if (gradientType->currentIndex() == 0)
 	{
@@ -401,11 +576,16 @@ void PropertyWidgetFrame_Transparency::switchPatternMode()
 
 void PropertyWidgetFrame_Transparency::editGradientVector()
 {
+	if (!m_haveDoc || !m_doc)
+		return;
+	if(!m_item)
+		return;
+
 	if (gradEditButton->isChecked())
 	{
-		TGradDia->unitChange(currentDoc->unitIndex());
-		TGradDia->setValues(currentItem->GrMaskStartX, currentItem->GrMaskStartY, currentItem->GrMaskEndX, currentItem->GrMaskEndY, currentItem->GrMaskFocalX, currentItem->GrMaskFocalY, currentItem->GrMaskScale, currentItem->GrMaskSkew, 0, 0);
-		if ((currentItem->GrMask == 1) || (currentItem->GrMask == 4))
+		TGradDia->unitChange(m_doc->unitIndex());
+		TGradDia->setValues(m_item->GrMaskStartX, m_item->GrMaskStartY, m_item->GrMaskEndX, m_item->GrMaskEndY, m_item->GrMaskFocalX, m_item->GrMaskFocalY, m_item->GrMaskScale, m_item->GrMaskSkew, 0, 0);
+		if ((m_item->GrMask == 1) || (m_item->GrMask == 4))
 			TGradDia->selectLinear();
 		else
 			TGradDia->selectRadial();
@@ -427,11 +607,98 @@ void PropertyWidgetFrame_Transparency::setActiveGradDia(bool active)
 	}
 }
 
-void PropertyWidgetFrame_Transparency::setSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk)
+
+void PropertyWidgetFrame_Transparency::updateColorSpecialGradient()
 {
-	if (TGradDia)
-		TGradDia->setValues(x1, y1, x2, y2, fx, fy, sg, sk, 0, 0);
+	if (!m_haveDoc || !m_doc)
+		return;
+	if(m_doc->m_Selection->isEmpty())
+		return;
+
+	PageItem *currItem=m_doc->m_Selection->itemAt(0);
+	if (currItem)
+	{
+		if (!currItem->isGroup()){
+			if (TGradDia)
+				TGradDia->setValues(currItem->GrMaskStartX, currItem->GrMaskStartY, currItem->GrMaskEndX, currItem->GrMaskEndY, currItem->GrMaskFocalX, currItem->GrMaskFocalY, currItem->GrMaskScale, currItem->GrMaskSkew,0,0);
+		}
+	}
 }
+
+void PropertyWidgetFrame_Transparency::handleGradientChanged()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem) && (m_doc))
+	{
+		VGradient vg(this->gradEdit->gradient());
+		m_doc->itemSelection_SetMaskGradient(vg);
+	}
+}
+
+void PropertyWidgetFrame_Transparency::handleGradientEdit()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		m_ScMW->view->editStrokeGradient = 2;
+		if (this->gradEditButton->isChecked())
+			m_ScMW->view->requestMode(modeEditGradientVectors);
+		else
+			m_ScMW->view->requestMode(modeNormal);
+	}
+}
+
+
+
+void PropertyWidgetFrame_Transparency::handleSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem) && (m_item) && (m_doc))
+	{
+		QRectF upRect;
+		m_item->GrMaskStartX = x1 / m_unitRatio;
+		m_item->GrMaskStartY = y1 / m_unitRatio;
+		m_item->GrMaskEndX = x2 / m_unitRatio;
+		m_item->GrMaskEndY = y2 / m_unitRatio;
+		m_item->GrMaskFocalX = fx / m_unitRatio;
+		m_item->GrMaskFocalY = fy / m_unitRatio;
+		m_item->GrMaskScale = sg;
+		m_item->GrMaskSkew = sk;
+		if ((m_item->GrMask == 1) || (m_item->GrMask == 4))
+		{
+			m_item->GrMaskFocalX = m_item->GrMaskStartX;
+			m_item->GrMaskFocalY = m_item->GrMaskStartY;
+		}
+		m_item->update();
+		upRect = QRectF(QPointF(m_item->GrMaskStartX, m_item->GrMaskStartY), QPointF(m_item->GrMaskEndX, m_item->GrMaskEndY));
+		double radEnd = distance(m_item->GrMaskEndX - m_item->GrMaskStartX, m_item->GrMaskEndY - m_item->GrMaskStartY);
+		double rotEnd = xy2Deg(m_item->GrMaskEndX - m_item->GrMaskStartX, m_item->GrMaskEndY - m_item->GrMaskStartY);
+		QTransform m;
+		m.translate(m_item->GrMaskStartX, m_item->GrMaskStartY);
+		m.rotate(rotEnd);
+		m.rotate(-90);
+		m.rotate(m_item->GrMaskSkew);
+		m.translate(radEnd * m_item->GrMaskScale, 0);
+		QPointF shP = m.map(QPointF(0,0));
+		upRect |= QRectF(shP, QPointF(m_item->GrMaskEndX, m_item->GrMaskEndY)).normalized();
+		upRect |= QRectF(shP, QPointF(m_item->GrMaskStartX, m_item->GrMaskStartY)).normalized();
+		upRect |= QRectF(shP, QPointF(0, 0)).normalized();
+		upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
+		upRect.translate(m_item->xPos(), m_item->yPos());
+		m_doc->regionsChanged()->update(upRect.adjusted(-10.0, -10.0, 10.0, 10.0));
+		m_doc->changed();
+	}
+}
+
+/*********************************************************************
+*
+* Feature Pattern
+*
+**********************************************************************/
+
 
 void PropertyWidgetFrame_Transparency::hideEditedPatterns(QStringList names)
 {
@@ -442,6 +709,7 @@ void PropertyWidgetFrame_Transparency::hideEditedPatterns(QStringList names)
 			items[0]->setHidden(true);
 	}
 }
+
 
 void PropertyWidgetFrame_Transparency::updatePatternList()
 {
@@ -509,7 +777,7 @@ void PropertyWidgetFrame_Transparency::setActPattern(QString pattern, double sca
 
 void PropertyWidgetFrame_Transparency::changePatternProps()
 {
-	PatternPropsDialog *dia = new PatternPropsDialog(this, currentUnit, false);
+	PatternPropsDialog *dia = new PatternPropsDialog(this, m_unitIndex, false);
 	dia->spinXscaling->setValue(m_Pattern_scaleX);
 	dia->spinYscaling->setValue(m_Pattern_scaleY);
 	if (m_Pattern_scaleX == m_Pattern_scaleY)
@@ -540,6 +808,12 @@ void PropertyWidgetFrame_Transparency::changePatternProps()
 	m_Pattern_mirrorY = dia->FlipV->isChecked();
 	delete dia;
 }
+
+/*********************************************************************
+*
+* Feature Fills
+*
+**********************************************************************/
 
 void PropertyWidgetFrame_Transparency::setActTrans(double val, double val2)
 {
@@ -578,7 +852,7 @@ void PropertyWidgetFrame_Transparency::editLineSelectorButton()
 		stackedWidget->setCurrentIndex(0);
 		editFillSelector->setChecked(false);
 	}
-	updateFromItem();
+	setCurrentItem(m_item);
 }
 
 void PropertyWidgetFrame_Transparency::editFillSelectorButton()
@@ -588,13 +862,8 @@ void PropertyWidgetFrame_Transparency::editFillSelectorButton()
 		stackedWidget->setCurrentIndex(1);
 		editLineSelector->setChecked(false);
 	}
-	updateFromItem();
+	setCurrentItem(m_item);
 }
 
-void PropertyWidgetFrame_Transparency::unitChange(double, double, int unitIndex)
-{
-	if (TGradDia)
-		TGradDia->unitChange(unitIndex);
-	currentUnit = unitIndex;
-}
+
 

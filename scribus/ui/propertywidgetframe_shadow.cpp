@@ -200,7 +200,7 @@ void PropertyWidgetFrame_Shadow::unsetDoc()
 	m_haveItem = false;
 	m_doc   = NULL;
 	m_item  = NULL;
-	setEnabled(false);
+//	setEnabled(false);
 }
 
 /*********************************************************************

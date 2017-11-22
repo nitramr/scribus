@@ -84,7 +84,6 @@ PropertiesPalette_Group::PropertiesPalette_Group( QWidget* parent) : QWidget(par
 	m_tmpSelection->clear();
 
 	setupUi(this);
-	setSizePolicy( QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum));
 
 	textFlowDisabled->setIcon(IconManager::instance()->loadIcon("flow-none.png"));
 	textFlowUsesFrameShape->setIcon(IconManager::instance()->loadIcon("flow-frame.png"));
@@ -109,36 +108,28 @@ PropertiesPalette_Group::PropertiesPalette_Group( QWidget* parent) : QWidget(par
 	connect(evenOdd      , SIGNAL(clicked())                 , this, SLOT(handleFillRule()) );
 	connect(nonZero      , SIGNAL(clicked())                 , this, SLOT(handleFillRule()) );
 	connect(clipGroups   , SIGNAL(clicked())                 , this, SLOT(handleClipping()) );
-	connect(transPalWidget , SIGNAL(editGradient())          , this, SLOT(handleGradientEdit()));
-	connect(transPalWidget , SIGNAL(NewSpecial(double, double, double, double, double, double, double, double, double, double)), this, SLOT(handleSpecialGradient(double, double, double, double, double, double, double, double )));
 }
 
-PageItem* PropertiesPalette_Group::currentItemFromSelection()
-{
-	PageItem *currentItem = NULL;
-
-	if (m_doc)
-	{
-		if (m_doc->m_Selection->count() > 1)
-		{
-			currentItem = m_doc->m_Selection->itemAt(0);
-		}
-		else if (m_doc->m_Selection->count() == 1)
-		{
-			currentItem = m_doc->m_Selection->itemAt(0);
-		}
-	}
-
-	return currentItem;
-}
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::setMainWindow(ScribusMainWindow *mw)
 {
 	m_ScMW = mw;
 
-	connect(this->transPalWidget, SIGNAL(gradientChanged()), this, SLOT(handleGradientChanged()));
+	transPalWidget->setMainWindow(mw);
+
 	connect(m_ScMW, SIGNAL(UpdateRequest(int)), this, SLOT(handleUpdateRequest(int)));
 }
+
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::setDoc(ScribusDoc *d)
 {
@@ -162,8 +153,7 @@ void PropertiesPalette_Group::setDoc(ScribusDoc *d)
 	m_unitRatio   = m_doc->unitRatio();
 	m_unitIndex   = m_doc->unitIndex();
 
-	transPalWidget->setDocument(m_doc);
-	transPalWidget->setCurrentItem(NULL);
+	transPalWidget->setDoc(m_doc);
 
 	m_haveDoc  = true;
 	m_haveItem = false;
@@ -191,19 +181,122 @@ void PropertiesPalette_Group::unsetDoc()
 	m_doc   = NULL;
 	m_item  = NULL;
 
-	transPalWidget->setDocument(NULL);
-	transPalWidget->setCurrentItem(NULL);
+	transPalWidget->unsetDoc();
 
 	setEnabled(false);
+}
+
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
+PageItem* PropertiesPalette_Group::currentItemFromSelection()
+{
+	PageItem *currentItem = NULL;
+
+	if (m_doc)
+	{
+		if (m_doc->m_Selection->count() > 1)
+		{
+			currentItem = m_doc->m_Selection->itemAt(0);
+		}
+		else if (m_doc->m_Selection->count() == 1)
+		{
+			currentItem = m_doc->m_Selection->itemAt(0);
+		}
+	}
+
+	return currentItem;
 }
 
 void PropertiesPalette_Group::unsetItem()
 {
 	m_haveItem = false;
 	m_item     = NULL;
-	transPalWidget->setCurrentItem(NULL);
+	//transPalWidget->setCurrentItem(NULL);
+//	transPalWidget->unsetItem();
 	handleSelectionChanged();
 }
+
+void PropertiesPalette_Group::setCurrentItem(PageItem *item)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	//CB We shouldn't really need to process this if our item is the same one
+	//maybe we do if the item has been changed by scripter.. but that should probably
+	//set some status if so.
+	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
+	//if (m_item == i)
+	//	return;
+
+	if (!m_doc)
+		setDoc(item->doc());
+
+	m_haveItem = false;
+	m_item = item;
+
+	transPalWidget->setCurrentItem(m_item);
+	nonZero->setChecked(!m_item->fillRule);
+	evenOdd->setChecked(m_item->fillRule);
+	clipGroups->setChecked(m_item->groupClipping());
+
+	if ((m_item->isGroup()) && (!m_item->isSingleSel))
+	{
+		setEnabled(true);
+		if (m_item->FrameType == 0)
+			customShape->setIcon(customShape->getIconPixmap(0));
+		if (m_item->FrameType == 1)
+			customShape->setIcon(customShape->getIconPixmap(1));
+		if (m_item->FrameType > 3)
+			customShape->setIcon(customShape->getIconPixmap(m_item->FrameType-2));
+		customShape->setEnabled(true);
+		editShape->setEnabled(true);
+		shapeGroup->setEnabled(true);
+		textFlowDisabled->setEnabled(true);
+		textFlowUsesFrameShape->setEnabled(true);
+		textFlowUsesBoundingBox->setEnabled(true);
+		textFlowUsesContourLine->setEnabled(true);
+		textFlowUsesImageClipping->setEnabled(false);
+	}
+	else
+	{
+		setEnabled(false);
+	}
+
+	m_haveItem = true;
+
+	if (m_item->asOSGFrame())
+	{
+		setEnabled(false);
+	}
+	if (m_item->asSymbolFrame())
+	{
+		setEnabled(true);
+		if (m_item->FrameType == 0)
+			customShape->setIcon(customShape->getIconPixmap(0));
+		if (m_item->FrameType == 1)
+			customShape->setIcon(customShape->getIconPixmap(1));
+		if (m_item->FrameType > 3)
+			customShape->setIcon(customShape->getIconPixmap(m_item->FrameType-2));
+		customShape->setEnabled(true);
+		editShape->setEnabled(true);
+		shapeGroup->setEnabled(true);
+		textFlowDisabled->setEnabled(true);
+		textFlowUsesFrameShape->setEnabled(true);
+		textFlowUsesBoundingBox->setEnabled(true);
+		textFlowUsesContourLine->setEnabled(true);
+		textFlowUsesImageClipping->setEnabled(false);
+	}
+	showTextFlowMode(m_item->textFlowMode());
+}
+
+/*********************************************************************
+*
+* Update helper
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::handleSelectionChanged()
 {
@@ -259,8 +352,7 @@ void PropertiesPalette_Group::handleSelectionChanged()
 	{
 		setCurrentItem(currItem);
 	}
-	updateGeometry();
-	//repaint();
+
 }
 
 void PropertiesPalette_Group::handleUpdateRequest(int updateFlags)
@@ -269,86 +361,28 @@ void PropertiesPalette_Group::handleUpdateRequest(int updateFlags)
 		updateColorList();
 }
 
-void PropertiesPalette_Group::setCurrentItem(PageItem *item)
+void PropertiesPalette_Group::languageChange()
 {
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	//CB We shouldn't really need to process this if our item is the same one
-	//maybe we do if the item has been changed by scripter.. but that should probably
-	//set some status if so.
-	//FIXME: This won't work until when a canvas deselect happens, m_item must be NULL.
-	//if (m_item == i)
-	//	return;
-
-	if (!m_doc)
-		setDoc(item->doc());
-
-	m_haveItem = false;
-	m_item = item;
-
-	bool   mirrorX, mirrorY;
-	double patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY;
-	m_item->patternTransform(patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY);
-	m_item->patternFlip(mirrorX, mirrorY);
-
-	transPalWidget->setCurrentItem(m_item);
-	nonZero->setChecked(!m_item->fillRule);
-	evenOdd->setChecked(m_item->fillRule);
-	clipGroups->setChecked(m_item->groupClipping());
-
-	if ((m_item->isGroup()) && (!m_item->isSingleSel))
-	{
-		setEnabled(true);
-		if (m_item->FrameType == 0)
-			customShape->setIcon(customShape->getIconPixmap(0));
-		if (m_item->FrameType == 1)
-			customShape->setIcon(customShape->getIconPixmap(1));
-		if (m_item->FrameType > 3)
-			customShape->setIcon(customShape->getIconPixmap(m_item->FrameType-2));
-		transPalWidget->updateFromItem();
-		transPalWidget->setActPattern(m_item->patternMask(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
-		customShape->setEnabled(true);
-		editShape->setEnabled(true);
-		shapeGroup->setEnabled(true);
-		textFlowDisabled->setEnabled(true);
-		textFlowUsesFrameShape->setEnabled(true);
-		textFlowUsesBoundingBox->setEnabled(true);
-		textFlowUsesContourLine->setEnabled(true);
-		textFlowUsesImageClipping->setEnabled(false);
-	}
-	else
-	{
-		setEnabled(false);
-	}
-
-	m_haveItem = true;
-
-	if (m_item->asOSGFrame())
-	{
-		setEnabled(false);
-	}
-	if (m_item->asSymbolFrame())
-	{
-		setEnabled(true);
-		if (m_item->FrameType == 0)
-			customShape->setIcon(customShape->getIconPixmap(0));
-		if (m_item->FrameType == 1)
-			customShape->setIcon(customShape->getIconPixmap(1));
-		if (m_item->FrameType > 3)
-			customShape->setIcon(customShape->getIconPixmap(m_item->FrameType-2));
-		transPalWidget->updateFromItem();
-		transPalWidget->setActPattern(m_item->patternMask(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY);
-		customShape->setEnabled(true);
-		editShape->setEnabled(true);
-		shapeGroup->setEnabled(true);
-		textFlowDisabled->setEnabled(true);
-		textFlowUsesFrameShape->setEnabled(true);
-		textFlowUsesBoundingBox->setEnabled(true);
-		textFlowUsesContourLine->setEnabled(true);
-		textFlowUsesImageClipping->setEnabled(false);
-	}
-	showTextFlowMode(m_item->textFlowMode());
+	retranslateUi(this);
 }
+
+void PropertiesPalette_Group::unitChange()
+{
+	if (!m_doc)
+		return;
+
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+
+	transPalWidget->unitChange();
+
+}
+
+/*********************************************************************
+*
+* Feature Textflow
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::showTextFlowMode(PageItem::TextFlowMode mode)
 {
@@ -372,6 +406,39 @@ void PropertiesPalette_Group::showTextFlowMode(PageItem::TextFlowMode mode)
 			textFlowUsesImageClipping->setEnabled(false);
 	}
 }
+
+void PropertiesPalette_Group::handleTextFlow()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		PageItem::TextFlowMode mode = PageItem::TextFlowDisabled;
+		if (m_item->isGroup())
+		{
+			if (textFlowDisabled->isChecked())
+				mode = PageItem::TextFlowDisabled;
+			if (textFlowUsesFrameShape->isChecked())
+				mode = PageItem::TextFlowUsesFrameShape;
+			if (textFlowUsesBoundingBox->isChecked())
+				mode = PageItem::TextFlowUsesBoundingBox;
+			if (textFlowUsesContourLine->isChecked())
+				mode = PageItem::TextFlowUsesContourLine;
+			if (textFlowUsesImageClipping->isChecked())
+				mode = PageItem::TextFlowUsesImageClipping;
+		}
+		m_item->setTextFlowMode(mode);
+		m_doc->changed();
+		m_doc->invalidateAll();
+		m_doc->regionsChanged()->update(QRect());
+	}
+}
+
+/*********************************************************************
+*
+* Feature Transparency
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::updateColorList()
 {
@@ -401,19 +468,11 @@ void PropertiesPalette_Group::updateColorSpecialGradient()
 			break;
 		default:
 			if (currItem->isGroup())
-				transPalWidget->setSpecialGradient(currItem->GrMaskStartX, currItem->GrMaskStartY, currItem->GrMaskEndX, currItem->GrMaskEndY, currItem->GrMaskFocalX, currItem->GrMaskFocalY, currItem->GrMaskScale, currItem->GrMaskSkew);
+				transPalWidget->updateColorSpecialGradient();
 		}
 	}
 }
 
-void PropertiesPalette_Group::handleGradientChanged()
-{
-	if (m_haveDoc)
-	{
-		VGradient vg(transPalWidget->gradEdit->gradient());
-		m_doc->itemSelection_SetMaskGradient(vg);
-	}
-}
 
 void PropertiesPalette_Group::handleGroupTransparency(double trans)
 {
@@ -463,107 +522,12 @@ void PropertiesPalette_Group::handleGroupPatternMaskProps(double imageScaleX, do
 	}
 }
 
-void PropertiesPalette_Group::handleNewShape(int frameType, int count, qreal *points)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		if ((m_item->itemType() == PageItem::PolyLine) || (m_item->itemType() == PageItem::PathText))
-			return;
 
-		m_doc->item_setFrameShape(m_item, frameType, count, points);
-		m_doc->invalidateAll();
-		m_doc->regionsChanged()->update(QRect());
-
-		//ScribusDoc::changed() is called in item_setFrameShape()
-		//Hope this is enough
-		//emit DocChanged();
-		emit shapeChanged(frameType);
-	}
-}
-
-void PropertiesPalette_Group::handleTextFlow()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		PageItem::TextFlowMode mode = PageItem::TextFlowDisabled;
-		if (m_item->isGroup())
-		{
-			if (textFlowDisabled->isChecked())
-				mode = PageItem::TextFlowDisabled;
-			if (textFlowUsesFrameShape->isChecked())
-				mode = PageItem::TextFlowUsesFrameShape;
-			if (textFlowUsesBoundingBox->isChecked())
-				mode = PageItem::TextFlowUsesBoundingBox;
-			if (textFlowUsesContourLine->isChecked())
-				mode = PageItem::TextFlowUsesContourLine;
-			if (textFlowUsesImageClipping->isChecked())
-				mode = PageItem::TextFlowUsesImageClipping;
-		}
-		m_item->setTextFlowMode(mode);
-		m_doc->changed();
-		m_doc->invalidateAll();
-		m_doc->regionsChanged()->update(QRect());
-	}
-}
-
-void PropertiesPalette_Group::handleGradientEdit()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		m_ScMW->view->editStrokeGradient = 2;
-		if (transPalWidget->gradEditButton->isChecked())
-			m_ScMW->view->requestMode(modeEditGradientVectors);
-		else
-			m_ScMW->view->requestMode(modeNormal);
-	}
-}
-
-void PropertiesPalette_Group::handleSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		QRectF upRect;
-		m_item->GrMaskStartX = x1 / m_unitRatio;
-		m_item->GrMaskStartY = y1 / m_unitRatio;
-		m_item->GrMaskEndX = x2 / m_unitRatio;
-		m_item->GrMaskEndY = y2 / m_unitRatio;
-		m_item->GrMaskFocalX = fx / m_unitRatio;
-		m_item->GrMaskFocalY = fy / m_unitRatio;
-		m_item->GrMaskScale = sg;
-		m_item->GrMaskSkew = sk;
-		if ((m_item->GrMask == 1) || (m_item->GrMask == 4))
-		{
-			m_item->GrMaskFocalX = m_item->GrMaskStartX;
-			m_item->GrMaskFocalY = m_item->GrMaskStartY;
-		}
-		m_item->update();
-		upRect = QRectF(QPointF(m_item->GrMaskStartX, m_item->GrMaskStartY), QPointF(m_item->GrMaskEndX, m_item->GrMaskEndY));
-		double radEnd = distance(m_item->GrMaskEndX - m_item->GrMaskStartX, m_item->GrMaskEndY - m_item->GrMaskStartY);
-		double rotEnd = xy2Deg(m_item->GrMaskEndX - m_item->GrMaskStartX, m_item->GrMaskEndY - m_item->GrMaskStartY);
-		QTransform m;
-		m.translate(m_item->GrMaskStartX, m_item->GrMaskStartY);
-		m.rotate(rotEnd);
-		m.rotate(-90);
-		m.rotate(m_item->GrMaskSkew);
-		m.translate(radEnd * m_item->GrMaskScale, 0);
-		QPointF shP = m.map(QPointF(0,0));
-		upRect |= QRectF(shP, QPointF(m_item->GrMaskEndX, m_item->GrMaskEndY)).normalized();
-		upRect |= QRectF(shP, QPointF(m_item->GrMaskStartX, m_item->GrMaskStartY)).normalized();
-		upRect |= QRectF(shP, QPointF(0, 0)).normalized();
-		upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
-		upRect.translate(m_item->xPos(), m_item->yPos());
-		m_doc->regionsChanged()->update(upRect.adjusted(-10.0, -10.0, 10.0, 10.0));
-		m_doc->changed();
-	}
-}
+/*********************************************************************
+*
+* Feature Shape
+*
+**********************************************************************/
 
 void PropertiesPalette_Group::handleFillRule()
 {
@@ -617,6 +581,32 @@ void PropertiesPalette_Group::handleShapeEditEnded()
 	}
 }
 
+void PropertiesPalette_Group::handleNewShape(int frameType, int count, qreal *points)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		if ((m_item->itemType() == PageItem::PolyLine) || (m_item->itemType() == PageItem::PathText))
+			return;
+
+		m_doc->item_setFrameShape(m_item, frameType, count, points);
+		m_doc->invalidateAll();
+		m_doc->regionsChanged()->update(QRect());
+
+		//ScribusDoc::changed() is called in item_setFrameShape()
+		//Hope this is enough
+		//emit DocChanged();
+		emit shapeChanged(frameType);
+	}
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
 void PropertiesPalette_Group::changeEvent(QEvent *e)
 {
 	if (e->type() == QEvent::LanguageChange)
@@ -628,21 +618,3 @@ void PropertiesPalette_Group::changeEvent(QEvent *e)
 }
 
 
-void PropertiesPalette_Group::languageChange()
-{
-	retranslateUi(this);
-}
-
-void PropertiesPalette_Group::unitChange()
-{
-	if (!m_doc)
-		return;
-
-	double oldRatio = m_unitRatio;
-	m_unitRatio = m_doc->unitRatio();
-	m_unitIndex = m_doc->unitIndex();
-
-	transPalWidget->blockSignals(true);
-	transPalWidget->unitChange(oldRatio, m_unitRatio, m_doc->unitIndex());
-	transPalWidget->blockSignals(false);
-}

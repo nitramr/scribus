@@ -36,6 +36,7 @@ for which a new license (GPL+exception) is in place.
 #include "ui_colorpalette.h"
 #include "ui/gradientvectordialog.h"
 #include "ui/patternpropsdialog.h"
+#include "propertywidgetbase.h"
 
 class PageItem;
 class ColorListBox;
@@ -48,7 +49,8 @@ class UndoManager;
   *@author Franz Schmid
   */
 
-class SCRIBUS_API ColorPalette : public QWidget, Ui::colorPalette
+class SCRIBUS_API ColorPalette : public QWidget, Ui::colorPalette,
+		public PropertyWidgetBase
 {
 	Q_OBJECT
 
@@ -58,7 +60,8 @@ public:
 	ColorPalette(QWidget* parent);
 	~ColorPalette() {};
 
-	void setDocument(ScribusDoc* doc);
+	void setMainWindow(ScribusMainWindow *mw);
+	void setDoc(ScribusDoc* d);
 
 	void updateColorList();
 
@@ -72,6 +75,8 @@ private:
 	UndoManager * undoManager;
 
 public slots:
+
+
 
 	void handleSelectionChanged();
 	void handleUpdateRequest(int);
@@ -126,8 +131,11 @@ public slots:
 	void changePatternPropsStroke();
 	void toggleStrokePattern();
 	void changeHatchProps();
-	void unitChange(double, double, int unitIndex);
+	void unitChange();
 	void languageChange();
+
+	void updateColorSpecialGradient();
+
 signals:
 	void NewPen(QString);
 	void NewBrush(QString);
@@ -146,7 +154,8 @@ signals:
 
 protected:
 	GradientVectorDialog* CGradDia;
-	QPointer<ScribusDoc> currentDoc;
+	ScribusMainWindow *m_ScMW;
+//	QPointer<ScribusDoc> m_doc;
 	PageItem* currentItem;
 	ColorList colorList;
 	QHash<QString, ScPattern> *patternList;
@@ -170,13 +179,13 @@ protected:
 	double m_Pattern_spaceS;
 	bool   m_Pattern_mirrorXS;
 	bool   m_Pattern_mirrorYS;
-	int    currentUnit;
+	int    m_unitIndex;
 	int    editStrokeGradient;
 
 	void   connectSignals();
 	void   disconnectSignals();
 
-	void   setCurrentItem(PageItem* item);
+	void   setCurrentItem(PageItem* i);
 	void   updateFromItem();
 
 	void   setGradientVectorValues();
