@@ -401,7 +401,7 @@ void PropertyWidgetFrame_Transparency::updateGradientList()
 	connect(namedGradient, SIGNAL(activated(const QString &)), this, SLOT(setNamedGradient(const QString &)));
 }
 
-void PropertyWidgetFrame_Transparency::unitChange(/*double, double, int unitIndex*/)
+void PropertyWidgetFrame_Transparency::unitChange()
 {
 	if (!m_haveDoc || !m_doc)
 		return;

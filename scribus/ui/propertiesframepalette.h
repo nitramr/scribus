@@ -25,7 +25,6 @@ class QWidget;
 #include "pageitem.h"
 #include "linkbutton.h"
 #include "linecombo.h"
-#include "scguardedptr.h"
 #include "sclistboxpixmap.h"
 #include "scpage.h"
 #include "spalette.h"
@@ -127,8 +126,6 @@ protected:
 	int       m_unitIndex;
 	PageItem* m_item;
 	UndoManager *undoManager;
-	
-//	ScGuardedPtr<ScribusDoc> m_doc;
 
 	ScLayoutSection *layoutSectionXYZ;
 	ScLayoutSection *layoutSectionDropShadow;

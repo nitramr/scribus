@@ -393,6 +393,9 @@ void ColorPalette::setDoc(ScribusDoc* d)
 	gradEdit->setColors(d->PageColors);
 	m_unitIndex = d->unitIndex();
 
+	m_haveDoc = true;
+	m_haveItem = false;
+
 	updateColorList();
 	updateCList();
 
@@ -562,9 +565,6 @@ void ColorPalette::setCurrentItem(PageItem* i)
 	if (!m_doc)
 		setDoc(i->doc());
 
-	m_haveItem = false;
-	m_item = i;
-
 	if ((i == NULL) || (m_item != i))
 	{
 		editStrokeGradient = 0;
@@ -573,10 +573,13 @@ void ColorPalette::setCurrentItem(PageItem* i)
 		gradEditButton->setEnabled(true);
 	}
 
+	m_item = i;
 	disconnectSignals();
 
 	if (!m_item)
 		return;
+
+	m_haveItem = true;
 
 	showOverprint(m_item->doOverprint ? 1 : 0);
 	showColorValues(m_item->lineColor(), m_item->fillColor(), m_item->lineShade(), m_item->fillShade());
@@ -653,7 +656,7 @@ void ColorPalette::setCurrentItem(PageItem* i)
 	m_item->strokePatternFlip(mirrorX, mirrorY);
 	setActPatternStroke(m_item->strokePattern(), patternScaleX, patternScaleY, patternOffsetX, patternOffsetY, patternRotation, patternSkewX, patternSkewY, mirrorX, mirrorY, patternSpace, m_item->isStrokePatternToPath());
 
-	m_haveItem = true;
+
 
 	connectSignals();
 
@@ -706,6 +709,7 @@ void ColorPalette::handleSelectionChanged()
 			m_haveItem = false;
 
 			this->showGradient(0);
+			break;
 		}
 	}
 }
@@ -718,10 +722,19 @@ void ColorPalette::handleUpdateRequest(int updateFlags)
 
 void ColorPalette::unitChange()
 {
+	if (!m_haveDoc || !m_doc)
+		return;
+	bool tmp = m_haveItem;
+	m_haveItem = false;
+
+	m_unitRatio = m_doc->unitRatio();
+	m_unitIndex = m_doc->unitIndex();
+
 	if (CGradDia)
 		CGradDia->unitChange(m_unitIndex);
 	hatchDist->setNewUnit(m_unitIndex);
-//	m_unitIndex = m_unitIndex;
+
+	m_haveItem = tmp;
 }
 
 void ColorPalette::languageChange()
@@ -1094,14 +1107,128 @@ void ColorPalette::setGradientColors()
 void ColorPalette::showGradient(int number)
 {
 	bool sigBlocked = fillModeCombo->blockSignals(true);
-	if (number==-1)
-	{
+//	if (number==-1)
+//	{
+//		fillModeCombo->setCurrentIndex(0);
+//	}
+//	if (number == 0)
+//		fillModeCombo->setCurrentIndex(0);
+//	else if (((number > 0) && (number < 8)) || ((number >= 9) && (number <= 13)))
+//	{
+//		if ((number == 5) || (number == 7) || (number == 13))
+//		{
+//			stackedWidget_2->setCurrentIndex(0);
+//			if ((number == 5) || (number == 7))
+//				gradientType->setCurrentIndex(1);
+//			if (number == 13)
+//				gradientType->setCurrentIndex(2);
+//		}
+//		else if (number == 9)
+//		{
+//			stackedWidget_2->setCurrentIndex(1);
+//			gradientType->setCurrentIndex(3);
+//			if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
+//				setCurrentComboItem(colorPoint1, m_item->GrColorP1);
+//			else
+//				colorPoint1->setCurrentIndex(0);
+//			if ((m_item->GrColorP2 != CommonStrings::None) && (!m_item->GrColorP2.isEmpty()))
+//				setCurrentComboItem(colorPoint2, m_item->GrColorP2);
+//			else
+//				colorPoint2->setCurrentIndex(0);
+//			if ((m_item->GrColorP3 != CommonStrings::None) && (!m_item->GrColorP3.isEmpty()))
+//				setCurrentComboItem(colorPoint3, m_item->GrColorP3);
+//			else
+//				colorPoint3->setCurrentIndex(0);
+//			if ((m_item->GrColorP4 != CommonStrings::None) && (!m_item->GrColorP4.isEmpty()))
+//				setCurrentComboItem(colorPoint4, m_item->GrColorP4);
+//			else
+//				colorPoint4->setCurrentIndex(0);
+//			color1Alpha->setValue(qRound(m_item->GrCol1transp * 100));
+//			color2Alpha->setValue(qRound(m_item->GrCol2transp * 100));
+//			color3Alpha->setValue(qRound(m_item->GrCol3transp * 100));
+//			color4Alpha->setValue(qRound(m_item->GrCol4transp * 100));
+//			color1Shade->setValue(m_item->GrCol1Shade);
+//			color2Shade->setValue(m_item->GrCol2Shade);
+//			color3Shade->setValue(m_item->GrCol3Shade);
+//			color4Shade->setValue(m_item->GrCol4Shade);
+//		}
+//		else if (number == 10)
+//		{
+//			stackedWidget_2->setCurrentIndex(0);
+//			gradientType->setCurrentIndex(4);
+//		}
+//		else if (number == 11)
+//		{
+//			stackedWidget_2->setCurrentIndex(2);
+//			if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
+//			{
+//				meshPoint mp = m_item->meshGradientArray[m_item->selectedMeshPointX][m_item->selectedMeshPointY];
+//				setCurrentComboItem(colorMeshPoint, mp.colorName);
+//				shadeMeshPoint->setValue(mp.shade);
+//				transparencyMeshPoint->setValue(mp.transparency * 100);
+//			}
+//			gradientType->setCurrentIndex(5);
+//		}
+//		else if (number == 12)
+//		{
+//			stackedWidget_2->setCurrentIndex(2);
+//			gradientType->setCurrentIndex(6);
+//		}
+//		else
+//		{
+//			stackedWidget_2->setCurrentIndex(0);
+//			gradientType->setCurrentIndex(0);
+//		}
+//		fillModeCombo->setCurrentIndex(1);
+//		if (m_item->getGradientExtend() == VGradient::none)
+//			gradientExtend->setCurrentIndex(0);
+//		else
+//			gradientExtend->setCurrentIndex(1);
+//	}
+//	else if (number == 14)
+//	{
+//		fillModeCombo->setCurrentIndex(2);
+//		hatchAngle->setValue(m_item->hatchAngle);
+//		hatchDist->setValue(m_item->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
+//		hatchType->setCurrentIndex(m_item->hatchType);
+//		if ((m_item->hatchForeground != CommonStrings::None) && (!m_item->hatchForeground.isEmpty()))
+//			setCurrentComboItem(hatchLineColor, m_item->hatchForeground);
+//		if (m_item->hatchUseBackground)
+//		{
+//			if (!m_item->hatchBackground.isEmpty())
+//				setCurrentComboItem(hatchBackground, m_item->hatchBackground);
+//		}
+//		else
+//			setCurrentComboItem(hatchBackground, CommonStrings::None);
+//	}
+//	else
+//	{
+//		if (patternList->count() == 0)
+//		{
+//			fillModeCombo->setCurrentIndex(0);
+//			emit NewGradient(0);
+//		}
+//		else
+//			fillModeCombo->setCurrentIndex(3);
+//	}
+
+	switch(number){
+	case -1:
+	case 0:
 		fillModeCombo->setCurrentIndex(0);
-	}
-	if (number == 0)
-		fillModeCombo->setCurrentIndex(0);
-	else if (((number > 0) && (number < 8)) || ((number >= 9) && (number <= 13)))
-	{
+		break;
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 13:
 		if ((number == 5) || (number == 7) || (number == 13))
 		{
 			stackedWidget_2->setCurrentIndex(0);
@@ -1171,9 +1298,9 @@ void ColorPalette::showGradient(int number)
 			gradientExtend->setCurrentIndex(0);
 		else
 			gradientExtend->setCurrentIndex(1);
-	}
-	else if (number == 14)
-	{
+
+		break;
+	case 14:
 		fillModeCombo->setCurrentIndex(2);
 		hatchAngle->setValue(m_item->hatchAngle);
 		hatchDist->setValue(m_item->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
@@ -1187,9 +1314,9 @@ void ColorPalette::showGradient(int number)
 		}
 		else
 			setCurrentComboItem(hatchBackground, CommonStrings::None);
-	}
-	else
-	{
+
+		break;
+	default:
 		if (patternList->count() == 0)
 		{
 			fillModeCombo->setCurrentIndex(0);
@@ -1197,15 +1324,20 @@ void ColorPalette::showGradient(int number)
 		}
 		else
 			fillModeCombo->setCurrentIndex(3);
+
+		break;
 	}
+
+
 	fillModeStack->setCurrentIndex( fillModeCombo->currentIndex() );
 	fillModeCombo->blockSignals(sigBlocked);
 }
 
 void ColorPalette::slotGrad(int number)
 {
-	if (number == 1)
-	{
+	switch(number){
+	case 1:{
+
 		bool sigBlocked1 = gradEdit->blockSignals(true);
 		bool sigBlocked2 = gradientType->blockSignals(true);
 		bool sigBlocked3 = namedGradient->blockSignals(true);
@@ -1221,23 +1353,21 @@ void ColorPalette::slotGrad(int number)
 			gradEdit->setGradient(m_item->fill_gradient);
 			gradEdit->setGradientEditable(true);
 		}
-		if (gradientType->currentIndex() == 0)
-		{
+
+		switch(gradientType->currentIndex()){
+		case 0:
 			stackedWidget_2->setCurrentIndex(0);
 			emit NewGradient(6);
-		}
-		else if (gradientType->currentIndex() == 1)
-		{
+			break;
+		case 1:
 			stackedWidget_2->setCurrentIndex(0);
 			emit NewGradient(7);
-		}
-		else if (gradientType->currentIndex() == 2)
-		{
+			break;
+		case 2:
 			stackedWidget_2->setCurrentIndex(0);
 			emit NewGradient(13);
-		}
-		else if (gradientType->currentIndex() == 3)
-		{
+			break;
+		case 3:{
 			stackedWidget_2->setCurrentIndex(1);
 			if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
 				setCurrentComboItem(colorPoint1, m_item->GrColorP1);
@@ -1264,14 +1394,13 @@ void ColorPalette::slotGrad(int number)
 			color3Shade->setValue(m_item->GrCol3Shade);
 			color4Shade->setValue(m_item->GrCol4Shade);
 			emit NewGradient(9);
+			break;
 		}
-		else if (gradientType->currentIndex() == 4)
-		{
+		case 4:
 			stackedWidget_2->setCurrentIndex(0);
 			emit NewGradient(10);
-		}
-		else if (gradientType->currentIndex() == 5)
-		{
+			break;
+		case 5:{
 			stackedWidget_2->setCurrentIndex(2);
 			if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
 			{
@@ -1281,18 +1410,22 @@ void ColorPalette::slotGrad(int number)
 				transparencyMeshPoint->setValue(mp.transparency * 100);
 			}
 			emit NewGradient(11);
+			break;
 		}
-		else if (gradientType->currentIndex() == 6)
-		{
+		case 6:
 			stackedWidget_2->setCurrentIndex(2);
 			emit NewGradient(12);
+			break;
+
 		}
+
 		gradEdit->blockSignals(sigBlocked1);
 		gradientType->blockSignals(sigBlocked2);
 		namedGradient->blockSignals(sigBlocked3);
+
+		break;
 	}
-	else if (number == 2)
-	{
+	case 2:{
 		hatchAngle->setValue(m_item->hatchAngle);
 		hatchDist->setValue(m_item->hatchDistance * unitGetRatioFromIndex(m_unitIndex));
 		hatchType->setCurrentIndex(m_item->hatchType);
@@ -1306,33 +1439,37 @@ void ColorPalette::slotGrad(int number)
 		else
 			setCurrentComboItem(hatchBackground, CommonStrings::None);
 		emit NewGradient(14);
+		break;
 	}
-	else if (number == 3)
+	case 3:
 		emit NewGradient(8);
-	else
+		break;
+	default:
 		emit NewGradient(0);
+		break;
+
+	}
+
 	fillModeStack->setCurrentIndex(number);
 }
 
 void ColorPalette::slotGradType(int type)
 {
-	if (type == 0)
-	{
+
+	switch(type){
+	case 0:
 		stackedWidget_2->setCurrentIndex(0);
 		emit NewGradient(6);
-	}
-	else if (type == 1)
-	{
+		break;
+	case 1:
 		stackedWidget_2->setCurrentIndex(0);
 		emit NewGradient(7);
-	}
-	else if (type == 2)
-	{
+		break;
+	case 2:
 		stackedWidget_2->setCurrentIndex(0);
 		emit NewGradient(13);
-	}
-	else if (type == 3)
-	{
+		break;
+	case 3:{
 		stackedWidget_2->setCurrentIndex(1);
 		if ((m_item->GrColorP1 != CommonStrings::None) && (!m_item->GrColorP1.isEmpty()))
 			setCurrentComboItem(colorPoint1, m_item->GrColorP1);
@@ -1359,14 +1496,13 @@ void ColorPalette::slotGradType(int type)
 		color3Shade->setValue(m_item->GrCol3Shade);
 		color4Shade->setValue(m_item->GrCol4Shade);
 		emit NewGradient(9);
+		break;
 	}
-	else if (type == 4)
-	{
+	case 4:
 		stackedWidget_2->setCurrentIndex(0);
 		emit NewGradient(10);
-	}
-	else if (type == 5)
-	{
+		break;
+	case 5:{
 		stackedWidget_2->setCurrentIndex(2);
 		if ((m_item->selectedMeshPointX > -1) && (m_item->selectedMeshPointY > -1l))
 		{
@@ -1376,12 +1512,15 @@ void ColorPalette::slotGradType(int type)
 			transparencyMeshPoint->setValue(mp.transparency * 100);
 		}
 		emit NewGradient(11);
+		break;
 	}
-	else if (type == 6)
-	{
+	case 6:
 		stackedWidget_2->setCurrentIndex(2);
 		emit NewGradient(12);
+		break;
+
 	}
+
 }
 
 void ColorPalette::updateColorSpecialGradient()
@@ -1394,20 +1533,38 @@ void ColorPalette::updateColorSpecialGradient()
 	PageItem *currItem=m_doc->m_Selection->itemAt(0);
 	if (currItem)
 	{
-		if (m_ScMW->view->editStrokeGradient == 0)
+
+		switch(m_ScMW->view->editStrokeGradient){
+		case 0:
 			this->setSpecialGradient(currItem->GrStartX, currItem->GrStartY, currItem->GrEndX, currItem->GrEndY, currItem->GrFocalX, currItem->GrFocalY, currItem->GrScale, currItem->GrSkew, 0, 0);
-		else if (m_ScMW->view->editStrokeGradient == 1)
+
+			break;
+		case 1:
 			this->setSpecialGradient(currItem->GrStrokeStartX, currItem->GrStrokeStartY, currItem->GrStrokeEndX, currItem->GrStrokeEndY, currItem->GrStrokeFocalX, currItem->GrStrokeFocalY, currItem->GrStrokeScale, currItem->GrStrokeSkew, 0, 0);
-		else if (m_ScMW->view->editStrokeGradient == 3)
+
+			break;
+		case 3:
 			this->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), 0, 0);
-		else if (m_ScMW->view->editStrokeGradient == 4)
+
+			break;
+		case 4:
 			this->setSpecialGradient(currItem->GrControl1.x(), currItem->GrControl1.y(), currItem->GrControl2.x(), currItem->GrControl2.y(), currItem->GrControl3.x(), currItem->GrControl3.y(), currItem->GrControl4.x(), currItem->GrControl4.y(), currItem->GrControl5.x(), currItem->GrControl5.y());
-		else if ((m_ScMW->view->editStrokeGradient == 5) || (m_ScMW->view->editStrokeGradient == 6))
+
+			break;
+		case 5:
+		case 6:
 			this->setMeshPoint();
-		else if (m_ScMW->view->editStrokeGradient == 8)
+
+			break;
+		case 8:
 			this->setMeshPatchPoint();
-		else if (m_ScMW->view->editStrokeGradient == 9)
+
+			break;
+		case 9:
 			this->setMeshPatch();
+			break;
+		}
+
 	}
 }
 
@@ -1421,8 +1578,10 @@ void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, dou
 		UndoTransaction trans;
 		if (UndoManager::undoEnabled())
 			trans = undoManager->beginTransaction(Um::Selection, Um::ILine, Um::GradPos + "p", "", Um::ILine);
-		if (m_ScMW->view->editStrokeGradient == 1)
-		{
+
+		switch(m_ScMW->view->editStrokeGradient){
+		case 1:{
+
 			m_item->setGradientStrokeStartX(x1 / m_unitRatio);
 			m_item->setGradientStrokeStartY(y1 / m_unitRatio);
 			m_item->setGradientStrokeEndX(x2 / m_unitRatio);
@@ -1451,18 +1610,19 @@ void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, dou
 			upRect = upRect.united(QRectF(shP, QPointF(m_item->gradientStrokeStartX(), m_item->gradientStrokeStartY())).normalized());
 			upRect |= QRectF(shP, QPointF(0, 0)).normalized();
 			upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
+
+			break;
 		}
-		else if (m_ScMW->view->editStrokeGradient == 3)
-		{
+		case 3:
 			m_item->setGradientControl1(FPoint(x1 / m_unitRatio, y1 / m_unitRatio));
 			m_item->setGradientControl2(FPoint(x2 / m_unitRatio, y2 / m_unitRatio));
 			m_item->setGradientControl3(FPoint(fx / m_unitRatio, fy / m_unitRatio));
 			m_item->setGradientControl4(FPoint(sg / m_unitRatio, sk / m_unitRatio));
 			m_item->update();
 			upRect = QRectF(QPointF(-m_item->width(), -m_item->height()), QPointF(m_item->width() * 2, m_item->height() * 2)).normalized();
-		}
-		else if (m_ScMW->view->editStrokeGradient == 4)
-		{
+
+			break;
+		case 4:
 			m_item->setGradientControl1(FPoint(x1 / m_unitRatio, y1 / m_unitRatio));
 			m_item->setGradientControl2(FPoint(x2 / m_unitRatio, y2 / m_unitRatio));
 			m_item->setGradientControl3(FPoint(fx / m_unitRatio, fy / m_unitRatio));
@@ -1470,9 +1630,8 @@ void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, dou
 			m_item->setGradientControl5(FPoint(cx / m_unitRatio, cy / m_unitRatio));
 			m_item->update();
 			upRect = QRectF(QPointF(-m_item->width(), -m_item->height()), QPointF(m_item->width() * 2, m_item->height() * 2)).normalized();
-		}
-		else
-		{
+			break;
+		default:{
 			if (m_item->gradientType() == 13 && UndoManager::undoEnabled())
 			{
 				SimpleState *ss= new SimpleState("Refresh");
@@ -1514,7 +1673,11 @@ void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, dou
 			upRect |= QRectF(shP, QPointF(m_item->gradientStartX(), m_item->gradientStartY())).normalized();
 			upRect |= QRectF(shP, QPointF(0, 0)).normalized();
 			upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
+
+			break;
 		}
+		}
+
 		if (trans)
 			trans.commit();
 		upRect.translate(m_item->xPos(), m_item->yPos());
