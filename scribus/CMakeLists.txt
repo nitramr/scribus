@@ -101,6 +101,10 @@ set(SCRIBUS_UI_SRC
 	ui/cmsprefsbase.ui
 	ui/cmykfwbase.ui
 	ui/colorpalette.ui
+	ui/colorpicker.ui
+	ui/colorpickercolorlist.ui
+	ui/colorpickercolormixer.ui
+	ui/colorpickermodeeditor.ui
 	ui/colorsandfillsbase.ui
 	ui/downloadspalettebase.ui
 	ui/gradientaddedit.ui
@@ -194,7 +198,6 @@ set(SCRIBUS_UI_SRC
 	ui/replaceonecolor.ui
 	ui/resourcemanagerbase.ui
 	ui/resourcemanagerlicensebase.ui
-	ui/sccolorpicker.ui
 	ui/selectobjects.ui
 	ui/shortcutwidget.ui
 	ui/smcellstylewidget.ui
@@ -349,7 +352,10 @@ set(SCRIBUS_MOC_CLASSES
 	ui/colorchart.h
 	ui/colorcombo.h
 	ui/sccolorfillsbox.h
-	ui/sccolorpicker.h
+	ui/colorpicker.h
+	ui/colorpickercolorlist.h
+	ui/colorpickercolormixer.h
+	ui/colorpickermodeeditor.h
 	ui/colorlistbox.h
 	ui/colorlistmodel.h
 	ui/colorsandfills.h
@@ -845,7 +851,10 @@ set(SCRIBUS_SOURCES
 	ui/colorchart.cpp
 	ui/colorcombo.cpp
 	ui/sccolorfillsbox.cpp
-	ui/sccolorpicker.cpp
+	ui/colorpicker.cpp
+	ui/colorpickercolorlist.cpp
+	ui/colorpickercolormixer.cpp
+	ui/colorpickermodeeditor.cpp
 	ui/colorlistbox.cpp
 	ui/colorlistmodel.cpp
 	ui/colorsandfills.cpp

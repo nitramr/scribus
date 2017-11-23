@@ -537,7 +537,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/ui/resourcemanagerlicense.h \
            scribus/ui/rulermover.h \
 	   scribus/ui/sccolorfillsbox.h \
-	   scribus/ui/sccolorpicker.h \
            scribus/ui/sccolorslider.h \
            scribus/ui/sccombobox.h \
            scribus/ui/scdockpalette.h \
@@ -979,7 +978,6 @@ HEADERS += scribus/actionmanager.h \
            scribus/plugins/tools/2geomtools/pathalongpath/pathalongpath.h \
            scribus/plugins/tools/2geomtools/pathalongpath/pathdialog.h \
     scribus/ui/flowlayout.h \
-    scribus/ui/sccolorpicker.h \
     scribus/ui/sccolorfillsbox.h \
     scribus/ui/scpopupmenu.h \
     scribus/ui/sclayoutsegment.h \
@@ -1016,7 +1014,11 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/propertywidgetframe_lineadvanced.h \
     scribus/ui/propertywidgetframe_shadow.h \
     scribus/ui/propertywidgetframe_shadowoptions.h \
-    scribus/ui/propertywidgetframe_shape.h
+    scribus/ui/propertywidgetframe_shape.h \
+    scribus/ui/colorpicker.h \
+    scribus/ui/colorpickercolormixer.h \
+    scribus/ui/colorpickercolorlist.h \
+    scribus/ui/colorpickermodeeditor.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \
@@ -1100,7 +1102,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/resourcemanagerbase.ui \
          scribus/ui/resourcemanagerlicensebase.ui \
          scribus/ui/rotationsetter.ui \
-	 scribus/ui/sccolorpicker.ui \
          scribus/ui/selectobjects.ui \
          scribus/ui/shortcutwidget.ui \
          scribus/ui/smcellstylewidget.ui \
@@ -1154,7 +1155,6 @@ FORMS += scribus/ui/aboutplugins.ui \
          scribus/plugins/scripter/python/sceditor/mainwindow.ui \
          scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.ui \
          scribus/plugins/tools/2geomtools/pathalongpath/pathdialogbase.ui \
-    scribus/ui/sccolorpicker.ui \
     scribus/ui/propertywidgettext_textstyles.ui \
     scribus/ui/propertywidgettext_textfont.ui \
     scribus/ui/propertywidgettext_textcolorbase.ui \
@@ -1181,7 +1181,11 @@ FORMS += scribus/ui/aboutplugins.ui \
     scribus/ui/propertywidgetframe_lineadvanced.ui \
     scribus/ui/propertywidgetframe_shadow.ui \
     scribus/ui/propertywidgetframe_shadowoptions.ui \
-    scribus/ui/propertywidgetframe_shape.ui
+    scribus/ui/propertywidgetframe_shape.ui \
+    scribus/ui/colorpicker.ui \
+    scribus/ui/colorpickercolormixer.ui \
+    scribus/ui/colorpickercolorlist.ui \
+    scribus/ui/colorpickermodeeditor.ui
 SOURCES += scribus/actionmanager.cpp \
            scribus/appmodehelper.cpp \
            scribus/canvas.cpp \
@@ -1658,7 +1662,6 @@ SOURCES += scribus/actionmanager.cpp \
            scribus/ui/resourcemanagerlicense.cpp \
            scribus/ui/rulermover.cpp \
 	   scribus/ui/sccolorfillsbox.cpp \
-	   scribus/ui/sccolorpicker.cpp \
            scribus/ui/sccolorslider.cpp \
            scribus/ui/sccombobox.cpp \
            scribus/ui/scdockpalette.cpp \
@@ -2158,7 +2161,11 @@ SOURCES += scribus/actionmanager.cpp \
     scribus/ui/propertywidgetframe_lineadvanced.cpp \
     scribus/ui/propertywidgetframe_shadow.cpp \
     scribus/ui/propertywidgetframe_shadowoptions.cpp \
-    scribus/ui/propertywidgetframe_shape.cpp
+    scribus/ui/propertywidgetframe_shape.cpp \
+    scribus/ui/colorpicker.cpp \
+    scribus/ui/colorpickercolormixer.cpp \
+    scribus/ui/colorpickercolorlist.cpp \
+    scribus/ui/colorpickermodeeditor.cpp
 RESOURCES += scribus/plugins/scripter/python/sceditor/dockwidget_icons.qrc
 TRANSLATIONS += resources/translations/scribus.af.ts \
                 resources/translations/scribus.ar.ts \

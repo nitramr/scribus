@@ -582,9 +582,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SwatchCombo</class>
-   <extends>QToolButton</extends>
-   <header>ui/swatchcombo.h</header>
+   <class>ScrSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>ui/scrspinbox.h</header>
   </customwidget>
   <customwidget>
    <class>ScComboBox</class>
@@ -592,20 +592,20 @@
    <header>ui/sccombobox.h</header>
   </customwidget>
   <customwidget>
-   <class>ColorChart</class>
-   <extends>QWidget</extends>
-   <header>ui/colorchart.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ColorListBox</class>
    <extends>QListView</extends>
    <header>ui/colorlistbox.h</header>
   </customwidget>
   <customwidget>
-   <class>ScrSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>ui/scrspinbox.h</header>
+   <class>SwatchCombo</class>
+   <extends>QToolButton</extends>
+   <header>ui/swatchcombo.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ColorChart</class>
+   <extends>QWidget</extends>
+   <header>ui/colorchart.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ScColorSlider</class>

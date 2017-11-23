@@ -28,6 +28,7 @@ class QWidget;
 #include "sclistboxpixmap.h"
 #include "scpage.h"
 #include "spalette.h"
+#include "colorpicker.h"
 #include "sclayoutsection.h" // Indigo Section
 #include "flowlayout.h"
 #include "propertywidgetbase.h"
@@ -87,6 +88,8 @@ public:
 	PropertyWidgetFrame_XYZTransform*   xyzTransformPal;
 	ColorPalette *colorPal;
 	PropertyWidgetFrame_Transparency *transparencyPal;
+
+	ColorPicker *colorPicker;
 
 
 

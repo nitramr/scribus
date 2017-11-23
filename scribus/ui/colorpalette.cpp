@@ -1675,7 +1675,7 @@ void ColorPalette::NewSpGradient(double x1, double y1, double x2, double y2, dou
 			upRect |= QRectF(shP, QPointF(m_item->width(), m_item->height())).normalized();
 
 			break;
-		}
+			}
 		}
 
 		if (trans)

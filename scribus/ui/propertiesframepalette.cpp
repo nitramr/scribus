@@ -64,7 +64,7 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 {
 	undoManager = UndoManager::instance();
 	m_ScMW=0;
-	m_doc=0;
+//	m_doc=0;
 	m_haveDoc = false;
 	m_haveItem = false;
 	m_unitRatio = 1.0;
@@ -86,6 +86,8 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 	lineAdvancedPal = new PropertyWidgetFrame_LineAdvanced(this);
 	colorPal = new ColorPalette(this);
 	transparencyPal = new PropertyWidgetFrame_Transparency(this);
+
+	colorPicker = new ColorPicker(this);
 
 
 	ScPopupMenu * popupXYZ = new ScPopupMenu(xyzExtPal);
@@ -113,6 +115,7 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 
 	layoutSectionColor = new ScLayoutSection(tr("&Colors"));
 	layoutSectionColor->addWidget(colorPal);
+	layoutSectionColor->addWidget(colorPicker);
 	layoutSectionColor->setVisible(false);
 
 	layoutSectionTransparency = new ScLayoutSection(tr("&Transparency"));
@@ -159,21 +162,12 @@ PropertiesFramePalette::PropertiesFramePalette( QWidget* parent) : ScDockPalette
 
 }
 
-void PropertiesFramePalette::closeEvent(QCloseEvent *closeEvent)
-{
-	if (m_ScMW && !m_ScMW->scriptIsRunning())
-	{
-		if ((m_haveDoc) && (m_haveItem))
-		{
-			if (colorPal->gradEditButton->isChecked())
-			{
-				m_ScMW->view->requestMode(modeNormal);
-				m_ScMW->view->RefreshGradient(m_item);
-			}
-		}
-	}
-	ScDockPalette::closeEvent(closeEvent);
-}
+
+/*********************************************************************
+*
+* Setup
+*
+**********************************************************************/
 
 void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 {
@@ -205,6 +199,11 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	connect(m_ScMW->appModeHelper, SIGNAL(AppModeChanged(int,int)), this, SLOT(AppModeChanged()));
 }
 
+/*********************************************************************
+*
+* Doc
+*
+**********************************************************************/
 
 void PropertiesFramePalette::setDoc(ScribusDoc *d)
 {
@@ -237,6 +236,8 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	lineAdvancedPal->setDoc(m_doc);
 	transparencyPal->setDoc(m_doc);
 	colorPal->setDoc(m_doc);
+
+	colorPicker->setDoc(m_doc);
 
 	updateColorList();
 
@@ -283,6 +284,12 @@ void PropertiesFramePalette::unsetDoc()
 	layoutSectionTransparency->setVisible(false);
 }
 
+/*********************************************************************
+*
+* Item
+*
+**********************************************************************/
+
 void PropertiesFramePalette::unsetItem()
 {
 	m_haveItem = false;
@@ -300,13 +307,6 @@ void PropertiesFramePalette::unsetItem()
 	handleSelectionChanged();
 }
 
-void PropertiesFramePalette::setTextFlowMode(PageItem::TextFlowMode mode)
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveItem)
-		return;
-	shapePal->showTextFlowMode(mode);
-	groupPal->showTextFlowMode(mode);
-}
 
 PageItem* PropertiesFramePalette::currentItemFromSelection()
 {
@@ -333,22 +333,6 @@ PageItem* PropertiesFramePalette::currentItemFromSelection()
 	}
 
 	return currentItem;
-}
-
-void PropertiesFramePalette::AppModeChanged()
-{
-	if (!m_ScMW || m_ScMW->scriptIsRunning())
-		return;
-	if ((m_haveDoc) && (m_haveItem))
-	{
-		if (m_item->isTable())
-		{
-			if (m_doc->appMode == modeEditTable)
-				connect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-			else
-				disconnect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
-		}
-	}
 }
 
 void PropertiesFramePalette::setCurrentItem(PageItem *i)
@@ -443,6 +427,12 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		layoutSectionTransparency->setVisible(false);
 	}
 }
+
+/*********************************************************************
+*
+* Update Helper
+*
+**********************************************************************/
 
 void  PropertiesFramePalette::handleSelectionChanged()
 {
@@ -581,6 +571,50 @@ void PropertiesFramePalette::unitChange()
 	m_haveItem = tmp;
 }
 
+void PropertiesFramePalette::languageChange()
+{
+	layoutSectionXYZ->setTitle(tr("X, Y, &Z"));
+	layoutSectionDropShadow->setTitle(tr("Drop Shadow"));
+	layoutSectionShape->setTitle(tr("&Shape"));
+	layoutSectionGroup->setTitle(tr("&Group"));
+	layoutSectionLine->setTitle(tr("&Line"));
+	layoutSectionColor->setTitle(tr("&Colors"));
+	layoutSectionTransparency->setTitle(tr("&Transparency"));
+
+	xyzPal->languageChange();
+	xyzTransformPal->languageChange();
+	xyzExtPal->languageChange();
+	shadowPal->languageChange();
+	shadowOptionsPal->languageChange();
+	shapePal->languageChange();
+	groupPal->languageChange();
+	colorPal->languageChange();
+	linePal->languageChange();
+	lineAdvancedPal->languageChange();
+}
+
+void PropertiesFramePalette::AppModeChanged()
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning())
+		return;
+	if ((m_haveDoc) && (m_haveItem))
+	{
+		if (m_item->isTable())
+		{
+			if (m_doc->appMode == modeEditTable)
+				connect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+			else
+				disconnect(m_item->asTable(), SIGNAL(selectionChanged()), this, SLOT(handleSelectionChanged()));
+		}
+	}
+}
+
+/*********************************************************************
+*
+* Features
+*
+**********************************************************************/
+
 void PropertiesFramePalette::NewLineMode(int mode)
 {
 	if (!m_ScMW || m_ScMW->scriptIsRunning())
@@ -627,41 +661,9 @@ bool PropertiesFramePalette::userActionOn()
 	return userActionOn;
 }
 
-void PropertiesFramePalette::changeEvent(QEvent *e)
-{
-	if (e->type() == QEvent::LanguageChange)
-	{
-		languageChange();
-		return;
-	}
-	if(e->type() == QEvent::Resize){
-		m_scrollArea->setMinimumWidth(this->width());
-		return;
-	}
-	ScDockPalette::changeEvent(e);
-}
 
-void PropertiesFramePalette::languageChange()
-{
-	layoutSectionXYZ->setTitle(tr("X, Y, &Z"));
-	layoutSectionDropShadow->setTitle(tr("Drop Shadow"));
-	layoutSectionShape->setTitle(tr("&Shape"));
-	layoutSectionGroup->setTitle(tr("&Group"));
-	layoutSectionLine->setTitle(tr("&Line"));
-	layoutSectionColor->setTitle(tr("&Colors"));
-	layoutSectionTransparency->setTitle(tr("&Transparency"));
 
-	xyzPal->languageChange();
-	xyzTransformPal->languageChange();
-	xyzExtPal->languageChange();
-	shadowPal->languageChange();
-	shadowOptionsPal->languageChange();
-	shapePal->languageChange();
-	groupPal->languageChange();
-	colorPal->languageChange();
-	linePal->languageChange();
-	lineAdvancedPal->languageChange();
-}
+
 
 void PropertiesFramePalette::setGradientEditMode(bool on)
 {
@@ -693,4 +695,48 @@ void PropertiesFramePalette::handleShapeEdit()
 		return;
 	if ((m_haveDoc) && (m_haveItem))
 		shapePal->setRoundRectEnabled(false);
+}
+
+void PropertiesFramePalette::setTextFlowMode(PageItem::TextFlowMode mode)
+{
+	if (!m_ScMW || m_ScMW->scriptIsRunning() || !m_haveItem)
+		return;
+	shapePal->showTextFlowMode(mode);
+	groupPal->showTextFlowMode(mode);
+}
+
+/*********************************************************************
+*
+* Events
+*
+**********************************************************************/
+
+void PropertiesFramePalette::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::LanguageChange)
+	{
+		languageChange();
+		return;
+	}
+	if(e->type() == QEvent::Resize){
+		m_scrollArea->setMinimumWidth(this->width());
+		return;
+	}
+	ScDockPalette::changeEvent(e);
+}
+
+void PropertiesFramePalette::closeEvent(QCloseEvent *closeEvent)
+{
+	if (m_ScMW && !m_ScMW->scriptIsRunning())
+	{
+		if ((m_haveDoc) && (m_haveItem))
+		{
+			if (colorPal->gradEditButton->isChecked())
+			{
+				m_ScMW->view->requestMode(modeNormal);
+				m_ScMW->view->RefreshGradient(m_item);
+			}
+		}
+	}
+	ScDockPalette::closeEvent(closeEvent);
 }

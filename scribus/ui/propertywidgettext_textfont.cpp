@@ -22,7 +22,7 @@ for which a new license (GPL+exception) is in place.
 PropertyWidgetText_TextFont::PropertyWidgetText_TextFont(QWidget* parent) : QWidget(parent)
 {
 	m_ScMW=0;
-	m_doc=0;
+//	m_doc=0;
 	m_item=0;
 	m_haveDoc = false;
 	m_haveItem = false;

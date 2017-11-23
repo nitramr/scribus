@@ -15,7 +15,6 @@ for which a new license (GPL+exception) is in place.
 #include "selection.h"
 
 #include "sccolorfillsbox.h"
-#include "sccolorpicker.h"
 #include "scpopupmenu.h"
 
 PropertyWidgetText_TextStyles::PropertyWidgetText_TextStyles(QWidget* parent) : QWidget(parent)
