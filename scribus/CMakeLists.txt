@@ -353,6 +353,7 @@ set(SCRIBUS_MOC_CLASSES
 	ui/colorcombo.h
 	ui/sccolorfillsbox.h
 	ui/colorpicker.h
+	ui/colorpickerstruct.h
 	ui/colorpickercolorlist.h
 	ui/colorpickercolormixer.h
 	ui/colorpickermodeeditor.h

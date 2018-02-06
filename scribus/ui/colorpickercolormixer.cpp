@@ -8,6 +8,7 @@
 #include "util_color.h"
 #include "scrspinbox.h"
 #include "sccombobox.h"
+#include "scmessagebox.h"
 #include "iconmanager.h"
 
 
@@ -25,6 +26,9 @@ ColorPickerColorMixer::ColorPickerColorMixer(QWidget *parent) :
 	widgetCyan->hide();
 	widgetMagenta->hide();
 	widgetYellow->hide();
+
+	Color = ScColor(0,0,0,0);
+	Color.setDisplayName(tr("New Color"));
 
 	imageA = QPixmap(40,40);
 	imageN = QPixmap(40,40);
@@ -77,8 +81,11 @@ ColorPickerColorMixer::ColorPickerColorMixer(QWidget *parent) :
 	ComboBox1->addItem( tr( "Lab" ) );
 	ComboBox1->addItem( tr( "HLC" ) );
 
+	ColorName->installEventFilter(this);
+
 	connect(toggleColorMap, SIGNAL(clicked(bool)), this, SLOT(handleToggleColorMap()));
 	connect(toggleColorList, SIGNAL(clicked(bool)), this, SLOT(handleToggleColorList()));
+	connect(ColorName, SIGNAL(textChanged(QString)), this, SLOT(handleColorName()));
 
 }
 
@@ -88,6 +95,26 @@ ColorPickerColorMixer::ColorPickerColorMixer(QWidget *parent) :
 *
 **********************************************************************/
 
+bool ColorPickerColorMixer::eventFilter(QObject *object, QEvent *event){
+	Q_UNUSED(object)
+		if (event->type() == QEvent::FocusOut) {
+
+			if (ColorName->text().isEmpty())
+			{
+				ScMessageBox::information(this, CommonStrings::trWarning, tr("You cannot create a color without a name.\nPlease give it a name"));
+				setColorName(tr("New Color"));
+				ColorName->setFocus();
+				ColorName->selectAll();
+			}else if (ColorName->text() == CommonStrings::None || ColorName->text() == CommonStrings::tr_NoneColor)
+			{
+				ScMessageBox::information(this, CommonStrings::trWarning, tr("You cannot create a color named \"%1\".\nIt is a reserved name for transparent color").arg(ColorName->text()));
+				setColorName(tr("New Color"));
+				ColorName->setFocus();
+				ColorName->selectAll();
+			}else prepColor();
+		}
+		return false;
+}
 
 /*********************************************************************
 *
@@ -107,34 +134,105 @@ void ColorPickerColorMixer::setDoc(ScribusDoc *d)
 
 	m_doc = d;
 
-	ScColor orig(50,10,70,0);
-	//orig.setColorRGB(128,255,28);
+	setObjectColor(Color);
+
+	//updatePickerSettings();
+
+}
+
+/*********************************************************************
+*
+* Color Name
+*
+**********************************************************************/
+
+void ColorPickerColorMixer::setColorName(QString name){
+
+	ColorName->setText(name);
+//	ColorName->selectAll();
+//	ColorName->setFocus();
+
+}
+
+QString ColorPickerColorMixer::colorName()
+{
+	return ColorName->text();
+}
+
+
+void ColorPickerColorMixer::handleColorName(){
+
+	prepColor();
+
+}
+
+/*********************************************************************
+*
+* Color
+*
+**********************************************************************/
+
+void ColorPickerColorMixer::setObjectColor(ScColor orig){
 
 	Color = orig;
+	setColorName(Color.getDisplayName());
 
-	imageA.fill( ScColorEngine::getDisplayColor(orig, m_doc) );
-	if ( ScColorEngine::isOutOfGamut(orig, m_doc) )
+	updatePickerSettings();
+
+}
+
+void ColorPickerColorMixer::setSpot()
+{
+	disconnect(ComboBox1, SIGNAL(activated(const QString&)), this, SLOT(selModel(const QString&)));
+	if (Separations->isChecked())
+	{
+		ComboBox1->setCurrentIndex( 0 );
+//		Commented out to allow RGB Spot-Colors
+//		selModel( tr("CMYK"));
+	}
+	connect(ComboBox1, SIGNAL(activated(const QString&)), this, SLOT(selModel(const QString&)));
+}
+
+bool ColorPickerColorMixer::isSpotColor()
+{
+	return Separations->isChecked();
+}
+
+/*********************************************************************
+*
+* Members
+*
+**********************************************************************/
+
+void ColorPickerColorMixer::updatePickerSettings(){
+
+	if(!m_doc)
+		m_doc = 0; //return;
+
+
+	imageA.fill( ScColorEngine::getDisplayColor(Color, m_doc) );
+	if ( ScColorEngine::isOutOfGamut(Color, m_doc) )
 		paintAlert(alertIcon,imageA, 2, 2, false);
 
-	imageN.fill( ScColorEngine::getDisplayColor(orig, m_doc) );
-	if ( ScColorEngine::isOutOfGamut(orig, m_doc) )
+	imageN.fill( ScColorEngine::getDisplayColor(Color, m_doc) );
+	if ( ScColorEngine::isOutOfGamut(Color, m_doc) )
 		paintAlert(alertIcon, imageN, 2, 2, false);
 
 	OldC->setPixmap( imageA );
 	NewC->setPixmap( imageN );
 
-	Separations->setChecked(orig.isSpotColor());
+	Separations->setChecked(Color.isSpotColor());
 
 	CyanSL->setPalette(sliderPix(180));
 	MagentaSL->setPalette(sliderPix(300));
 	YellowSL->setPalette(sliderPix(60));
 	BlackSL->setPalette(sliderBlack());
 
-	if (orig.getColorModel () == colorModelCMYK)
+	if (Color.getColorModel () == colorModelCMYK)
 	{
 		double ccd, cmd, cyd, ckd;
 		CMYKColor cmyk;
-		ScColorEngine::getCMYKValues(orig, m_doc, cmyk);
+		ScColorEngine::getCMYKValues(Color, m_doc, cmyk);
 		ccd = cmyk.c / 2.55;
 		cmd = cmyk.m / 2.55;
 		cyd = cmyk.y / 2.55;
@@ -151,22 +249,22 @@ void ColorPickerColorMixer::setDoc(ScribusDoc *d)
 	}
 
 	int h, s, v;
-	ScColorEngine::getRGBColor(orig, m_doc).getHsv(&h, &s, &v);
+	ScColorEngine::getRGBColor(Color, m_doc).getHsv(&h, &s, &v);
 	ColorMap->setFixedWidth(180);
 	ColorMap->drawPalette(v);
 	ColorMap->setMark(h, s);
 
-	if (orig.getColorModel () == colorModelRGB)
+	if (Color.getColorModel () == colorModelRGB)
 	{
 		ComboBox1->setCurrentIndex(1);
 		selModel ( tr( "RGB" ));
 	}
-	else if (orig.getColorModel() == colorModelCMYK)
+	else if (Color.getColorModel() == colorModelCMYK)
 	{
 		ComboBox1->setCurrentIndex(0);
 		selModel ( tr( "CMYK" ));
 	}
-	else if (orig.getColorModel() == colorModelLab)
+	else if (Color.getColorModel() == colorModelLab)
 	{
 		ComboBox1->setCurrentIndex(3);
 		selModel ( tr( "Lab" ));
@@ -197,13 +295,9 @@ void ColorPickerColorMixer::setDoc(ScribusDoc *d)
 	connect( ColorMap, SIGNAL( ColorVal(int, int, bool)), this, SLOT( setColor2(int, int, bool)));
 	connect( ComboBox1, SIGNAL(activated(const QString&)), this, SLOT(selModel(const QString&)));
 	connect( Separations, SIGNAL(clicked()), this, SLOT(setSpot()));
+
 }
 
-/*********************************************************************
-*
-* Features
-*
-**********************************************************************/
 
 QPalette ColorPickerColorMixer::sliderPix(int color)
 {
@@ -607,6 +701,8 @@ void ColorPickerColorMixer::setColor()
 	if ( ScColorEngine::isOutOfGamut(tmp, m_doc) )
 		paintAlert(alertIcon, imageN, 2, 2, false);
 	NewC->setPixmap( imageN );
+
+	prepColor();
 }
 
 void ColorPickerColorMixer::setColor2(int h, int s, bool ende)
@@ -639,7 +735,83 @@ void ColorPickerColorMixer::setColor2(int h, int s, bool ende)
 	Color = tmp;
 	if (ende)
 		setValues();
+
+	prepColor();
 }
+
+void ColorPickerColorMixer::setValSLiders(double value)
+{
+	if (CyanSp == sender())
+		CyanSL->setValue(value * 1000);
+	if (MagentaSp == sender())
+		MagentaSL->setValue(value * 1000);
+	if (YellowSp == sender())
+		YellowSL->setValue(value * 1000);
+	if (BlackSp == sender())
+		BlackSL->setValue(value * 1000);
+}
+
+void ColorPickerColorMixer::setValueS(int val)
+{
+	disconnect( CyanSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	disconnect( MagentaSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	disconnect( YellowSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	disconnect( BlackSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	if (CyanSL == sender())
+		CyanSp->setValue(val / 1000.0);
+	if (MagentaSL == sender())
+		MagentaSp->setValue(val / 1000.0);
+	if (YellowSL == sender())
+		YellowSp->setValue(val / 1000.0);
+	if (BlackSL == sender())
+		BlackSp->setValue(val / 1000.0);
+	setColor();
+	connect( CyanSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	connect( MagentaSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	connect( YellowSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+	connect( BlackSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
+}
+
+void ColorPickerColorMixer::setColorPaintMode(ColorPaintMode mode, GradientTypes gradient)
+{
+
+
+	switch(mode){
+	case ColorPaintMode::Pattern:
+		this->setVisible(false);
+		this->toggleColorList->setVisible(true);
+		break;
+	case ColorPaintMode::Gradient:
+		switch(gradient){
+		case GradientTypes::Linear:
+		case GradientTypes::Radial:
+		case GradientTypes::Diamond:
+		case GradientTypes::Conical:
+			this->setVisible(true);
+			this->toggleColorList->setVisible(true);
+			break;
+		case GradientTypes::FourColors:
+		case GradientTypes::Mesh:
+		case GradientTypes::PatchMesh:
+		default:
+			this->setVisible(true);
+			this->toggleColorList->setVisible(false);
+			break;
+		}
+		break;
+
+	case ColorPaintMode::Hatch:
+		this->setVisible(true);
+		this->toggleColorList->setVisible(false);
+		break;
+	case ColorPaintMode::Solid:
+		this->setVisible(true);
+		this->toggleColorList->setVisible(true);
+		break;
+	}
+
+}
+
 
 /*********************************************************************
 *
@@ -677,50 +849,15 @@ void ColorPickerColorMixer::handleToggleColorList(){
 
 }
 
-void ColorPickerColorMixer::setValSLiders(double value)
-{
-	if (CyanSp == sender())
-		CyanSL->setValue(value * 1000);
-	if (MagentaSp == sender())
-		MagentaSL->setValue(value * 1000);
-	if (YellowSp == sender())
-		YellowSL->setValue(value * 1000);
-	if (BlackSp == sender())
-		BlackSL->setValue(value * 1000);
+void ColorPickerColorMixer::prepColor(){
+
+	Color.setDisplayName(colorName());
+	Color.setSpotColor(this->isSpotColor());
+
+	emitColor(Color);
 }
 
-void ColorPickerColorMixer::setValueS(int val)
-{
-	disconnect( CyanSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	disconnect( MagentaSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	disconnect( YellowSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	disconnect( BlackSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	if (CyanSL == sender())
-		CyanSp->setValue(val / 1000.0);
-	if (MagentaSL == sender())
-		MagentaSp->setValue(val / 1000.0);
-	if (YellowSL == sender())
-		YellowSp->setValue(val / 1000.0);
-	if (BlackSL == sender())
-		BlackSp->setValue(val / 1000.0);
-	setColor();
-	connect( CyanSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	connect( MagentaSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	connect( YellowSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-	connect( BlackSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
-}
 
-void ColorPickerColorMixer::setSpot()
-{
-	disconnect(ComboBox1, SIGNAL(activated(const QString&)), this, SLOT(selModel(const QString&)));
-	if (Separations->isChecked())
-	{
-		ComboBox1->setCurrentIndex( 0 );
-//		Commented out to allow RGB Spot-Colors
-//		selModel( tr("CMYK"));
-	}
-	connect(ComboBox1, SIGNAL(activated(const QString&)), this, SLOT(selModel(const QString&)));
-}
 
 void ColorPickerColorMixer::selModel(const QString& mod)
 {
@@ -975,6 +1112,8 @@ void ColorPickerColorMixer::selModel(const QString& mod)
 	NewC->setPixmap( imageN );
 	NewC->setToolTip( "<qt>" + tr( "If color management is enabled, an exclamation mark indicates that the color may be outside of the color gamut of the current printer profile selected. What this means is the color may not print exactly as indicated on screen. More hints about gamut warnings are in the online help under Color Management." ) + "</qt>");
 	OldC->setToolTip( "<qt>" + tr( "If color management is enabled, an exclamation mark indicates that the color may be outside of the color gamut of the current printer profile selected. What this means is the color may not print exactly as indicated on screen. More hints about gamut warnings are in the online help under Color Management." ) + "</qt>");
+
+	prepColor();
 
 	connect( CyanSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );
 	connect( MagentaSp, SIGNAL( valueChanged(double) ), this, SLOT( setValSLiders(double) ) );

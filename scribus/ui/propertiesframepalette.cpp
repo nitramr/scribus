@@ -39,6 +39,7 @@ for which a new license (GPL+exception) is in place.
 #include "colorlistbox.h"
 #include "commonstrings.h"
 #include "colorpalette.h"
+#include "colorpicker.h"
 #include "dasheditor.h"
 #include "pageitem_table.h"
 #include "propertiespalette_group.h"
@@ -193,6 +194,7 @@ void PropertiesFramePalette::setMainWindow(ScribusMainWindow* mw)
 	this->lineAdvancedPal->setMainWindow(mw);
 	this->colorPal->setMainWindow(mw);
 	this->transparencyPal->setMainWindow(mw);
+	this->colorPicker->setMainWindow(mw);
 
 	//connect(this->colorPal, SIGNAL(gradientChanged()), m_ScMW, SLOT(updtGradFill()));
 	//connect(this->colorPal, SIGNAL(strokeGradientChanged()), m_ScMW, SLOT(updtGradStroke()));
@@ -236,7 +238,6 @@ void PropertiesFramePalette::setDoc(ScribusDoc *d)
 	lineAdvancedPal->setDoc(m_doc);
 	transparencyPal->setDoc(m_doc);
 	colorPal->setDoc(m_doc);
-
 	colorPicker->setDoc(m_doc);
 
 	updateColorList();
@@ -271,6 +272,7 @@ void PropertiesFramePalette::unsetDoc()
 	linePal->unsetDoc();
 	lineAdvancedPal->unsetDoc();
 	colorPal->unsetDoc();
+	colorPicker->unsetDoc();
 	transparencyPal->unsetDoc();
 
 	m_haveItem = false;
@@ -296,6 +298,7 @@ void PropertiesFramePalette::unsetItem()
 	m_item     = NULL;
 
 	colorPal->unsetItem();
+	colorPicker->unsetItem();
 	transparencyPal->unsetItem();
 	shapePal->unsetItem();
 	groupPal->unsetItem();
@@ -403,6 +406,7 @@ void PropertiesFramePalette::setCurrentItem(PageItem *i)
 		linePal->handleSelectionChanged();
 		lineAdvancedPal->handleSelectionChanged();
 		colorPal->handleSelectionChanged();
+		colorPicker->handleSelectionChanged();
 
 	}
 
@@ -566,6 +570,7 @@ void PropertiesFramePalette::unitChange()
 	linePal->unitChange();
 	lineAdvancedPal->unitChange();
 	colorPal->unitChange();
+	colorPicker->unitChange();
 	transparencyPal->unitChange();
 
 	m_haveItem = tmp;
@@ -589,6 +594,7 @@ void PropertiesFramePalette::languageChange()
 	shapePal->languageChange();
 	groupPal->languageChange();
 	colorPal->languageChange();
+	colorPicker->languageChange();
 	linePal->languageChange();
 	lineAdvancedPal->languageChange();
 }
@@ -647,6 +653,7 @@ void PropertiesFramePalette::updateColorList()
 
 	groupPal->updateColorList();
 	colorPal->updateColorList();
+//	colorPicker->updateColorList();
 	transparencyPal->updateColorList();
 	shadowPal->updateColorList();
 

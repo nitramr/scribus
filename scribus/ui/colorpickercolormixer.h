@@ -8,6 +8,7 @@
 #include "sccolor.h"
 #include "scribusapi.h"
 #include "propertywidgetbase.h"
+#include "colorpickerstruct.h"
 
 class ColorPickerColorMixer : public QWidget, public Ui::ColorPickerColorMixer,
 		public PropertyWidgetBase
@@ -20,7 +21,12 @@ public:
 
 	enum MixerMode { Map, Slider };
 
-	void setDoc(ScribusDoc *d);
+	void setDoc(ScribusDoc *d);	
+	void setColorName(QString name);
+
+
+	QString colorName();
+	bool isSpotColor();
 
 private:
 	MixerMode m_mixermode;
@@ -34,6 +40,11 @@ private:
 	QPixmap imageN;
 	QPixmap alertIcon;
 
+	bool eventFilter(QObject *object, QEvent *event);
+
+	void updatePickerSettings();
+	void prepColor();
+
 protected:
 
 	bool isHLC;
@@ -44,6 +55,7 @@ private slots:
 
 	void handleToggleColorMap();
 	void handleToggleColorList();
+	void handleColorName();
 
 	void setValSLiders(double value);
 	void setValueS(int val);
@@ -53,9 +65,14 @@ private slots:
 	void setSpot();
 	void selModel(const QString& mod);
 
+public slots:
+	void setColorPaintMode(ColorPaintMode mode, GradientTypes gradient);
+	void setObjectColor(ScColor orig);
+
 
 signals:
 	void sendToggleColorList();
+	void emitColor(ScColor);
 
 };
 

@@ -20,7 +20,6 @@ class QWidget;
 
 #include "scribusapi.h"
 #include "scdockpalette.h"
-#include "scguardedptr.h"
 #include "scrspinbox.h"
 #include "pageitem.h"
 #include "linkbutton.h"
@@ -28,13 +27,13 @@ class QWidget;
 #include "sclistboxpixmap.h"
 #include "scpage.h"
 #include "spalette.h"
-#include "colorpicker.h"
 #include "sclayoutsection.h" // Indigo Section
 #include "flowlayout.h"
 #include "propertywidgetbase.h"
 
 class ColorCombo;
 class ColorPalette;
+class ColorPicker;
 class NameWidget;
 class PropertiesPalette_Group;
 class PropertyWidgetFrame_Line;

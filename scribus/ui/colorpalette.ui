@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
+    <width>548</width>
     <height>380</height>
    </rect>
   </property>
@@ -75,7 +75,7 @@
        <item>
         <widget class="QStackedWidget" name="fillModeStack">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="solidFillPage">
           <layout class="QVBoxLayout" name="verticalLayout_3">

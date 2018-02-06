@@ -1018,7 +1018,8 @@ HEADERS += scribus/actionmanager.h \
     scribus/ui/colorpicker.h \
     scribus/ui/colorpickercolormixer.h \
     scribus/ui/colorpickercolorlist.h \
-    scribus/ui/colorpickermodeeditor.h
+    scribus/ui/colorpickermodeeditor.h \
+    scribus/ui/colorpickerstruct.h
 FORMS += scribus/ui/aboutplugins.ui \
          scribus/ui/aligndistribute.ui \
          scribus/ui/annot.ui \

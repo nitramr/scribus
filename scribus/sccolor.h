@@ -127,6 +127,11 @@ public:
 	/** \brief Set a color to be a registration color or not. No effect if color is the None color. */
 	void setRegistrationColor(bool s);
 
+	void setDisplayName(const QString name);
+	QString getDisplayName() const;
+
+
+
 private:
 
 	/** \brief Cyan or Red Component of Color (depends of color model)*/
@@ -150,6 +155,8 @@ private:
 	bool m_Regist;
 	/** \brief Color model of the current color */
 	colorModel m_Model;
+
+	QString	m_name ="";
 };
 
 class SCRIBUS_API ColorList : public QMap<QString,ScColor>
@@ -189,6 +196,8 @@ public:
 
 	/** \brief Try to add ScColor col to the list, if col already exists either by name or by value the existing color name is returned. */
 	QString tryAddColor(QString name, ScColor col);
+
+	void insert(const QString name, const ScColor color);
 };
 
 #endif

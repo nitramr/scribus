@@ -310,6 +310,18 @@ void ScColor::setNamedColor(QString name)
 	}
 }
 
+void ScColor::setDisplayName(const QString name){
+
+	m_name = name;
+
+}
+
+QString ScColor::getDisplayName() const{
+
+	return m_name;
+}
+
+
 bool ScColor::isRegistrationColor() const
 {
 	return m_Regist;
@@ -360,6 +372,14 @@ void ColorList::addColors(const ColorList& colorList, bool overwrite)
 		if (overwrite || !contains(it.key()))
 			insert(it.key(), it.value());
 	}
+}
+
+void ColorList::insert(const QString name, const ScColor color){
+
+	ScColor tmpColor = color;
+	tmpColor.setDisplayName(name);
+
+	QMap<QString,ScColor>::insert(name, tmpColor);
 }
 
 void ColorList::copyColors(const ColorList& colorList, bool overwrite)

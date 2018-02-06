@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>210</width>
-    <height>178</height>
+    <width>362</width>
+    <height>124</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,93 +55,156 @@
        <height>70</height>
       </size>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="lineWidth">
-      <number>2</number>
-     </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="stopPosLabel">
-     <property name="text">
-      <string>Position:</string>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>4</number>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="ScrSpinBox" name="stopPos">
-     <property name="suffix">
-      <string> %</string>
-     </property>
-     <property name="maximum">
-      <number>100</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="stopColorLabel">
-     <property name="text">
-      <string>Color:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="ColorCombo" name="stopColor"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="stopOpacityLabel">
-     <property name="text">
-      <string>Opacity:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="ScrSpinBox" name="stopOpacity">
-     <property name="suffix">
-      <string> %</string>
-     </property>
-     <property name="maximum">
-      <number>100</number>
-     </property>
-     <property name="singleStep">
-      <number>10</number>
-     </property>
-     <property name="value">
-      <number>100</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="stopShadeLabel">
-     <property name="text">
-      <string>Shade:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="ScrSpinBox" name="stopShade">
-     <property name="suffix">
-      <string> %</string>
-     </property>
-     <property name="maximum">
-      <number>100</number>
-     </property>
-     <property name="singleStep">
-      <number>10</number>
-     </property>
-     <property name="value">
-      <number>100</number>
-     </property>
-    </widget>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="stopPos">
+         <property name="suffix">
+          <string> %</string>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stopPosLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Position:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ColorCombo" name="stopColor"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="stopColorLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Color:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="stopOpacity">
+         <property name="suffix">
+          <string> %</string>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>10.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>100.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stopOpacityLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Opacity:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="ScrSpinBox" name="stopShade">
+         <property name="suffix">
+          <string> %</string>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>10.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>100.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stopShadeLabel">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Shade:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>ScrSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>ui/scrspinbox.h</header>
+  </customwidget>
   <customwidget>
    <class>ColorCombo</class>
    <extends>QComboBox</extends>
@@ -152,11 +215,6 @@
    <extends>QFrame</extends>
    <header>ui/gradientpreview.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ScrSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header location="global">ui/scrspinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
