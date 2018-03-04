@@ -42,6 +42,7 @@ private:
 	ColorPaintMode colorPaintMode;
 	ObjectPaintMode objectPaintMode;
 	GradientTypes gradientTypes;
+
 	int sortRule;
 	bool modified;
 	bool paletteLocked;
@@ -66,6 +67,10 @@ protected:
 
 	ScColor Color;
 
+	VGradient m_gradient;
+	QString m_gradientName;
+
+
 //	QTreeWidgetItem *colorItems;
 //	QTreeWidgetItem *gradientItems;
 //	QTreeWidgetItem *patternItems;
@@ -75,6 +80,8 @@ protected:
 	QTreeWidgetItem* updateColorList(QString addedName = "");
 signals:
 	void emitColor(ScColor);
+	void emitGradient(QString, VGradient);
+
 	void emitMainWindowUpdateColorList();
 	void emitMainWindowSlotDocCh(bool);
 
@@ -83,6 +90,8 @@ private slots:
 	void selEditColor(QTreeWidgetItem *it);
 	void itemSelectionChanged();
 	void itemSelected(QTreeWidgetItem* it);
+
+	void setGradientData(const QString name, VGradient gradient);
 
 	void createNew();
 	void removeColorItem();

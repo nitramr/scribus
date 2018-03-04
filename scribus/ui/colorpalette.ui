@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabFillStroke">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabFill">
       <attribute name="title">
@@ -1159,7 +1159,7 @@
        <item>
         <widget class="QStackedWidget" name="strokeModeStack">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="solidStrokePage">
           <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -1422,14 +1422,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ColorListBox</class>
-   <extends>QListView</extends>
-   <header>ui/colorlistbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>ColorCombo</class>
    <extends>QComboBox</extends>
    <header>ui/colorcombo.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ColorListBox</class>
+   <extends>QListView</extends>
+   <header>ui/colorlistbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

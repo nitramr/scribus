@@ -31,22 +31,30 @@ ColorPickerColorList::ColorPickerColorList(QWidget *parent) :
 	objectPaintMode = ObjectPaintMode::Fill;
 	gradientTypes = GradientTypes::Linear;
 
-	// dummy content
-	Color = ScColor(0,0,0,0);
-	Color.setDisplayName(tr("New Color"));
-
 	// Buttons
-	importButton->setEnabled(false);
-	newButton->setEnabled(false);
-	editButton->setEnabled(false);
-	duplicateButton->setEnabled(false);
-	deleteButton->setEnabled(false);
-	deleteUnusedButton->setEnabled(false);
+	newButton->setEnabled(false); // Add
+	deleteButton->setEnabled(false); // Delete
+	editButton->setEnabled(false); // Rename
+	duplicateButton->setEnabled(false); // Duplicate
+	importButton->setEnabled(false); // Import
+	deleteUnusedButton->setEnabled(false); // Remove Unused
 
 	// Lists
 	dataTree->setContextMenuPolicy(Qt::CustomContextMenu);
 	dataTree->setIconSize(QSize(60, 48));
 	dataTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+	// Color Dummy
+	Color = ScColor(0,0,0,0);
+	Color.setDisplayName(tr("New Color"));
+
+	// Gradient Dummy
+	VGradient fill_gradient = VGradient(VGradient::linear);
+	fill_gradient.clearStops();
+	fill_gradient.addStop(QColor(Qt::black), 0.0, 0.5, 1.0, "Black", 100);
+	fill_gradient.addStop(QColor(Qt::white), 1.0, 0.5, 1.0, "White", 100);
+	m_gradient = fill_gradient;
+	m_gradientName = tr("New Gradient");
 
 	// connections
 	connect(dataTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(itemSelected(QTreeWidgetItem*)));
@@ -471,26 +479,29 @@ void ColorPickerColorList::updateDoc(){
 
 void ColorPickerColorList::selEditColor(QTreeWidgetItem *it)
 {
-	if ((it) && (!paletteLocked))
-	{
-		switch(colorPaintMode){
-		case ColorPaintMode::Solid:
-		case ColorPaintMode::Gradient:
-		{
-			QString curCol = it->text(0);
-			bool enableDel  = (!isMandatoryColor(curCol)) && (m_colorList.count() > 1);
-			bool enableEdit = (!isMandatoryColor(curCol));
-			duplicateButton->setEnabled(curCol != "Registration");
-			deleteButton->setEnabled(enableDel);
-			editButton->setEnabled(enableEdit);
-			if(enableEdit)
-				editColorItem();
-			break;
-		}
 
-		}
+	// No color edit necessary
 
-	}
+//	if ((it) && (!paletteLocked))
+//	{
+//		switch(colorPaintMode){
+//		case ColorPaintMode::Solid:
+//		case ColorPaintMode::Gradient:
+//		{
+//			QString curCol = it->text(0);
+//			bool enableDel  = (!isMandatoryColor(curCol)) && (m_colorList.count() > 1);
+//			bool enableEdit = (!isMandatoryColor(curCol));
+//			duplicateButton->setEnabled(curCol != "Registration");
+//			deleteButton->setEnabled(enableDel);
+//			editButton->setEnabled(enableEdit);
+//			if(enableEdit)
+//				editColorItem();
+//			break;
+//		}
+
+//		}
+
+//	}
 }
 
 void ColorPickerColorList::itemSelectionChanged()
@@ -531,6 +542,9 @@ void ColorPickerColorList::createNew()
 
 			if(!isMandatoryColor(name)){
 
+				// TODO:
+				// Add Dialog that ask user to override existing color
+
 				m_colorList.insert(name, Color);
 				QTreeWidgetItem *lg = updateColorList(name);
 				if (lg != 0)
@@ -549,27 +563,24 @@ void ColorPickerColorList::createNew()
 		}
 		case ColorPaintMode::Gradient:{
 
-			VGradient fill_gradient = VGradient(VGradient::linear);
-			fill_gradient.clearStops();
-			fill_gradient.addStop(QColor(Qt::black), 0.0, 0.5, 1.0, "Black", 100);
-			fill_gradient.addStop(QColor(Qt::white), 1.0, 0.5, 1.0, "White", 100);
-			gradientEditDialog *dia = new gradientEditDialog(this, tr("New Gradient"), fill_gradient, m_colorList, m_doc, &dialogGradients, true);
-			if (dia->exec())
-			{
-				dialogGradients.insert(dia->name(), dia->gradient());
-				QTreeWidgetItem *lg = updateGradientList(dia->name());
-				if (lg != 0)
-				{
-					dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
-				}
-				itemSelected(dataTree->currentItem());
-				modified = true;
+			// Use local copy of Gradent data that has been set by "ColorPickerModeEditor"
+			// m_gradientName, m_gradient
 
-				updateGradientList();
-				itemSelected(0);
-				updateDoc();
+			// TODO:
+			// Add Dialog that ask user to override existing gradient
+
+			dialogGradients.insert(m_gradientName, m_gradient);
+			QTreeWidgetItem *lg = updateGradientList(m_gradientName);
+			if (lg != 0)
+			{
+				dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
 			}
-			delete dia;
+			itemSelected(dataTree->currentItem());
+			modified = true;
+
+			updateGradientList();
+			itemSelected(0);
+			updateDoc();
 
 			break;
 		}
@@ -626,32 +637,6 @@ void ColorPickerColorList::editColorItem()
 				updateDoc();
 			}
 
-			//				ScColor tmpColor = m_colorList[it->text(0)];
-			//				CMYKChoose* dia = new CMYKChoose(this, m_doc, tmpColor, it->text(0), &m_colorList, false);
-			//				if (dia->exec())
-			//				{
-			//					dia->Farbe.setSpotColor(dia->isSpotColor());
-			//					dia->Farbe.setRegistrationColor(tmpColor.isRegistrationColor());
-			//					m_colorList[dia->colorName()] = dia->Farbe;
-			//					if (it->text(0) != dia->colorName())
-			//					{
-			//						replaceColorMap.insert(it->text(0), dia->colorName());
-			//						m_colorList.remove(it->text(0));
-			//					}
-			//					updateGradientColors(dia->colorName(), it->text(0));
-			//					updateGradientList();
-			//					updatePatternList();
-			//					QTreeWidgetItem *lg = updateColorList(dia->colorName());
-			//					if (lg != 0)
-			//					{
-			//						dataTree->expandItem(lg->parent());
-			//						dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
-			//					}
-			//					itemSelected(dataTree->currentItem());
-			//					modified = true;
-			//				}
-			//				delete dia;
-
 			break;
 		}
 		case ColorPaintMode::Gradient:{
@@ -659,49 +644,92 @@ void ColorPickerColorList::editColorItem()
 			QString gradN = it->text(0);
 			QString patternName = origNames[it->text(0)];
 			QString newName = "";
-			gradientEditDialog *dia = new gradientEditDialog(this, gradN, dialogGradients[gradN], m_colorList, m_doc, &dialogGradients, false);
-			if (dia->exec())
-			{
-				newName = dia->name();
-				if (newName != gradN)
-				{
-					origNames.remove(patternName);
-					origNames.insert(newName, patternName);
-					replaceMap.insert(patternName, newName);
-					dialogGradients.remove(gradN);
-					dialogGradients.insert(newName, dia->gradient());
-				}
-				else
-					dialogGradients[gradN] = dia->gradient();
-				QStringList patterns = dialogPatterns.keys();
-				for (int c = 0; c < dialogPatterns.count(); ++c)
-				{
-					ScPattern pa = dialogPatterns[patterns[c]];
-					for (int o = 0; o < pa.items.count(); o++)
-					{
-						PageItem *ite = pa.items.at(o);
-						if (ite->gradient() == gradN)
-							ite->setGradient(newName);
-						if (ite->strokeGradient() == gradN)
-							ite->setStrokeGradient(newName);
-						if (ite->gradientMask() == gradN)
-							ite->setGradientMask(newName);
-					}
-					PageItem *ite = pa.items.at(0);
-					dialogPatterns[patterns[c]].pattern = ite->DrawObj_toImage(pa.items, 1.0);
-				}
-				QTreeWidgetItem *lg = updateGradientList(dia->name());
-				if (lg != 0)
-				{
-					dataTree->expandItem(lg->parent());
-					dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
-				}
-				itemSelected(dataTree->currentItem());
-				modified = true;
 
-				updateDoc();
+			newName = m_gradientName;
+			if (newName != gradN)
+			{
+				origNames.remove(patternName);
+				origNames.insert(newName, patternName);
+				replaceMap.insert(patternName, newName);
+				dialogGradients.remove(gradN);
+				dialogGradients.insert(newName, m_gradient);
 			}
-			delete dia;
+			else
+				dialogGradients[gradN] = m_gradient;
+			QStringList patterns = dialogPatterns.keys();
+			for (int c = 0; c < dialogPatterns.count(); ++c)
+			{
+				ScPattern pa = dialogPatterns[patterns[c]];
+				for (int o = 0; o < pa.items.count(); o++)
+				{
+					PageItem *ite = pa.items.at(o);
+					if (ite->gradient() == gradN)
+						ite->setGradient(newName);
+					if (ite->strokeGradient() == gradN)
+						ite->setStrokeGradient(newName);
+					if (ite->gradientMask() == gradN)
+						ite->setGradientMask(newName);
+				}
+				PageItem *ite = pa.items.at(0);
+				dialogPatterns[patterns[c]].pattern = ite->DrawObj_toImage(pa.items, 1.0);
+			}
+
+			// Update gradient list
+			QTreeWidgetItem *lg = updateGradientList(m_gradientName);
+			if (lg != 0)
+			{
+				dataTree->expandItem(lg->parent());
+				dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
+			}
+			itemSelected(dataTree->currentItem());
+			modified = true;
+
+			updateDoc();
+
+
+//			gradientEditDialog *dia = new gradientEditDialog(this, gradN, dialogGradients[gradN], m_colorList, m_doc, &dialogGradients, false);
+//			if (dia->exec())
+//			{
+//				newName = dia->name();
+//				if (newName != gradN)
+//				{
+//					origNames.remove(patternName);
+//					origNames.insert(newName, patternName);
+//					replaceMap.insert(patternName, newName);
+//					dialogGradients.remove(gradN);
+//					dialogGradients.insert(newName, dia->gradient());
+//				}
+//				else
+//					dialogGradients[gradN] = dia->gradient();
+//				QStringList patterns = dialogPatterns.keys();
+//				for (int c = 0; c < dialogPatterns.count(); ++c)
+//				{
+//					ScPattern pa = dialogPatterns[patterns[c]];
+//					for (int o = 0; o < pa.items.count(); o++)
+//					{
+//						PageItem *ite = pa.items.at(o);
+//						if (ite->gradient() == gradN)
+//							ite->setGradient(newName);
+//						if (ite->strokeGradient() == gradN)
+//							ite->setStrokeGradient(newName);
+//						if (ite->gradientMask() == gradN)
+//							ite->setGradientMask(newName);
+//					}
+//					PageItem *ite = pa.items.at(0);
+//					dialogPatterns[patterns[c]].pattern = ite->DrawObj_toImage(pa.items, 1.0);
+//				}
+//				QTreeWidgetItem *lg = updateGradientList(dia->name());
+//				if (lg != 0)
+//				{
+//					dataTree->expandItem(lg->parent());
+//					dataTree->setCurrentItem(lg, 0, QItemSelectionModel::ClearAndSelect);
+//				}
+//				itemSelected(dataTree->currentItem());
+//				modified = true;
+
+//				updateDoc();
+//			}
+//			delete dia;
 
 			break;
 		}
@@ -1352,7 +1380,7 @@ void ColorPickerColorList::itemSelected(QTreeWidgetItem* it)
 
 			break;
 		}
-		case ColorPaintMode::Gradient:
+		case ColorPaintMode::Gradient:{
 
 			newButton->setEnabled(true);
 			deleteButton->setEnabled(true);
@@ -1362,7 +1390,12 @@ void ColorPickerColorList::itemSelected(QTreeWidgetItem* it)
 			importButton->setEnabled(false);
 			deleteUnusedButton->setEnabled(false);
 
+			QString gradientName = it->text(0);
+			VGradient gradient = dialogGradients.value(gradientName);
+			emit emitGradient(gradientName, gradient);
+
 			break;
+		}
 		case ColorPaintMode::Hatch:
 
 			break;
@@ -1471,4 +1504,11 @@ void ColorPickerColorList::itemSelected(QTreeWidgetItem* it)
 
 		dataTree->clearSelection();
 	}
+}
+
+
+void ColorPickerColorList::setGradientData(const QString name, VGradient gradient)
+{
+	m_gradient = gradient;
+	m_gradientName = name;
 }

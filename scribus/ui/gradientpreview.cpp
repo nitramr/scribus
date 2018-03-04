@@ -41,8 +41,8 @@ for which a new license (GPL+exception) is in place.
 GradientPreview::GradientPreview(QWidget *pa) : QFrame(pa)
 {
 	setFrameShape( QFrame::Panel );
-	setFrameShadow( QFrame::Sunken );
-	setLineWidth( 2 );
+//	setFrameShadow( QFrame::Sunken );
+	setLineWidth( 0 );
 	setMinimumSize(QSize(200, 70));
 	setMaximumSize(QSize(3000, 70));
 	setMouseTracking(true);

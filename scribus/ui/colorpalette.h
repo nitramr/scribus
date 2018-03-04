@@ -117,19 +117,21 @@ public slots:
 	void slotGradTypeStroke(int type);
 	void setGradientColors();
 	void editMeshPointColor();
+
+	void setActiveGradDia(bool active);
 	void createNewMeshGradient();
 	void resetMeshGradient();
 	void meshGradientToShape();
 	void resetOneControlPoint();
 	void resetAllControlPoints();
+	void handleRemovePatch();
+	void snapToPatchGrid(bool val);
+
 	void editGradientVector();
-	void editGradientVectorStroke();
-	void setActiveGradDia(bool active);
+	void editGradientVectorStroke();	
 	void setSpecialGradient(double x1, double y1, double x2, double y2, double fx, double fy, double sg, double sk, double cx, double cy);
 	void setMeshPoint();
 	void endPatchAdd();
-	void snapToPatchGrid(bool val);
-	void handleRemovePatch();
 	void setMeshPatch();
 	void setMeshPatchPoint();
 	void updateMeshPoint();

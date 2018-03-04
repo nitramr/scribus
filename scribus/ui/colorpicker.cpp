@@ -52,8 +52,13 @@ void ColorPicker::connectSignals()
 	connect(fillModeCombo , SIGNAL(currentIndexChanged(int)), this, SLOT(setColorPaintMode(int)));
 	connect(colorPickerColorMixer->toggleColorList, SIGNAL(clicked(bool)), colorPickerColorList, SLOT(toggleColorList()) );
 	connect(colorPickerColorMixer, SIGNAL(emitColor(ScColor)), colorPickerColorList, SLOT(setColor(ScColor)));
+
+	connect(colorPickerModeEditor, SIGNAL(emitGradientUpdate(QString,VGradient)), colorPickerColorList, SLOT(setGradientData(QString,VGradient)));
+	connect(colorPickerColorList, SIGNAL(emitGradient(QString, VGradient)), colorPickerModeEditor, SLOT(setFillGradient(QString, VGradient)));
+
 	connect(colorPickerModeEditor, SIGNAL(emitGradientType(GradientTypes)), this, SLOT(setGradientTypes(GradientTypes)));
 	connect(colorPickerColorList, SIGNAL(emitColor(ScColor)), colorPickerColorMixer, SLOT(setObjectColor(ScColor)));
+
 
 
 }
@@ -64,8 +69,13 @@ void ColorPicker::disconnectSignals()
 	disconnect(fillModeCombo , SIGNAL(currentIndexChanged(int)), this, SLOT(setColorPaintMode(int)));
 	disconnect(colorPickerColorMixer->toggleColorList, SIGNAL(clicked(bool)), colorPickerColorList, SLOT(toggleColorList()) );
 	disconnect(colorPickerColorMixer, SIGNAL(emitColor(ScColor)), colorPickerColorList, SLOT(setColor(ScColor)));
+
+	disconnect(colorPickerModeEditor, SIGNAL(emitGradientUpdate(QString,VGradient)), colorPickerColorList, SLOT(setGradientData(QString,VGradient)));
+	disconnect(colorPickerColorList, SIGNAL(emitGradient(QString, VGradient)), colorPickerModeEditor, SLOT(setFillGradient(QString, VGradient)));
+
 	disconnect(colorPickerModeEditor, SIGNAL(emitGradientType(GradientTypes)), this, SLOT(setGradientTypes(GradientTypes)));
 	disconnect(colorPickerColorList, SIGNAL(emitColor(ScColor)), colorPickerColorMixer, SLOT(setObjectColor(ScColor)));
+
 
 }
 
@@ -380,6 +390,7 @@ void ColorPicker::setObjectPaintMode(int index){
 	}
 
 	colorPickerColorList->setObjectPaintMode(objectPaintMode);
+	colorPickerModeEditor->setObjectPaintMode(objectPaintMode);
 
 }
 

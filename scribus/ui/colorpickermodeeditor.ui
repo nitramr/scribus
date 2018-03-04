@@ -63,60 +63,130 @@
           <number>4</number>
          </property>
          <item>
-          <widget class="QComboBox" name="gradientType">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item>
-            <property name="text">
-             <string>Linear</string>
-            </property>
+            <widget class="QComboBox" name="gradientType">
+             <item>
+              <property name="text">
+               <string>Linear</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Radial</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Conical</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>4 Colors</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Diamond</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Mesh</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Patch Mesh</string>
+              </property>
+             </item>
+            </widget>
            </item>
            <item>
-            <property name="text">
-             <string>Radial</string>
-            </property>
+            <widget class="QLabel" name="label_10">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Gradient Type</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
            </item>
-           <item>
-            <property name="text">
-             <string>Conical</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>4 Colors</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Diamond</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Mesh</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Patch Mesh</string>
-            </property>
-           </item>
-          </widget>
+          </layout>
          </item>
          <item>
-          <widget class="QToolButton" name="gradEditButton">
-           <property name="text">
-            <string>Move Vector</string>
+          <layout class="QVBoxLayout" name="verticalLayout_14">
+           <property name="spacing">
+            <number>0</number>
            </property>
-           <property name="checkable">
-            <bool>true</bool>
+           <item>
+            <widget class="QLineEdit" name="gradientName"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Gradient Name</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_18">
+           <property name="spacing">
+            <number>0</number>
            </property>
-          </widget>
+           <item>
+            <widget class="QToolButton" name="gradEditButton">
+             <property name="text">
+              <string>Move Vector</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Minimum</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>8</width>
+               <height>8</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
        <item>
         <widget class="QStackedWidget" name="stackedWidget_2">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="gradientPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1198,25 +1268,25 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ScrSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>ui/scrspinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ScComboBox</class>
-   <extends>QComboBox</extends>
-   <header>ui/sccombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GradientEditor</class>
    <extends>QFrame</extends>
    <header>ui/gradienteditor.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ScrSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>ui/scrspinbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>ColorCombo</class>
    <extends>QComboBox</extends>
    <header>ui/colorcombo.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ScComboBox</class>
+   <extends>QComboBox</extends>
+   <header>ui/sccombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

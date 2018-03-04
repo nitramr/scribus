@@ -854,7 +854,7 @@ void ColorPickerColorMixer::prepColor(){
 	Color.setDisplayName(colorName());
 	Color.setSpotColor(this->isSpotColor());
 
-	emitColor(Color);
+	emit emitColor(Color);
 }
 
 
