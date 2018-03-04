@@ -38,14 +38,15 @@ GradientEditor::GradientEditor(QWidget *pa) : QFrame(pa)
 	stopPos->setDecimals(0);
 	stopOpacity->setDecimals(0);
 	stopShade->setDecimals(0);
-	connect(stopPos    , SIGNAL(valueChanged(double)), this, SLOT(changePos(double)));
-	connect(stopColor  , SIGNAL(activated(const QString &)), this, SLOT(setStopColor(const QString &)));
-	connect(stopOpacity, SIGNAL(valueChanged(double)), this, SLOT(setStopTrans(double)));
-	connect(stopShade  , SIGNAL(valueChanged(double)), this, SLOT(setStopShade(double)));
-	connect(Preview, SIGNAL(selectedStop(VColorStop*)), this, SLOT(slotDisplayStop(VColorStop*)));
-	connect(Preview, SIGNAL(currStep(double)), this, SLOT(setPos(double)));
-	connect(Preview, SIGNAL(currStep(double)), this, SIGNAL(gradientChanged()));
-	connect(Preview, SIGNAL(gradientChanged()), this, SIGNAL(gradientChanged()));
+	connect(stopPos			, SIGNAL(valueChanged(double))		, this, SLOT(changePos(double)));
+	connect(stopColor		, SIGNAL(activated(const QString &)), this, SLOT(setStopColor(const QString &)));
+	connect(stopOpacity		, SIGNAL(valueChanged(double))		, this, SLOT(setStopTrans(double)));
+	connect(stopShade		, SIGNAL(valueChanged(double))		, this, SLOT(setStopShade(double)));
+	connect(Preview			, SIGNAL(selectedStop(VColorStop*))	, this, SLOT(slotDisplayStop(VColorStop*)));
+	connect(Preview			, SIGNAL(currStep(double))			, this, SLOT(setPos(double)));
+	connect(Preview			, SIGNAL(currStep(double))			, this, SIGNAL(gradientChanged()));
+	connect(Preview			, SIGNAL(gradientChanged())			, this, SIGNAL(gradientChanged()));
+	connect(gradientExtend  , SIGNAL(activated(int))			, this, SIGNAL(emitGradientExtend(int)));
 }
 
 void GradientEditor::setGradient(VGradient grad)
@@ -172,7 +173,9 @@ void GradientEditor::changeEvent(QEvent *e)
 
 void GradientEditor::languageChange()
 {
+	int oldGradientExtendIndex = gradientExtend->currentIndex();
 	retranslateUi(this);
+	gradientExtend->setCurrentIndex(oldGradientExtendIndex);
 }
 
 bool GradientEditor::event(QEvent * event)

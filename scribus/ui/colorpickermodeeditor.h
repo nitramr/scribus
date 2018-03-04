@@ -61,12 +61,18 @@ protected:
 	void   setGradientVectorValues();
 
 signals:
+	void NewPen(QString);
+	void NewBrush(QString);
 	void NewGradient(int);
 	void NewSpecial(double, double, double, double, double, double, double, double, double, double);
+	void NewOverprint(int);
+	void NewPattern(QString);
+	void NewPatternProps(double, double, double, double, double, double, double, bool, bool);
 
 	void emitGradientType(GradientTypes);
 	void emitGradientUpdate( QString, VGradient);
 	void editGradient(int);
+
 
 private slots:
 
@@ -86,14 +92,17 @@ public slots:
 	void setColorPaintMode(ColorPaintMode number);
 	void setObjectPaintMode(ObjectPaintMode mode);
 
+	// Gradient General
 	void slotGradType(int type);
 	void setGradientColors();
+	void handleGradientExtend(int val);
 	void handleFillGradient();
 	void setFillGradient(const QString name, VGradient gradient);
 
 	// Mesh Gradient
 	void editMeshPointColor();
 	void editGradientVector();
+	void updateMeshPoint();
 
 	// Gradient Vector Dialog
 	void setActiveGradDia(bool active);
@@ -104,6 +113,9 @@ public slots:
 //	void resetAllControlPoints();
 	void handleRemovePatch();
 	void snapToPatchGrid(bool val);
+
+	// Hatch
+	void changeHatchProps();
 
 };
 

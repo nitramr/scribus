@@ -119,7 +119,6 @@ void ColorPickerModeEditor::connectSignals()
 	connect(color4Shade    , SIGNAL(valueChanged(double)), this, SLOT(setGradientColors()));
 //	connect(colorListFill  , SIGNAL(currentRowChanged(int)), this, SLOT(selectColorF(int)));
 //	connect(colorListStroke, SIGNAL(currentRowChanged(int)), this, SLOT(selectColorS(int)));
-//	connect(colorMeshPoint , SIGNAL(activated(int)), this, SLOT(updateMeshPoint()));
 	connect(editMeshColors , SIGNAL(clicked()), this, SLOT(editMeshPointColor()));
 //	connect(editPatternProps      , SIGNAL(clicked()) , this, SLOT(changePatternProps()));
 //	connect(editPatternPropsStroke, SIGNAL(clicked()), this, SLOT(changePatternPropsStroke()));
@@ -138,18 +137,21 @@ void ColorPickerModeEditor::connectSignals()
 //	connect(overPrintCombo     , SIGNAL(activated(int)), this, SIGNAL(NewOverprint(int)));
 //	connect(patternBox         , SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPattern(QListWidgetItem*)));
 //	connect(patternBoxStroke   , SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPatternS(QListWidgetItem*)));
-//	connect(shadeMeshPoint     , SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
 //	connect(strokeShade        , SIGNAL(valueChanged(double)), this, SIGNAL(NewPenShade(double)));
 //	connect(strokeModeCombo    , SIGNAL(currentIndexChanged(int)), this, SLOT(slotGradStroke(int)));
 //	connect(tabFillStroke      , SIGNAL(currentChanged(int)), this, SLOT(fillStrokeSelector(int)));
-//	connect(transparencyMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
-//	connect(hatchAngle, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
-//	connect(hatchDist, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
-//	connect(hatchType, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
-//	connect(hatchBackground, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
-//	connect(hatchLineColor, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
-//	connect(gradientExtend  , SIGNAL(activated(int)), this, SLOT(handleGradientExtend(int)));
-//	connect(GradientExtendS  , SIGNAL(activated(int)), this, SLOT(handleStrokeGradientExtend(int)));
+	connect(colorMeshPoint , SIGNAL(activated(int)), this, SLOT(updateMeshPoint()));
+	connect(shadeMeshPoint     , SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
+	connect(transparencyMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
+	connect(hatchAngle		, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
+	connect(hatchDist		, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
+	connect(hatchType		, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+	connect(hatchBackground	, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+	connect(hatchLineColor	, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+
+	connect(gradEdit  , SIGNAL(emitGradientExtend(int)), this, SLOT(handleGradientExtend(int)));
+//	connect(gradientExtend  , SIGNAL(activated(int)), this, SLOT(handleGradientExtend(int))); // replaced by gradEdit Signal for Gradient Extend Setting
+//	connect(GradientExtendS  , SIGNAL(activated(int)), this, SLOT(handleStrokeGradientExtend(int))); // replaced by gradEdit Signal for Gradient Extend Setting
 }
 
 void ColorPickerModeEditor::disconnectSignals()
@@ -164,7 +166,6 @@ void ColorPickerModeEditor::disconnectSignals()
 //	disconnect(CGradDia, SIGNAL(resetAllControl()), this, SLOT(resetAllControlPoints()));
 	disconnect(CGradDia, SIGNAL(removePatch()), this, SLOT(handleRemovePatch()));
 	disconnect(CGradDia, SIGNAL(snapToMGrid(bool)), this, SLOT(snapToPatchGrid(bool)));
-
 	disconnect(colorPoint1    , SIGNAL(activated(int)), this, SLOT(setGradientColors()));
 	disconnect(colorPoint2    , SIGNAL(activated(int)), this, SLOT(setGradientColors()));
 	disconnect(colorPoint3    , SIGNAL(activated(int)), this, SLOT(setGradientColors()));
@@ -179,7 +180,6 @@ void ColorPickerModeEditor::disconnectSignals()
 	disconnect(color4Shade    , SIGNAL(valueChanged(double)), this, SLOT(setGradientColors()));
 //	disconnect(colorListFill  , SIGNAL(currentRowChanged(int)), this, SLOT(selectColorF(int)));
 //	disconnect(colorListStroke, SIGNAL(currentRowChanged(int)), this, SLOT(selectColorS(int)));
-//	disconnect(colorMeshPoint , SIGNAL(activated(int)), this, SLOT(updateMeshPoint()));
 	disconnect(editMeshColors , SIGNAL(clicked()), this, SLOT(editMeshPointColor()));
 //	disconnect(editPatternProps      , SIGNAL(clicked()) , this, SLOT(changePatternProps()));
 //	disconnect(editPatternPropsStroke, SIGNAL(clicked()), this, SLOT(changePatternPropsStroke()));
@@ -198,16 +198,21 @@ void ColorPickerModeEditor::disconnectSignals()
 //	disconnect(overPrintCombo     , SIGNAL(activated(int)), this, SIGNAL(NewOverprint(int)));
 //	disconnect(patternBox         , SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPattern(QListWidgetItem*)));
 //	disconnect(patternBoxStroke   , SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPatternS(QListWidgetItem*)));
-//	disconnect(shadeMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
+
 //	disconnect(strokeModeCombo    , SIGNAL(currentIndexChanged(int)), this, SLOT(slotGradStroke(int)));
 //	disconnect(strokeShade    , SIGNAL(valueChanged(double)), this, SIGNAL(NewPenShade(double)));
 //	disconnect(tabFillStroke      , SIGNAL(currentChanged(int)), this, SLOT(fillStrokeSelector(int)));
-//	disconnect(transparencyMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
-//	disconnect(hatchAngle, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
-//	disconnect(hatchDist, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
-//	disconnect(hatchType, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
-//	disconnect(hatchBackground, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
-//	disconnect(hatchLineColor, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+	disconnect(colorMeshPoint , SIGNAL(activated(int)), this, SLOT(updateMeshPoint()));
+	disconnect(shadeMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
+	disconnect(transparencyMeshPoint, SIGNAL(valueChanged(double)), this, SLOT(updateMeshPoint()));
+	disconnect(hatchAngle, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
+	disconnect(hatchDist, SIGNAL(valueChanged(double)), this, SLOT(changeHatchProps()));
+	disconnect(hatchType, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+	disconnect(hatchBackground, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+	disconnect(hatchLineColor, SIGNAL(activated(int)), this, SLOT(changeHatchProps()));
+
+
+	disconnect(gradEdit  , SIGNAL(emitGradientExtend(int)), this, SLOT(handleGradientExtend(int)));
 //	disconnect(gradientExtend  , SIGNAL(activated(int)), this, SLOT(handleGradientExtend(int)));
 //	disconnect(GradientExtendS  , SIGNAL(activated(int)), this, SLOT(handleStrokeGradientExtend(int)));
 }
@@ -251,15 +256,15 @@ void ColorPickerModeEditor::setDoc(ScribusDoc* d)
 
 	if (m_doc)
 	{
-//		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
-//		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
 //		disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
 //		disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
 		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
 //		disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
-//		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
-//		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
-//		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
@@ -296,15 +301,15 @@ void ColorPickerModeEditor::setDoc(ScribusDoc* d)
 //	updateColorList();
 //	updateCList();
 
-//	connect(this, SIGNAL(NewPen(QString))      , m_doc, SLOT(itemSelection_SetItemPen(QString)));
-//	connect(this, SIGNAL(NewBrush(QString))    , m_doc, SLOT(itemSelection_SetItemBrush(QString)));
+	connect(this, SIGNAL(NewPen(QString))      , m_doc, SLOT(itemSelection_SetItemPen(QString)));
+	connect(this, SIGNAL(NewBrush(QString))    , m_doc, SLOT(itemSelection_SetItemBrush(QString)));
 //	connect(this, SIGNAL(NewPenShade(double))     , this, SLOT(handleStrokeShade(double)));
 //	connect(this, SIGNAL(NewBrushShade(double))   , this, SLOT(handleFillShade(double)));
 	connect(this, SIGNAL(NewGradient(int))     , m_doc, SLOT(itemSelection_SetItemGradFill(int)));
 //	connect(this, SIGNAL(NewGradientS(int))    , m_doc, SLOT(itemSelection_SetItemGradStroke(int)));
-//	connect(this, SIGNAL(NewPattern(QString))  , m_doc, SLOT(itemSelection_SetItemPatternFill(QString)));
-//	connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), m_doc, SLOT(itemSelection_SetItemPatternProps(double, double, double, double, double, double, double, bool, bool)));
-//	connect(this, SIGNAL(NewOverprint(int))    , this, SLOT(handleOverprint(int)));
+	connect(this, SIGNAL(NewPattern(QString))  , m_doc, SLOT(itemSelection_SetItemPatternFill(QString)));
+	connect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), m_doc, SLOT(itemSelection_SetItemPatternProps(double, double, double, double, double, double, double, bool, bool)));
+	connect(this, SIGNAL(NewOverprint(int))    , this, SLOT(handleOverprint(int)));
 //	connect(this, SIGNAL(NewPatternS(QString)) , m_doc, SLOT(itemSelection_SetItemStrokePattern(QString)));
 //	connect(this, SIGNAL(NewPatternTypeS(bool)), m_doc, SLOT(itemSelection_SetItemStrokePatternType(bool)));
 //	connect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), m_doc, SLOT(itemSelection_SetItemStrokePatternProps(double, double, double, double, double, double, double, double, bool, bool)));
@@ -328,15 +333,15 @@ void ColorPickerModeEditor::unsetDoc()
 
 	if (m_doc)
 	{
-//		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
-//		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPen(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewBrush(QString)), 0, 0);
 //		disconnect(this, SIGNAL(NewPenShade(double)), 0, 0);
 //		disconnect(this, SIGNAL(NewBrushShade(double)), 0, 0);
 		disconnect(this, SIGNAL(NewGradient(int)), 0, 0);
 //		disconnect(this, SIGNAL(NewGradientS(int)), 0, 0);
-//		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
-//		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
-//		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
+		disconnect(this, SIGNAL(NewPattern(QString)), 0, 0);
+		disconnect(this, SIGNAL(NewPatternProps(double, double, double, double, double, double, double, bool, bool)), 0, 0);
+		disconnect(this, SIGNAL(NewOverprint(int)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternS(QString)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternTypeS(bool)), 0, 0);
 //		disconnect(this, SIGNAL(NewPatternPropsS(double, double, double, double, double, double, double, double, bool, bool)), 0, 0);
@@ -539,7 +544,7 @@ void ColorPickerModeEditor::languageChange()
 
 	// Save fill tab state
 	int oldGradientTypeIndex = gradientType->currentIndex();
-	int oldGradientExtendIndex = gradientExtend->currentIndex();
+//	int oldGradientExtendIndex = gradientExtend->currentIndex();
 	int oldHatchTypeIndex = hatchType->currentIndex();
 
 //	// Save stroke tab state
@@ -563,7 +568,7 @@ void ColorPickerModeEditor::languageChange()
 
 	// Restore properties
 	gradientType->setCurrentIndex(oldGradientTypeIndex);
-	gradientExtend->setCurrentIndex(oldGradientExtendIndex);
+//	gradientExtend->setCurrentIndex(oldGradientExtendIndex);
 	hatchType->setCurrentIndex(oldHatchTypeIndex);
 
 //	strokeModeCombo->setCurrentIndex(oldStrokeModeComboIndex);
@@ -1162,6 +1167,17 @@ void ColorPickerModeEditor::setGradientVectorValues()
 	}
 }
 
+void ColorPickerModeEditor::updateMeshPoint()
+{
+	QString color = colorMeshPoint->currentText();
+	if (color == CommonStrings::tr_NoneColor)
+		color = CommonStrings::None;
+	double t = transparencyMeshPoint->value() / 100.0;
+	m_item->setMeshPointColor(m_item->selectedMeshPointX, m_item->selectedMeshPointY, color, static_cast<int>(shadeMeshPoint->value()), t, m_doc->view()->editStrokeGradient == 8);
+	m_item->update();
+	m_doc->regionsChanged()->update(QRect());
+}
+
 
 /*********************************************************************
 *
@@ -1267,4 +1283,39 @@ void ColorPickerModeEditor::setFillGradient(const QString name, VGradient gradie
 
 	handleFillGradient();
 
+}
+
+void ColorPickerModeEditor::handleGradientExtend(int val)
+{
+	if (m_doc)
+	{
+		if (val == 0)
+			m_item->setGradientExtend(VGradient::none);
+		else
+			m_item->setGradientExtend(VGradient::pad);
+		m_item->update();
+		m_doc->regionsChanged()->update(QRect());
+	}
+}
+
+/*********************************************************************
+*
+* Hatch
+*
+**********************************************************************/
+
+void ColorPickerModeEditor::changeHatchProps()
+{
+	QString color1 = hatchLineColor->currentText();
+	if (color1 == CommonStrings::tr_NoneColor)
+		color1 = CommonStrings::None;
+	QString color2 = hatchBackground->currentText();
+	if (color2 == CommonStrings::tr_NoneColor)
+		color2 = CommonStrings::None;
+	bool useB = (color2 != CommonStrings::None);
+	double angle = hatchAngle->value();
+	double dist = hatchDist->value() / unitGetRatioFromIndex(m_unitIndex);
+	m_item->setHatchParameters(hatchType->currentIndex(), dist, angle, useB, color2, color1);
+	m_item->update();
+	m_doc->regionsChanged()->update(QRect());
 }

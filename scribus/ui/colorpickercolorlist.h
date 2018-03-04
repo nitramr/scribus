@@ -37,6 +37,8 @@ public:
 	QMap<QString,QString> origNamesPatterns;
 	QStringList origPatterns;
 
+	bool hasImportedColors;
+
 private:
 
 	ColorPaintMode colorPaintMode;
@@ -78,6 +80,12 @@ protected:
 	QTreeWidgetItem* updatePatternList(QString addedName = "");
 	QTreeWidgetItem* updateGradientList(QString addedName = "");
 	QTreeWidgetItem* updateColorList(QString addedName = "");
+
+	void loadScribusFormat(QString fileName);
+	void loadGimpFormat(QString fileName);
+	void addGimpColor(QString &colorName, double r, double g, double b);
+	void loadVectors(QString data);
+
 signals:
 	void emitColor(ScColor);
 	void emitGradient(QString, VGradient);
@@ -96,6 +104,7 @@ private slots:
 	void createNew();
 	void removeColorItem();
 	void editColorItem();
+	void importColorItems();
 	void removeUnusedColorItem();
 
 public slots:

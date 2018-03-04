@@ -65,6 +65,7 @@ public slots:
 
 signals:
 	void gradientChanged();
+	void emitGradientExtend(int);
 
 protected:
 	ColorList m_colorList;
